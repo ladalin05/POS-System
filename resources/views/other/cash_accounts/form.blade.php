@@ -1,0 +1,27 @@
+<x-app-layout>
+    <x-basic.breadcrumb>
+    </x-basic.breadcrumb>
+    <!-- Content area -->
+    <div class="content">
+        <x-basic.card :title="$title">
+            <x-basic.form action="{{ route('other.cash_accounts.save', $form?->id) }}" novalidate>
+                <div class="row">
+                    <div class="col-md-6">
+                        <x-basic.form.text label="{{ __('global.code') }}" name="code" value="{{ $form?->code }}" :required="true" />
+                    </div>
+                    <div class="col-md-6">
+                        <x-basic.form.text label="{{ __('global.name') }}" name="name" value="{{ $form?->name }}" :required="true" />
+                    </div>
+                    <div class="col-md-6">
+                        <x-basic.form.text label="{{ __('global.type') }}" name="type" value="{{ $form?->type }}" :required="true" />
+                    </div>
+                </div>
+                <div class="text-end mt-3">
+                    <a href="{{ route('other.cash_accounts.index') }}" class="btn btn-warning">{{ __('global.cancel') }}</a>
+                    <button type="submit" class="btn btn-primary">{{ __('global.save') }}</button>
+                </div>
+            </x-basic.form>
+        </x-basic.card>
+    </div>
+    <!-- /content area -->
+</x-app-layout>

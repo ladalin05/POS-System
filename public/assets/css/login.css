@@ -1,0 +1,80 @@
+/* --- Login Card --- */
+.login-card {
+    border-radius: 1.5rem !important;
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+    border: 1px solid #f3f4f6;
+    transition: box-shadow 0.3s;
+}
+.login-card:hover {
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+}
+
+/* --- Input Groups --- */
+.form-control:focus {
+    border-color: var(--bs-indigo-light);
+    box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.25);
+}
+.input-icon-group {
+    position: relative;
+}
+.input-icon-group .fa {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    z-index: 10;
+}
+.password-toggle {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6b7280;
+    padding: 0.25rem;
+    transition: color 0.15s;
+}
+.password-toggle:hover {
+    color: #4b5563;
+}
+
+/* --- Recaptcha Placeholder --- */
+.recaptcha-placeholder {
+    border-radius: 0.75rem;
+    border-color: #e5e7eb;
+    background-color: #f9fafb;
+}
+.recaptcha-box {
+    height: 2.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.recaptcha-box:hover {
+    border-color: var(--bs-indigo);
+}
+.recaptcha-verified {
+    background-color: #d1fae5 !important;
+    border-color: #34d399 !important;
+    color: #065f46 !important;
+}
+
+/* Login footer links */
+.res-box label a {
+    color: #7f56d9;
+}
+.res-box label {
+    margin-left: 5px;
+    color: #888;
+    font-weight: 500;
+}
+.login-wrapper .res-box a {
+    color: #7f56d9;
+    font-weight: 600;
+}
+.login-wrapper .res-box a:hover {
+    color: #495057;
+    text-decoration: underline;
+}

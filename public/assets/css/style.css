@@ -1,0 +1,126 @@
+/* --- Header & Search Styling --- */
+.datatable-header {
+    height: 60px;
+    display: flex;
+    align-items: start;
+    margin-top: 20px;
+}
+.dataTables_filter input {
+    border: 1px solid #e9ecef !important;
+    border-radius: 10px !important;
+    padding: 8px 12px 8px 35px !important;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23adb5bd' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat 10px center;
+}
+
+
+/* --- Table Content --- */
+.table thead tr th {
+    background-color: #F9FAFB;
+    color: #556080;
+    font-weight: 500;
+    border-bottom: 1px solid #f0f2f5;
+    padding: 15px;
+}
+
+.table tfoot tr {
+    display: none;
+}
+
+/* Status Badge - Soft Green with Dot */
+.badge-status-active {
+    background-color: #e6f6ec;
+    color: #1eb564;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+}
+.badge-status-active::before {
+    content: "●";
+    margin-right: 8px;
+    font-size: 10px;
+}
+
+/* --- Footer Styling --- */
+.datatable-footer {
+    padding: 20px 0;
+}
+
+/* Row Per Page styling */
+.dataTables_length {
+    color: #6c757d;
+    font-size: 14px;
+    text-wrap: nowrap;
+}
+.dataTables_length select {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    margin: 0 5px;
+}
+
+/* Orange Circular Pagination */
+.dataTables_paginate .paginate_button {
+    border: none !important;
+    background: transparent !important;
+    padding: 0;
+    margin: 0 2px;
+}
+
+.dataTables_paginate .paginate_button a {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50% !important;
+    color: #6c757d !important;
+    text-decoration: none;
+}
+
+.dataTables_paginate .paginate_button.active a {
+    border: none !important;
+    background-color: #ff9f43 !important;
+    color: white !important;
+    box-shadow: 0 4px 10px rgba(255, 159, 67, 0.3);
+}
+
+/* Icon box styling (the white square buttons) */
+.btn-icon-box {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    background-color: #fff;
+}
+
+.btn-icon-box img {
+    width: 20px;
+    height: 20px;
+}
+
+.btn-icon-box:hover {
+    background-color: #f8f9fa;
+}
+
+/* Specific Orange Button */
+.btn-add-user {
+    background-color: #ff9f43; /* This matches the orange in the image */
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.btn-add-user:hover {
+    background-color: #ee8e32;
+    color: white;
+}
+
+/* Ensure icons look right */
+.bi {
+    font-size: 1.1rem;
+    line-height: 1;
+}

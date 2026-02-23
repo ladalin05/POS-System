@@ -1,0 +1,94 @@
+.navbar-dark {
+    background-color: #002959 !important;
+}
+
+.nav-link {
+    color: #002959 !important;
+}
+
+.nav-item .nav-link i {
+    margin-right: 12px;
+}
+
+.nav-group-sub .nav-link {
+    padding-left: 36px !important;
+}
+
+.nav-group-sub .nav-group-sub .nav-link {
+    padding-left: 56px !important;
+}
+
+.ph {
+    font-size: var(--icon-font-size);
+}
+
+.lang-flag {
+    vertical-align: middle;
+    height: 22px;
+    width: 22px;
+    overflow: hidden;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.lang-flag-text {
+    text-transform: uppercase;
+}
+
+.ph-1x {
+    font-size: calc(1 * var(--icon-font-size))
+}
+
+.ph-2x {
+    font-size: calc(2 * var(--icon-font-size))
+}
+
+.ph-3x {
+    font-size: calc(3 * var(--icon-font-size))
+}
+
+.ph-4x {
+    font-size: calc(4 * var(--icon-font-size))
+}
+
+.ph-5x {
+    font-size: calc(5 * var(--icon-font-size))
+}
+
+.ph-lg {
+    font-size: var(--icon-font-size-lg)
+}
+
+.ph-sm {
+    font-size: var(--icon-font-size-sm)
+}
+
+.ph-rotate-90 {
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg)
+}
+
+.ph-rotate-180 {
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg)
+}
+
+.ph-rotate-270 {
+    -webkit-transform: rotate(270deg);
+    transform: rotate(270deg)
+}
+
+.ph-flip-horizontal {
+    -webkit-transform: scale(-1, 1);
+    transform: scale(-1, 1)
+}
+
+.ph-flip-vertical {
+    -webkit-transform: scale(1, -1);
+    transform: scale(1, -1)
+}
+
+.ph-flip-horizontal.ph-flip-vertical {
+    -webkit-transform: scale(-1, -1);
+    transform: scale(-1, -1)
+}
