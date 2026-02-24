@@ -1,4 +1,4 @@
-<div class="modal-body">
+
     {{-- Logo Section - Styled as a Profile Upload --}}
     <div class="row mb-4 align-items-center bg-light rounded p-3 mx-0 border-dashed">
         <div class="col-md-8">
@@ -96,14 +96,13 @@
             </div>
         </div>
     </div>
-</div>
 
-<div class="modal-footer bg-light px-4">
-    <button type="button" class="btn btn-link text-muted fw-semibold" data-bs-dismiss="modal">{{ __('global.close') }}</button>
-    <button type="submit" class="btn btn-primary px-4 shadow-sm">
-        <i class="ph ph-floppy-disk me-2"></i> {{ __('global.save') }}
-    </button>
-</div>
+    <div class="col-12 px-4 justify-content-end d-flex gap-2">
+        <button type="button" class="btn btn-link text-muted fw-semibold" data-bs-dismiss="modal">{{ __('global.close') }}</button>
+        <button type="submit" class="btn btn-primary px-4 shadow-sm">
+            <i class="ph ph-floppy-disk me-2"></i> {{ __('global.save') }}
+        </button>
+    </div>
 
 <style>
     .bg-primary-light { background: rgba(13, 110, 253, 0.1); }

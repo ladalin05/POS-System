@@ -159,5 +159,13 @@ return [
     'country' => 'Country',
     'vat_number' => 'VAT Number',
     'invoice_footer' => 'Invoice Footer',
+    'exchange_rate' => 'Exchange Rate',
+    'group_customer' => 'Group Customer',
+    'company' => 'Company',
+    'credit_amount' => 'Credit Amount',
+    'postal_code' => 'Postal Code',
+    'credit_day' => 'Credit Day',
+    'attachment' => 'Attachment',
+    'credit_days' => 'Credit Days',
     
 ];
