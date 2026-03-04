@@ -20,11 +20,13 @@ class WarehousesDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query))
-            ->addColumn('checkbox', function ($a) {
-                return '<input type="checkbox" class="row-checkbox" value="' . $a->id . '">';
+        return datatables()
+            ->eloquent($query)
+            ->addIndexColumn()
+            ->addColumn('checkbox', function ($row) {
+                return '<input type="checkbox" class="row-checkbox" value="' . $row->id . '">';
             })
-            ->addColumn('action', fn($a) => view('other.warehouses.action', compact('a')))
+            ->addColumn('action', fn($row) => view('other.warehouses.action', compact('row')))
             ->rawColumns(['checkbox', 'action'])
             ->setRowId('id');
     }
@@ -71,8 +73,10 @@ class WarehousesDataTable extends DataTable
                 ->width(30)
                 ->title('<input type="checkbox" id="select-all">')
                 ->addClass('text-center'),
-
-            Column::make('id')->title('ID')->width(60),
+            Column::computed('DT_RowIndex')
+                ->title(__('No'))
+                ->width(60)
+                ->addClass('text-center'),
             Column::make('code')->title(__('global.code')),
             Column::make('name')->title(__('global.name')),
             Column::make('phone')->title(__('global.phone')),

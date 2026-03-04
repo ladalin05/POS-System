@@ -3,7 +3,7 @@
 
     <div class="content">
         <x-basic.card :title="$title">
-            <x-basic.form action="{{ route('setting.base_units.save', $form?->id) }}" method="POST" novalidate>
+            <x-basic.form action="{{ route('setting.base-units.save', $form?->id) }}" method="POST" novalidate>
                 @csrf
                 <div class="row">
 

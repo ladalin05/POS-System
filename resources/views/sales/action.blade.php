@@ -1,47 +1,37 @@
-<div class="d-inline-flex dropdown ms-2">
-    <a href="javascript:void(0)" class="d-inline-flex align-items-center text-body dropdown-toggle"
-        data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="ph ph-list"></i>
-    </a>
-    <div class="dropdown-menu dropdown-menu-end">
+<div class="dropdown">
+    <button class="btn btn-light btn-icon btn-sm dropdown-toggle hide-arrow shadow-sm" 
+            type="button" 
+            data-bs-toggle="dropdown" 
+            aria-expanded="false"
+            style="border-radius: 8px; padding: 0.5rem;">
+        <i class="fa-solid fa-bars"></i>
+    </button>
 
-
-
-
-
-
-
-
-
-        @can('payment.modal')
-            <a href="javascript:void(0)" class="dropdown-item" id="open-payment-modal"
-                data-url="{{ route('payment.modal', $a->id) }}">
-                <i class="ph ph-pencil me-2"></i> {{ __('global.add_payment') }}
+    <div class="dropdown-menu dropdown-menu-end border-0 shadow-lg py-2" style="min-width: 160px; border-radius: 12px;">
+        
+        @can('sales.sales.show')
+            <a href="{{ route('sales.sales.show', $row->id) }}" class="dropdown-item py-2 px-3 d-flex align-items-center">
+                <div class="bg-primary-subtle rounded-circle p-1 me-2 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                    <i class="ph ph-eye text-primary"></i>
+                </div>
+                <span class="fw-medium text-dark">{{ __('global.view') }}</span>
             </a>
         @endcan
 
-        @can('payment.index')
-            <a href="javascript:void(0)" class="dropdown-item" id="open-payment-view"
-                data-url="{{ route('payment.index', $a->id) }}">
-                <i class="ph ph-pencil me-2"></i> {{ __('global.view_payment') }}
+        @can('sales.sales.delete')
+            @can('sales.sales.show')
+                <div class="dropdown-divider my-1 opacity-50"></div>
+            @endcan
+
+            <a href="{{ route('sales.sales.delete', $row->id) }}" 
+               class="dropdown-item py-2 px-3 d-flex align-items-center text-danger"
+               onclick="deleteRecord(event)">
+                <div class="bg-danger-subtle rounded-circle p-1 me-2 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                    <i class="ph ph-trash text-danger"></i>
+                </div>
+                <span class="fw-medium">{{ __('global.delete') }}</span>
             </a>
         @endcan
-
-
-
-
-
-        @can('sales.delete')
-            <div class="dropdown-divider"></div>
-            <a href="{{ route('sales.delete', $a->id) }}" class="dropdown-item" onclick="deleteRecord(event)">
-                <i class="ph ph-x text-danger me-2"></i>
-                {{ __('global.delete') }}
-            </a>
-        @endcan
-
-
-
-
 
     </div>
 </div>

@@ -18,10 +18,12 @@ class CategoryDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query))
-            ->addColumn('action', fn ($a) => view('product.categories.action', compact('a')))
-            ->addColumn('api', fn($a) => clipboard(url("api/v1/{$a->endpoint}")))
-            ->addColumn('endpoint', fn($a) => clipboard("{$a->url}"))
+        return datatables()
+            ->eloquent($query)
+            ->addIndexColumn()
+            ->addColumn('action', fn ($row) => view('product.categories.action', compact('row')))
+            ->addColumn('api', fn($row) => clipboard(url("api/v1/{$row->endpoint}")))
+            ->addColumn('endpoint', fn($row) => clipboard("{$row->url}"))
             ->rawColumns(['action', 'api', 'endpoint'])
             ->setRowId('id');
     }
@@ -62,7 +64,10 @@ class CategoryDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('id')->visible(false),
+            Column::computed('DT_RowIndex')
+                ->title(__('global.n_o'))
+                ->width(60)
+                ->addClass('text-center'),
             Column::make('image'),
             Column::make('code'),
             Column::make('name'),

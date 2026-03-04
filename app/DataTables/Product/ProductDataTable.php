@@ -18,20 +18,19 @@ class ProductDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query))
-            ->addColumn('image', function ($a) {
-                // clean image path
-                $path = ltrim($a->image ?? '', '/');
-
-                // if empty OR file does not exist → use default
+        return datatables()
+            ->eloquent($query)
+            ->addIndexColumn()
+            ->addColumn('image', function ($row) {
+                $path = ltrim($row->image ?? '', '/');
                 if (!$path || !file_exists(public_path($path))) {
                     $path = 'assets/images/no_image.png';
                 }
-
                 return '<img src="' . asset($path) . '" class="img-thumbnail" style="width:35px; height:35px;" />';
             })
-            ->addColumn('category_name', fn($a) => $a->category->name ?? '-')
-            ->addColumn('action', fn($a) => view('product.products.action', compact('a')))
+            ->addColumn('category_name', fn($row) => $row->category_name ?? '-')
+            ->addColumn('unit_name', fn($row) => $row->unit_name ?? '-')
+            ->addColumn('action', fn($row) => view('product.products.action', compact('row')))
             ->rawColumns(['image', 'action'])
             ->setRowId('id');
     }
@@ -42,18 +41,10 @@ class ProductDataTable extends DataTable
      */
     public function query(Product $model): QueryBuilder
     {
-        return $model->newQuery()->select([
-            'id',
-            'image',
-            'code',
-            'name',
-            'type',
-            'category_id',
-            'unit_id',
-            'cost',
-            'price',
-            'alert_quantity'
-        ])->with('category', 'unit');
+        return $model->newQuery()
+                ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
+                ->leftJoin('units', 'products.unit_id', '=', 'units.id')
+                ->select('products.*', 'categories.name as category_name', 'units.name as unit_name');
 
 
     }
@@ -86,13 +77,16 @@ class ProductDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('id'),
+            Column::computed('DT_RowIndex')
+                ->title(__('global.n_o'))
+                ->width(60)
+                ->addClass('text-center'),
             Column::make('image'),
             Column::make('code'),
             Column::make('name'),
             Column::make('type'),
             Column::make('category_name')->title('Category'),
-            Column::make('unit_id'),
+            Column::make('unit_name')->title('Unit'),
             Column::make('cost'),
             Column::make('price'),
             Column::make('alert_quantity'),

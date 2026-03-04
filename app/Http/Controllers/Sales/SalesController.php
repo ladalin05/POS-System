@@ -16,7 +16,6 @@ class SalesController extends Controller
 
     public function index(SalesDataTable $dataTable)
     {
-
         return $dataTable->render('sales.index');
     }
 

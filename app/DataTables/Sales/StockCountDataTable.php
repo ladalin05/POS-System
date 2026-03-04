@@ -2,7 +2,7 @@
 
 namespace App\DataTables\Sales;
 
-use App\Models\Adjustment\StockMove;
+use App\Models\Stocks\StockMove;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\EloquentDataTable;

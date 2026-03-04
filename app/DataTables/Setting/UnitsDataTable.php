@@ -18,8 +18,10 @@ class UnitsDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query))
-            ->addColumn('action', fn ($a) => view('setting.units.action', compact('a')))
+        return datatables()
+            ->eloquent($query)
+            ->addIndexColumn()
+            ->addColumn('action', fn ($row) => view('setting.units.action', compact('row')))
             ->rawColumns(['action'])
             ->setRowId('id');
     }
@@ -59,7 +61,10 @@ class UnitsDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('id')->visible(false),
+            Column::computed('DT_RowIndex')
+                ->title(__('No'))
+                ->width(60)
+                ->addClass('text-center'),
             Column::make('code'),
             Column::make('name'),
             Column::computed('action')

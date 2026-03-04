@@ -2,7 +2,7 @@
 
 namespace App\DataTables\Product;
 
-use App\Models\Adjustment\StockMove;
+use App\Models\Stocks\StockMove;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
@@ -20,9 +20,9 @@ class AlertQuantityDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('image', function ($a) {
+            ->addColumn('image', function ($row) {
                 // clean image path
-                $path = ltrim($a->image ?? '', '/');
+                $path = ltrim($row->image ?? '', '/');
 
                 // if empty OR file does not exist → use default
                 if (!$path || !file_exists(public_path($path))) {
@@ -31,8 +31,8 @@ class AlertQuantityDataTable extends DataTable
 
                 return '<img src="' . asset($path) . '" class="img-thumbnail" style="width:35px; height:35px;" />';
             })
-            ->addColumn('category_name', fn($a) => $a->category->name ?? '-')
-            ->addColumn('action', fn($a) => view('product.products.alert_qty.action', compact('a')))
+            ->addColumn('category_name', fn($row) => $row->category->name ?? '-')
+            ->addColumn('action', fn($row) => view('product.products.alert_qty.action', compact('row')))
             ->rawColumns(['image', 'action'])
             ->setRowId('id');
     }

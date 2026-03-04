@@ -1,25 +1,37 @@
-<div class="d-inline-flex dropdown ms-2">
-    <a href="javascript:void(0)" class="d-inline-flex align-items-center text-body dropdown-toggle"
-        data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="ph ph-list"></i>
-    </a>
-    <div class="dropdown-menu dropdown-menu-end">
+<div class="dropdown">
+    <button class="btn btn-light btn-icon btn-sm dropdown-toggle hide-arrow shadow-sm" 
+            type="button" 
+            data-bs-toggle="dropdown" 
+            aria-expanded="false"
+            style="border-radius: 8px; padding: 0.5rem;">
+        <i class="fa-solid fa-bars"></i>
+    </button>
 
-
-        @can('other.currencies.save')
-            <a href="{{ route('other.currencies.save', $a->id) }}" class="dropdown-item" onclick="editcurrencies(event)">
-                <i class="ph ph-pencil me-2"></i>
+    <div class="dropdown-menu dropdown-menu-end border-0 shadow-lg py-2" style="min-width: 160px; border-radius: 12px;">
+        
+        @can('other.currencies.edit')
+            <a href="{{ route('other.currencies.edit', $row->id) }}" class="dropdown-item py-2 px-3 d-flex align-items-center">
+                <div class="bg-primary-subtle rounded-circle p-1 me-2 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                    <i class="ph ph-pencil me-2"></i>
+                </div>
                 {{ __('global.edit') }}
             </a>
         @endcan
+
         @can('other.currencies.delete')
-            <div class="dropdown-divider"></div>
-            <a href="{{ route('other.currencies.delete', $a->id) }}" class="dropdown-item" onclick="deleteRecord(event)">
-                <i class="ph ph-x text-danger me-2"></i>
-                {{ __('global.delete') }}
+            @can('other.currencies.edit')
+                <div class="dropdown-divider my-1 opacity-50"></div>
+            @endcan
+
+            <a href="{{ route('other.currencies.delete', $row->id) }}" 
+               class="dropdown-item py-2 px-3 d-flex align-items-center text-danger"
+               onclick="deleteRecord(event)">
+                <div class="bg-danger-subtle rounded-circle p-1 me-2 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                    <i class="ph ph-trash text-danger"></i>
+                </div>
+                <span class="fw-medium">{{ __('global.delete') }}</span>
             </a>
         @endcan
-
 
     </div>
 </div>

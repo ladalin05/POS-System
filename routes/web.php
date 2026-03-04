@@ -22,12 +22,16 @@ use App\Http\Controllers\Setting\BaseUnitController;
 use App\Http\Controllers\Setting\FloorController;
 use App\Http\Controllers\Setting\RoomController;
 use App\Http\Controllers\Setting\UnitConvertController;
-use App\Http\Controllers\Adjustment\AdjustmentController;
+use App\Http\Controllers\Stocks\AdjustmentController;
+use App\Http\Controllers\Stocks\ManageStockController;
+use App\Http\Controllers\Stocks\StockTransferController;
 use App\Http\Controllers\Sales\SalesController;
+use App\Http\Controllers\Sales\InvoicesController;
 use App\Http\Controllers\Reports\ReportController;
 use App\Http\Controllers\People\CustomerController;
 use App\Http\Controllers\People\SuppliersController;
 use App\Http\Controllers\Purchases\PurchasesController;
+use App\Http\Controllers\Sales\SaleReturnController;
 use App\Http\Controllers\Api\V1\PaymentController;
 
 
@@ -41,7 +45,7 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 
@@ -61,7 +65,7 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             Route::get('add', [UserController::class, 'add'])->name('add');
             Route::get('edit/{id}', [UserController::class, 'edit'])->name('edit');
             Route::post('save/{id?}', [UserController::class, 'save'])->name('save');
-            Route::delete('delete/{id}', [UserController::class, 'delete'])->name('delete');
+            Route::post('delete/{id}', [UserController::class, 'delete'])->name('delete');
             Route::match(['get', 'post'], 'permission/{id}', [UserController::class, 'permission'])->name('permission');
             Route::match(['get', 'post'], 'change-password/{id}', [UserController::class, 'changePassword'])->name('change-password');
             Route::get('account', [UserController::class, 'account'])->name('account');
@@ -77,7 +81,7 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             Route::get('add', [RoleController::class, 'add'])->name('add');
             Route::get('edit/{id}', [RoleController::class, 'edit'])->name('edit');
             Route::post('save/{id?}', [RoleController::class, 'save'])->name('save');
-            Route::delete('delete/{id}', [RoleController::class, 'delete'])->name('delete');
+            Route::post('delete/{id}', [RoleController::class, 'delete'])->name('delete');
         });
     });
 
@@ -94,7 +98,7 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             Route::get('add', [ProductController::class, 'add'])->name('add');
             Route::get('edit/{id}', [ProductController::class, 'edit'])->name('edit');
             Route::post('save/{id?}', [ProductController::class, 'save'])->name('save');
-            Route::delete('delete/{id}', [ProductController::class, 'delete'])->name('delete');
+            Route::post('delete/{id}', [ProductController::class, 'delete'])->name('delete');
             Route::get('view/{id}', [ProductController::class, 'view'])->name('view');
             Route::get('alert_qty/index', [ProductController::class, 'alert_quantity'])->name('alert_quantity');
         });
@@ -107,7 +111,7 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             Route::get('add', [CategoryController::class, 'add'])->name('add');
             Route::get('edit/{id}', [CategoryController::class, 'edit'])->name('edit');
             Route::post('save/{id?}', [CategoryController::class, 'save'])->name('save');
-            Route::delete('delete/{id}', [CategoryController::class, 'delete'])->name('delete');
+            Route::post('delete/{id}', [CategoryController::class, 'delete'])->name('delete');
         });
     });
 
@@ -123,7 +127,7 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             Route::get('add', [UnitsController::class, 'add'])->name('add');
             Route::get('edit/{id}', [UnitsController::class, 'edit'])->name('edit');
             Route::post('save/{id?}', [UnitsController::class, 'save'])->name('save');
-            Route::delete('delete/{id}', [UnitsController::class, 'delete'])->name('delete');
+            Route::post('delete/{id}', [UnitsController::class, 'delete'])->name('delete');
         });
 
         Route::group([
@@ -134,7 +138,7 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             Route::get('add', [BaseUnitController::class, 'add'])->name('add');
             Route::get('edit/{id}', [BaseUnitController::class, 'edit'])->name('edit');
             Route::post('save/{id?}', [BaseUnitController::class, 'save'])->name('save');
-            Route::delete('delete/{id}', [BaseUnitController::class, 'delete'])->name('delete');
+            Route::post('delete/{id}', [BaseUnitController::class, 'delete'])->name('delete');
         });
 
         Route::group([
@@ -145,7 +149,7 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             Route::get('add', [FloorController::class, 'add'])->name('add');
             Route::get('edit/{id}', [FloorController::class, 'edit'])->name('edit');
             Route::post('save/{id?}', [FloorController::class, 'save'])->name('save');
-            Route::delete('delete/{id}', [FloorController::class, 'delete'])->name('delete');
+            Route::post('delete/{id}', [FloorController::class, 'delete'])->name('delete');
         });
 
         Route::group([
@@ -156,7 +160,7 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             Route::get('add', [RoomController::class, 'add'])->name('add');
             Route::get('edit/{id}', [RoomController::class, 'edit'])->name('edit');
             Route::post('save/{id?}', [RoomController::class, 'save'])->name('save');
-            Route::delete('delete/{id}', [RoomController::class, 'delete'])->name('delete');
+            Route::post('delete/{id}', [RoomController::class, 'delete'])->name('delete');
         });
         
         Route::group([
@@ -167,7 +171,7 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             Route::get('add', [UnitConvertController::class, 'add'])->name('add');
             Route::get('edit/{id}', [UnitConvertController::class, 'edit'])->name('edit');
             Route::post('save/{id?}', [UnitConvertController::class, 'save'])->name('save');
-            Route::delete('delete/{id}', [UnitConvertController::class, 'delete'])->name('delete');
+            Route::post('delete/{id}', [UnitConvertController::class, 'delete'])->name('delete');
         });
 
     });
@@ -180,13 +184,10 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'prefix' => 'manage',
             'as' => 'manage.',
         ], function () {
-            Route::get('/', [AdjustmentController::class, 'index'])->name('index');
-            Route::get('add', [AdjustmentController::class, 'add'])->name('add');
-            Route::get('edit/{id}', [AdjustmentController::class, 'edit'])->name('edit');
-            Route::post('save/{id?}', [AdjustmentController::class, 'save'])->name('save');
-            Route::delete('delete/{id}', [AdjustmentController::class, 'delete'])->name('delete');
-            Route::post('{id}/approve', [AdjustmentController::class, 'approve'])->name('approve');
-
+            Route::get('/', [ManageStockController::class, 'index'])->name('index');
+            Route::get('add', [ManageStockController::class, 'add'])->name('add');
+            Route::get('edit/{id}', [ManageStockController::class, 'edit'])->name('edit');
+            Route::post('delete/{id}', [ManageStockController::class, 'delete'])->name('delete');
         });
         Route::group([
             'prefix' => 'adjustment',
@@ -196,20 +197,24 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             Route::get('add', [AdjustmentController::class, 'add'])->name('add');
             Route::get('edit/{id}', [AdjustmentController::class, 'edit'])->name('edit');
             Route::post('save/{id?}', [AdjustmentController::class, 'save'])->name('save');
-            Route::delete('delete/{id}', [AdjustmentController::class, 'delete'])->name('delete');
+            Route::post('delete/{id}', [AdjustmentController::class, 'delete'])->name('delete');
             Route::post('{id}/approve', [AdjustmentController::class, 'approve'])->name('approve');
+            Route::get('/modal_view/{id}', [AdjustmentController::class, 'modalView'])->name('modal_view');
+            Route::get('add', [AdjustmentController::class, 'add'])->name('add');
+            Route::get('ajaxQoh', [AdjustmentController::class, 'ajaxQoh'])->name('ajaxQoh');
+            Route::get('ajaxProducts', [AdjustmentController::class, 'ajaxProducts'])->name('ajaxProducts');
+            Route::get('ajaxUnits', [AdjustmentController::class, 'ajaxUnits'])->name('ajaxUnits');
+            Route::get('ajaxProductUnits', [AdjustmentController::class, 'ajaxProductUnits'])->name('ajaxProductUnits');
 
         });
         Route::group([
             'prefix' => 'transfer',
             'as' => 'transfer.',
         ], function () {
-            Route::get('/', [AdjustmentController::class, 'index'])->name('index');
-            Route::get('add', [AdjustmentController::class, 'add'])->name('add');
-            Route::get('edit/{id}', [AdjustmentController::class, 'edit'])->name('edit');
-            Route::post('save/{id?}', [AdjustmentController::class, 'save'])->name('save');
-            Route::delete('delete/{id}', [AdjustmentController::class, 'delete'])->name('delete');
-            Route::post('{id}/approve', [AdjustmentController::class, 'approve'])->name('approve');
+            Route::get('/', [StockTransferController::class, 'index'])->name('index');
+            Route::get('add', [StockTransferController::class, 'add'])->name('add');
+            Route::get('edit/{id}', [StockTransferController::class, 'edit'])->name('edit');
+            Route::post('delete/{id}', [StockTransferController::class, 'delete'])->name('delete');
 
         });
     });
@@ -223,7 +228,8 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'sales.',
         ], function () {
             Route::get('/', [SalesController::class, 'index'])->name('index');
-            Route::delete('delete/{id}', [SalesController::class, 'delete'])->name('delete');
+            Route::get('show/{id}', [SalesController::class, 'show'])->name('show');
+            Route::post('delete/{id}', [SalesController::class, 'delete'])->name('delete');
             Route::get('stockcount/index', [SalesController::class, 'StockCount'])->name('StockCount');
         });
         
@@ -231,33 +237,43 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'prefix' => 'pos',
             'as' => 'pos.',
         ], function () {
-
             Route::get('/', [PosController::class, 'index'])->name('index');
             Route::get('search-customer', [PosController::class, 'searchCustomer'])->name('searchCustomer');
             Route::get('getProductDataByCode', [PosController::class, 'getProductDataByCode'])->name('getProductDataByCode');
+            Route::get('search-name', [PosController::class, 'searchProductByName'])->name('searchProductByName');
+            Route::get('ajaxCategoryData', [PosController::class, 'ajaxCategoryData'])->name('ajaxCategoryData');
+            Route::get('table-form', [PosController::class, 'addTable'])->name('addTable');
+            Route::get('getWarehouses', [PosController::class, 'getWarehouses'])->name('getWarehouses');
+            Route::get('today_sale', [PosController::class, 'todaySale'])->name('today_sale');
+            Route::get('select-table/{id}', [PosController::class, 'selectTable'])->name('selectTable');
+            Route::get('clear-table', [PosController::class, 'clearTable'])->name('clearTable');
+            Route::post('save-suspend', [PosController::class, 'saveSuspend'])->name('saveSuspend');
+            Route::get('move-room', [PosController::class, 'moveRoom'])->name('moveRoom');
+            Route::get('opened_bills', [PosController::class, 'openedBills'])->name('opened_bills');
+            Route::get('openedBillsItems/{id}', [PosController::class, 'openedBillsItems'])->name('opened_bills_items');
             Route::post('submit-sale', [PosController::class, 'submitSale'])->name('submitSale');
+            Route::get('modal_bill/{id}', [PosController::class, 'modal_bill'])->name('modal_bill');
         });
         
         Route::group([
             'prefix' => 'invoices',
             'as' => 'invoices.',
         ], function () {
-
-            Route::get('/', [PosController::class, 'index'])->name('index');
-            Route::get('search-customer', [PosController::class, 'searchCustomer'])->name('searchCustomer');
-            Route::get('getProductDataByCode', [PosController::class, 'getProductDataByCode'])->name('getProductDataByCode');
-            Route::post('submit-sale', [PosController::class, 'submitSale'])->name('submitSale');
+            Route::get('/', [InvoicesController::class, 'index'])->name('index');
+            Route::get('show/{id}', [InvoicesController::class, 'show'])->name('show');
+            Route::post('/delete/{id}', [InvoicesController::class, 'destroy'])->name('delete');
+            Route::get('search-customer', [InvoicesController::class, 'searchCustomer'])->name('searchCustomer');
+            Route::get('getProductDataByCode', [InvoicesController::class, 'getProductDataByCode'])->name('getProductDataByCode');
+            Route::post('submit-sale', [InvoicesController::class, 'submitSale'])->name('submitSale');
         });
         
         Route::group([
             'prefix' => 'return',
             'as' => 'return.',
         ], function () {
-
-            Route::get('/', [PosController::class, 'index'])->name('index');
-            Route::get('search-customer', [PosController::class, 'searchCustomer'])->name('searchCustomer');
-            Route::get('getProductDataByCode', [PosController::class, 'getProductDataByCode'])->name('getProductDataByCode');
-            Route::post('submit-sale', [PosController::class, 'submitSale'])->name('submitSale');
+            Route::get('/', [SaleReturnController::class, 'index'])->name('index');
+            Route::get('/show/{id}', [SaleReturnController::class, 'show'])->name('show');
+            Route::post('/delete/{id}', [SaleReturnController::class, 'destroy'])->name('delete');
         });
         
         Route::group([
@@ -277,8 +293,8 @@ Route::middleware(['auth', 'abilities'])->group(function () {
         'as' => 'reports.',
     ], function () {
         Route::get('product-sales-report', [ReportController::class, 'productSales'])->name('product-sales-report');
+        Route::get('product-sales', [ReportController::class, 'exportProductSales'])->name('product_sales');
         Route::get('product-sales/export', [ReportController::class, 'exportProductSales'])->name('product_sales.export');
-
     });
 
     Route::group([
@@ -294,7 +310,7 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             Route::get('add', [CashAccountController::class, 'add'])->name('add');
             Route::get('edit/{id}', [CashAccountController::class, 'edit'])->name('edit');
             Route::post('save/{id?}', [CashAccountController::class, 'save'])->name('save');
-            Route::delete('delete/{id}', [CashAccountController::class, 'delete'])->name('delete');
+            Route::post('delete/{id}', [CashAccountController::class, 'delete'])->name('delete');
         });
         
         Route::group([
@@ -305,7 +321,7 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             Route::get('add', [BranchController::class, 'add'])->name('add');
             Route::get('edit/{id}', [BranchController::class, 'edit'])->name('edit');
             Route::match(['get', 'post'], 'save/{id?}', [BranchController::class, 'save'])->name('save');
-            Route::delete('delete/{id}', [BranchController::class, 'delete'])->name('delete');
+            Route::post('delete/{id}', [BranchController::class, 'delete'])->name('delete');
             Route::post('bulk-delete', [BranchController::class, 'bulkDelete'])->name('bulk-delete');
         });
 
@@ -317,7 +333,7 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             Route::get('add', [WarehousesController::class, 'add'])->name('add');
             Route::get('edit/{id}', [WarehousesController::class, 'edit'])->name('edit');
             Route::match(['get', 'post'], 'save/{id?}', [WarehousesController::class, 'save'])->name('save');
-            Route::delete('delete/{id}', [WarehousesController::class, 'delete'])->name('delete');
+            Route::post('delete/{id}', [WarehousesController::class, 'delete'])->name('delete');
             Route::post('bulk-delete', [WarehousesController::class, 'bulkDelete'])->name('bulk-delete');
         });
 
@@ -329,7 +345,7 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             Route::get('add', [CurrenciesController::class, 'add'])->name('add');
             Route::get('edit/{id}', [CurrenciesController::class, 'edit'])->name('edit');
             Route::match(['get', 'post'], 'save/{id?}', [CurrenciesController::class, 'save'])->name('save');
-            Route::delete('delete/{id}', [CurrenciesController::class, 'delete'])->name('delete');
+            Route::post('delete/{id}', [CurrenciesController::class, 'delete'])->name('delete');
             Route::post('bulk-delete', [CurrenciesController::class, 'bulkDelete'])->name('bulk-delete');
         });
     });
@@ -347,7 +363,7 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             Route::get('add', [CustomerController::class, 'add'])->name('add');
             Route::get('edit/{id}', [CustomerController::class, 'edit'])->name('edit');
             Route::post('save/{id?}', [CustomerController::class, 'save'])->name('save');
-            Route::delete('delete/{id}', [CustomerController::class, 'delete'])->name('delete');
+            Route::post('delete/{id}', [CustomerController::class, 'delete'])->name('delete');
         });
         
         Route::group([
@@ -358,7 +374,7 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             Route::get('add', [SuppliersController::class, 'add'])->name('add');
             Route::get('edit/{id}', [SuppliersController::class, 'edit'])->name('edit');
             Route::match(['get', 'post'], 'save/{id?}', [BranchController::class, 'save'])->name('save');
-            Route::delete('delete/{id}', [BranchController::class, 'delete'])->name('delete');
+            Route::post('delete/{id}', [BranchController::class, 'delete'])->name('delete');
             Route::post('bulk-delete', [BranchController::class, 'bulkDelete'])->name('bulk-delete');
         });
 
@@ -373,7 +389,7 @@ Route::middleware(['auth', 'abilities'])->group(function () {
         Route::get('add', [PurchasesController::class, 'add'])->name('add');
         Route::get('edit/{id}', [PurchasesController::class, 'edit'])->name('edit');
         Route::post('save/{id?}', [PurchasesController::class, 'save'])->name('save');
-        Route::delete('delete/{id}', [PurchasesController::class, 'delete'])->name('delete');
+        Route::post('delete/{id}', [PurchasesController::class, 'delete'])->name('delete');
         Route::post('{id}/approve', [PurchasesController::class, 'approve'])->name('approve');
         Route::get('modal_view/{id}', [PurchasesController::class, 'modal'])->name('modal_view');
         Route::get('ajaxProducts', [PurchasesController::class, 'ajaxProducts'])->name('ajaxProducts');

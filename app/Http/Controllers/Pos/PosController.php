@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Pos;
 
 use App\Http\Controllers\Controller;
-use App\Models\Adjustment\StockMove;
+use App\Models\Stocks\StockMove;
 use App\Models\Other\Branch;
 use App\Models\Other\CashAccount;
 use App\Models\Other\Currencies;

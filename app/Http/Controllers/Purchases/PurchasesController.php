@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Purchases;
 
 use App\Http\Controllers\Controller;
 use App\DataTables\Purchases\PurchasesDataTable;
-use App\Models\Adjustment\StockMove;
+use App\Models\Stocks\StockMove;
 use App\Models\Other\Branch;
 use App\Models\People\Suppliers;
 use App\Models\Warehouses\Warehouses as Warehouse;

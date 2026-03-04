@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Adjustment;
+namespace App\Http\Controllers\Stocks;
 
-use App\DataTables\Adjustment\AdjustmentDataTable;
-use App\Models\Adjustment\AdjustmentItem;
+use App\DataTables\Stocks\AdjustmentDataTable;
+use App\Models\Stocks\AdjustmentItem;
 use App\Http\Controllers\Controller;
-use App\Models\Adjustment\Adjustment;
-use App\Models\Adjustment\StockMove;
+use App\Models\Stocks\Adjustment;
+use App\Models\Stocks\StockMove;
 use App\Models\Other\Branch;
 use App\Models\People\Customer;
 use App\Models\Product\Product;
@@ -24,7 +24,7 @@ class AdjustmentController extends Controller
     {
 
 
-        return $dataTable->render('adjustment.index');
+        return $dataTable->render('stocks.adjustment.index');
     }
 
 
@@ -324,7 +324,7 @@ class AdjustmentController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => $id ? __('messages.user_updated') : __('messages.user_saved'),
-                'redirect' => route('adjustment.index'),
+                'redirect' => route('stock.adjustment.index'),
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();

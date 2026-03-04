@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Adjustment;
+namespace App\Models\Stocks;
 
 use App\Models\Other\Branch;
 use App\Models\User;

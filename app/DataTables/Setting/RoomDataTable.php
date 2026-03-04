@@ -19,9 +19,11 @@ class RoomDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query))
-            ->addColumn('floor_name', fn($a) => $a->floor->name ?? '-')
-            ->addColumn('action', fn($a) => view('setting.room.action', compact('a')))
+        return datatables()
+            ->eloquent($query)
+            ->addIndexColumn()
+            ->addColumn('floor_name', fn($row) => $row->floor->name ?? '-')
+            ->addColumn('action', fn($row) => view('setting.room.action', compact('row')))
             ->rawColumns(['action'])
             ->setRowId('id');
     }
@@ -61,7 +63,10 @@ class RoomDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('id')->visible(false),
+            Column::computed('DT_RowIndex')
+                ->title(__('No'))
+                ->width(60)
+                ->addClass('text-center'),
             Column::make('floor_name')->title('Floor'),
             Column::make('code'),
             Column::make('name'),

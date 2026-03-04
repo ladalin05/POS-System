@@ -84,7 +84,7 @@ class BaseUnitController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => !empty($id) ? __('messages.user_updated') : __('messages.user_saved'),
-                'redirect' => route('setting.base_units.index'),
+                'redirect' => route('setting.base-units.index'),
             ]);
         } catch (\Throwable $e) {
             return response()->json([

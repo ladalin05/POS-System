@@ -1,27 +1,99 @@
 <x-app-layout>
+    @push('css')
+
+    <style>
+        .card { border-radius: 12px; overflow: hidden; }
+        .form-label { font-size: 0.9rem; color: #495057; font-weight: 600; }
+
+        .permission-tree-container {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef !important;
+        }
+
+        .tree-checkbox-hierarchical ul {
+            list-style: none;
+            padding-left: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .tree-checkbox-hierarchical .tree-root { padding-left: 0; }
+
+        .tree-checkbox-hierarchical li {
+            position: relative;
+            padding: 5px 0;
+            font-size: 0.95rem;
+            color: #344767;
+        }
+
+        /* Vertical lines for the tree */
+        .tree-checkbox-hierarchical li::before {
+            content: "";
+            position: absolute;
+            left: -15px;
+            top: 0;
+            border-left: 1px solid #dee2e6;
+            height: 100%;
+        }
+
+        .tree-checkbox-hierarchical li::after {
+            content: "";
+            position: absolute;
+            left: -15px;
+            top: 15px;
+            border-top: 1px solid #dee2e6;
+            width: 10px;
+        }
+
+        .tree-checkbox-hierarchical li:last-child::before { height: 15px; }
+
+        .folder > .tree-label::before {
+            content: "\F2E8";
+            font-family: "bootstrap-icons";
+            margin-right: 8px;
+            color: #ffc107;
+        }
+
+        .selected {
+            color: #0d6efd !important;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background-color: #4361ee;
+            border-color: #4361ee;
+        }
+        .btn-primary:hover {
+            background-color: #3751d4;
+        }
+    </style>
+        
+    @endpush
     <x-basic.breadcrumb>
-        <x-basic.option>
-
-            @can('setting.unit_convert.save')
-                <a href="{{ route('setting.unit_convert.save') }}" class="dropdown-item hidden" onclick="addUnitConvert(event)">
-                    <i class=" ph ph-plus-circle me-2"></i>
-                    {{ __('global.add') }}
-                </a>
-                @can('setting.unit_convert.delete')
-                    <a href="{{ route('setting.unit_convert.bulk-delete') }}" class="dropdown-item" onclick="delete_selected(event)">
-                        <i class="ph ph-plus-circle me-2"></i>
-                        {{ __('global.delete') }}
-                    </a>
-                @endcan
-            @endcan
-
-        </x-basic.option>
+        <x-slot name="title">
+            <h2 class="mb-0" >Units Convert List</h2>
+            <span style="color: #646B72; font-size: 14px;">Manage your Units Convert</span>
+        </x-slot>
+        <div class="header-actions d-flex align-items-center gap-2">
+            <button class="btn btn-icon-box" style="border: none">
+                <img src="https://cdn-icons-png.flaticon.com/512/337/337946.png" alt="PDF">
+            </button>
+            <button class="btn btn-icon-box" style="border: none">
+                <img src="https://cdn-icons-png.flaticon.com/512/732/732220.png" alt="Excel">
+            </button>
+            <a href="{{ route('setting.unit_convert.add') }}" class="btn btn-add-user d-flex align-items-center gap-2 text-white">
+                <i class="ph ph-plus-circle me-2"></i>
+                {{ __('global.add_new') }}
+            </a>
+        </div>
     </x-basic.breadcrumb>
+    <!-- Content area -->
     <div class="content">
         <x-basic.datatables title="{{ __('global.list') }}" :data="$dataTable">
         </x-basic.datatables>
     </div>
-    <x-basic.modal id="action-modal" size="modal-xl">
+    <!-- /content area -->
+    <x-basic.modal id="action-modal">
         <x-basic.form id="action-form" novalidate>
         </x-basic.form>
     </x-basic.modal>
@@ -63,54 +135,6 @@
                             $('#action-modal').modal('show');
                         }
                     }
-                });
-            }
-
-       
-            function delete_selected(e) {
-                e.preventDefault();
-                const ids = $('.row-checkbox:checked').map(function () {
-                    return $(this).val();
-                }).get();
-
-                swalInit.fire({
-                    title: '{{ __('messages.are_you_sure') }}',
-                    text: '{{ __('messages.you_want_to_delete') }}',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '{{ __('messages.yes_delete') }}',
-                    cancelButtonText: '{{ __('messages.no_cancel') }}',
-                    buttonsStyling: false,
-                    customClass: {
-                        confirmButton: 'btn btn-primary',
-                        cancelButton: 'btn btn-danger'
-                    }
-                }).then(function (result) {
-                    if (ids.length === 0) return;
-                    $.ajax({
-                        url: "{{ route('setting.unit_convert.bulk-delete') }}",
-                        type: "POST",
-                        data: {
-                            ids: ids,
-                            _token: "{{ csrf_token() }}"
-                        },
-                        success: function (res) {
-                            if (res.status === 'success') {
-                                $('#unitconvert-table').DataTable().ajax.reload();
-                                $('#delete-selected').prop('disabled', true);
-                                swalInit.fire({
-                                    icon: 'success',
-                                    title: 'Success',
-                                    html: res.message
-                                });
-                            }
-
-                        },
-                        error: function (err) {
-                            alert('Something went wrong.');
-                        }
-                    });
-
                 });
             }
 

@@ -75,7 +75,7 @@ class CategoryController extends Controller
             return json([
                 'status' => 'success',
                 'message' => !empty($id) ? __('messages.user_updated') : __('messages.user_saved'),
-                'redirect' => route('product.categories.index'),
+                'redirect' => route('products.categories.index'),
             ]);
         } catch (\Exception $e) {
             return json([

@@ -167,5 +167,14 @@ return [
     'credit_day' => 'Credit Day',
     'attachment' => 'Attachment',
     'credit_days' => 'Credit Days',
+    'reference_no' => 'Reference No',
+    'branch' => 'Branch',
+    'quantity' => 'Quantity',
+    'product_name' => 'Product Name',
+    'new_qoh' => 'New QOH',
+    'qoh' => 'QOH',
+    'unit_from' => 'Unit From',
+    'unit_to' => 'Unit To',
+    'operator' => 'Operator',
     
 ];

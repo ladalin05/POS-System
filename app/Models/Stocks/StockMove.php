@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Models\Adjustment;
+namespace App\Models\Stocks;
 
-use App\Models\Other\Branch;
-use App\Models\Product\Product;
-use App\Models\Warehouses\Warehouses;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class StockMove extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
+
     protected $table = 'stockmoves';
+
     protected $fillable = [
         'transaction',
         'transaction_id',
@@ -39,19 +39,22 @@ class StockMove extends Model
         'actual_date' => 'datetime',
     ];
 
+    /* =========================
+       RELATIONS
+    ==========================*/
+
     public function product()
     {
-
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(\App\Models\Product::class, 'product_id');
     }
+
     public function warehouse()
     {
-
-        return $this->belongsTo(Warehouses::class);
+        return $this->belongsTo(\App\Models\Warehouse::class, 'warehouse_id');
     }
 
-    public function branch()
+    public function user()
     {
-        return $this->belongsTo(Branch::class);
+        return $this->belongsTo(\App\Models\User::class, 'user_id');
     }
 }

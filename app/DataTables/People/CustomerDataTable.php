@@ -15,11 +15,13 @@ class CustomerDataTable extends DataTable
 {
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query))
-            ->addColumn('action', fn($a) => view('people.customer.action', compact('a')))
-            ->addColumn('group_customer', fn($a) => $a->group_customer->group_name ?? '-')
-            ->addColumn('deposit', function ($a) {
-                return number_format($a->depositsAmount->sum('amount'), 2);
+        return datatables()
+            ->eloquent($query)
+            ->addIndexColumn()
+            ->addColumn('action', fn($row) => view('people.customer.action', compact('row')))
+            ->addColumn('group_customer', fn($row) => $row->group_customer->group_name ?? '-')
+            ->addColumn('deposit', function ($row) {
+                return number_format($row->depositsAmount->sum('amount'), 2);
             })
             ->rawColumns(['action'])
             ->setRowId('id');
@@ -52,7 +54,10 @@ class CustomerDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('id')->visible(false),
+            Column::computed('DT_RowIndex')
+                ->title(__('No'))
+                ->width(60)
+                ->addClass('text-center'),
             Column::make('code'),
             Column::make('company'),
             Column::make('name'),

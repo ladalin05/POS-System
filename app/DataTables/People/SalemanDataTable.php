@@ -14,10 +14,12 @@ class SalemanDataTable extends DataTable
 {
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query))
-            ->addColumn('action', fn ($a) => view('people.saleman.action', compact('a')))
-            ->addColumn('full_name', fn ($a) => $a->first_name . ' ' . $a->last_name)
-            ->addColumn('group_name', fn ($a) => $a->group->group_name ?? '-')
+        return datatables()
+            ->eloquent($query)
+            ->addIndexColumn()
+            ->addColumn('action', fn ($row) => view('people.saleman.action', compact('row')))
+            ->addColumn('full_name', fn ($row) => $row->first_name . ' ' . $row->last_name)
+            ->addColumn('group_name', fn ($row) => $row->group->group_name ?? '-')
             ->rawColumns(['action'])
             ->setRowId('id');
     }
@@ -48,7 +50,10 @@ class SalemanDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('id')->visible(false),
+            Column::computed('DT_RowIndex')
+                ->title(__('No'))
+                ->width(60)
+                ->addClass('text-center'),
             Column::make('full_name')->title('Full Name'),
             Column::make('gender'),
             Column::make('phone'),

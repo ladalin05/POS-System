@@ -15,8 +15,10 @@ class SalesDataTable extends DataTable
 {
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query))
-            ->addColumn('action', fn($a) => view('sales.action', compact('a')))
+        return datatables()
+            ->eloquent($query)
+            ->addIndexColumn()
+            ->addColumn('action', fn($row) => view('sales.action', compact('row')))
             ->editColumn('date', function ($row) {
                 if (empty($row->date)) {
                     return '';
@@ -24,16 +26,16 @@ class SalesDataTable extends DataTable
                 $d = $row->date instanceof Carbon ? $row->date : Carbon::parse($row->date);
                 return $d->setTimezone('Asia/Phnom_Penh')->format('Y-m-d H:i');
             })
-            ->addColumn('reference_no', fn($a) => $a->reference_no ?? '')
-            ->addColumn('customer', fn($a) => $a->customer->name ?? '-')
-            ->addColumn('salesman', fn($a) => $a->salesman->name ?? '-')
-            ->editColumn('total', fn($a) => number_format((float) ($a->total ?? 0), 2))
-            ->editColumn('order_tax', fn($a) => number_format((float) ($a->order_tax ?? 0), 2))
-            ->editColumn('returned', fn($a) => number_format((float) ($a->returned ?? 0), 2))
-            ->editColumn('order_discount', fn($a) => number_format((float) ($a->order_discount ?? 0), 2))
-            ->editColumn('grand_total', fn($a) => '<strong>' . number_format((float) ($a->grand_total ?? 0), 2) . '</strong>')
-            ->editColumn('paid', fn($a) => number_format((float) ($a->paid ?? 0), 2))
-            ->editColumn('balance', fn($a) => number_format((float) ($a->balance ?? 0), 2))
+            ->addColumn('reference_no', fn($row) => $row->reference_no ?? '')
+            ->addColumn('customer_name', fn($row) => $row->customer_name ?? '-')
+            ->addColumn('biller_name', fn($row) => $row->{'biller_name_' . app()->getLocale()} ?? '-')
+            ->editColumn('total', fn($row) => number_format((float) ($row->total ?? 0), 2))
+            ->editColumn('order_tax', fn($row) => number_format((float) ($row->order_tax ?? 0), 2))
+            ->editColumn('returned', fn($row) => number_format((float) ($row->returned ?? 0), 2))
+            ->editColumn('order_discount', fn($row) => number_format((float) ($row->order_discount ?? 0), 2))
+            ->editColumn('grand_total', fn($row) => '<strong>' . number_format((float) ($row->grand_total ?? 0), 2) . '</strong>')
+            ->editColumn('paid', fn($row) => number_format((float) ($row->paid ?? 0), 2))
+            ->editColumn('balance', fn($row) => number_format((float) ($row->balance ?? 0), 2))
             ->editColumn('delivery_status', function ($row) {
                 $s = (string) ($row->delivery_status ?? '');
                 if ($s === '')
@@ -57,20 +59,20 @@ class SalesDataTable extends DataTable
     public function query(Sales $model): QueryBuilder
     {
         // eager load relations used in columns; adjust relation names if your model uses different names
-        return $model->newQuery()
-            ->with([
-                'customer:id,name',
-                'salesman:id,name'
-            ]);
+        $model = $model->newQuery()
+                ->join('customers', 'sales.customer_id', '=', 'customers.id')
+                ->join('users as biller', 'sales.biller_id', '=', 'biller.id')
+                ->select('sales.*', 'customers.name as customer_name', 'biller.name_en as biller_name_en', 'biller.name_kh as biller_name_kh');
+        return $model;
     }
 
     public function html(): HtmlBuilder
     {
         return $this->builder()
-            ->setTableId('sales-table')
+            ->setTableId('user-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
-            ->orderBy(1, 'desc') // order by Date (index 1)
+            ->orderBy(1)
             ->selectStyleSingle()
             ->buttons([
                 Button::make('excel'),
@@ -78,27 +80,30 @@ class SalesDataTable extends DataTable
                 Button::make('pdf'),
                 Button::make('print'),
                 Button::make('reset'),
-                Button::make('reload'),
+                Button::make('reload')
             ]);
     }
 
     public function getColumns(): array
     {
         return [
-            Column::make('id')->visible(false),
-            Column::make('date')->title('Date')->width(150),
-            Column::make('reference_no')->title('Reference No'),
-            Column::make('customer')->title('Customer')->orderable(false)->searchable(true),
-            Column::make('salesman')->title('Salesman')->orderable(false)->searchable(true),
+            Column::computed('DT_RowIndex')
+                ->title(__('global.n_o'))
+                ->width(60)
+                ->addClass('text-center'),
+            Column::make('date')->title('Date')->width(150)->addClass('text-nowrap'),
+            Column::make('reference_no')->title('Reference No')->addClass('text-nowrap'),
+            Column::make('customer_name')->title('Customer')->orderable(false)->searchable(true)->addClass('text-nowrap'),
+            Column::make('biller_name')->title('Biller')->orderable(false)->searchable(true),
             Column::make('total')->title('Total')->addClass('text-end')->searchable(false),
             Column::make('tax')->title('Tax')->addClass('text-end')->searchable(false),
             Column::make('returned')->title('Returned')->addClass('text-end')->searchable(false),
             Column::make('discount')->title('Discount')->addClass('text-end')->searchable(false),
-            Column::make('grand_total')->title('Grand Total')->addClass('text-end')->searchable(false),
+            Column::make('grand_total')->title('Grand Total')->addClass('text-end')->searchable(false)->addClass('text-nowrap'),
             Column::make('paid')->title('Paid')->addClass('text-end')->searchable(false),
             Column::make('balance')->title('Balance')->addClass('text-end')->searchable(false),
-            Column::make('delivery_status')->title('Delivery Status')->orderable(false)->searchable(false),
-            Column::make('payment_status')->title('Payment Status')->orderable(false)->searchable(false),
+            Column::make('delivery_status')->title('Delivery Status')->orderable(false)->searchable(false)->addClass('text-nowrap'),
+            Column::make('payment_status')->title('Payment Status')->orderable(false)->searchable(false)->addClass('text-nowrap'),
             Column::computed('action')
                 ->exportable(false)->printable(false)
                 ->width(90)->addClass('text-center no-modal'),

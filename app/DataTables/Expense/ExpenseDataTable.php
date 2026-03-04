@@ -2,7 +2,7 @@
 
 namespace App\DataTables\Expense;
 use Carbon\Carbon;
-use App\Models\Adjustment\Adjustment;
+use App\Models\Stocks\Adjustment;
 use App\Models\Expense\Expense;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
@@ -20,11 +20,13 @@ class ExpenseDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query))
-            ->addColumn('checkbox', fn($a) => '<input type="checkbox" class="row-checkbox" value="' . $a->id . '">')
-            ->addColumn('paid_by', fn($a) => $a->cashAccount->name )
-            ->addColumn('branch',fn($a) => $a->branch->name)
-            ->addColumn('action', fn($a) => view('expense.add_expense.action', compact('a')))
+        return datatables()
+            ->eloquent($query)
+            ->addIndexColumn()
+            ->addColumn('checkbox', fn($row) => '<input type="checkbox" class="row-checkbox" value="' . $row->id . '">')
+            ->addColumn('paid_by', fn($row) => $row->cashAccount->name ?? '-')
+            ->addColumn('branch',fn($row) => $row->branch->name ?? '-')
+            ->addColumn('action', fn($row) => view('expense.add_expense.action', compact('row')))
             ->editColumn('date', function ($row) {
                 if (empty($row->date)) {
                     return '';
@@ -32,7 +34,7 @@ class ExpenseDataTable extends DataTable
                 $d = $row->date instanceof Carbon ? $row->date : Carbon::parse($row->date);
                 return $d->setTimezone('Asia/Phnom_Penh')->format('Y-m-d H:i');
             })
-            ->addColumn('warehouse', fn($a) => $a->warehouse->name ?? '-')
+            ->addColumn('warehouse', fn($row) => $row->warehouse->name ?? '-')
             ->rawColumns(['action', 'checkbox'])
             ->setRowId('id');
     }
@@ -79,7 +81,10 @@ class ExpenseDataTable extends DataTable
                 ->width(30)
                 ->title('<input type="checkbox" id="select-all">')
                 ->addClass('text-center'),
-            Column::make('id'),
+            Column::computed('DT_RowIndex')
+                ->title(__('No'))
+                ->width(60)
+                ->addClass('text-center'),
             Column::make('date')->title(__('global.date'))->width(200),
             Column::make('reference_no')->title(__('global.reference_no'))->width(140),
             Column::make('branch')->title(__('global.branch')),

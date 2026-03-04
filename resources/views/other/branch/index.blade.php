@@ -77,59 +77,6 @@
                 }
             });
         }
-
-        /**
-         * Bulk Delete Handler
-         */
-        function delete_selected(e) {
-            e.preventDefault();
-            const ids = $('.row-checkbox:checked').map(function () {
-                return $(this).val();
-            }).get();
-
-            if (ids.length === 0) {
-                swalInit.fire({ 
-                    icon: 'info', 
-                    title: 'Selection Required', 
-                    text: 'Please select at least one branch to delete.' 
-                });
-                return;
-            }
-
-            swalInit.fire({
-                title: '{{ __("messages.are_you_sure") }}',
-                text: '{{ __("messages.you_want_to_delete") }}',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: '{{ __("messages.yes_delete") }}',
-                customClass: {
-                    confirmButton: 'btn btn-danger mx-2',
-                    cancelButton: 'btn btn-light mx-2'
-                },
-                buttonsStyling: false
-            }).then(function (result) {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: "{{ route('other.branch.bulk-delete') }}", // Ensure this route is correct
-                        type: "POST",
-                        data: {
-                            ids: ids,
-                            _token: "{{ csrf_token() }}"
-                        },
-                        success: function (res) {
-                            if (res.status === 'success') {
-                                // Reload Datatable
-                                $('.dataTable').DataTable().ajax.reload(null, false);
-                                swalInit.fire({ icon: 'success', title: 'Deleted!', text: res.message });
-                            }
-                        },
-                        error: function() {
-                            swalInit.fire({ icon: 'error', title: 'Error', text: 'Something went wrong.' });
-                        }
-                    });
-                }
-            });
-        }
     </script>
     @endpush
 </x-app-layout>

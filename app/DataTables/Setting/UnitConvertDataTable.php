@@ -18,13 +18,15 @@ class UnitConvertDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query))
-            ->addColumn('checkbox', function ($a) {
-                return '<input type="checkbox" class="row-checkbox" value="' . $a->id . '">';
+        return datatables()
+            ->eloquent($query)
+            ->addIndexColumn()
+            ->addColumn('checkbox', function ($row) {
+                return '<input type="checkbox" class="row-checkbox" value="' . $row->id . '">';
             })
-            ->editColumn('unit_from_name', fn($r) => $r->unit_from_name)
-            ->editColumn('unit_to_name', fn($r) => $r->unit_to_name)
-            ->addColumn('action', fn($a) => view('setting.unit_convert.action', compact('a')))
+            ->editColumn('unit_from_name', fn($row) => $row->unit_from_name)
+            ->editColumn('unit_to_name', fn($row) => $row->unit_to_name)
+            ->addColumn('action', fn($row) => view('setting.unit_convert.action', compact('row')))
             ->rawColumns(['checkbox', 'action'])
             ->setRowId('id');
     }
@@ -78,7 +80,10 @@ class UnitConvertDataTable extends DataTable
                 ->width(30)
                 ->title('<input type="checkbox" id="select-all">')
                 ->addClass('text-center'),
-            Column::make('id')->visible(false),
+            Column::computed('DT_RowIndex')
+                ->title(__('No'))
+                ->width(60)
+                ->addClass('text-center'),
             Column::make('unit_from_name')->title(__('global.unit_from')),
             Column::make('unit_to_name')->title(__('global.unit_to')),
             Column::make('operator'),

@@ -21,19 +21,21 @@ class BaseUnitDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query))
-            ->addColumn('from_code', function ($a) {
-                return $a->fromUnit?->name ?? '-';
+        return datatables()
+            ->eloquent($query)
+            ->addIndexColumn()
+            ->addColumn('from_code', function ($row) {
+                return $row->fromUnit?->name ?? '-';
             })
-            ->addColumn('to_code', function ($a) {
-                return $a->toUnit?->name ?? '-';
+            ->addColumn('to_code', function ($row) {
+                return $row->toUnit?->name ?? '-';
             })
-            ->editColumn('is_active', function ($a) {
-                return $a->is_active
+            ->editColumn('is_active', function ($row) {
+                return $row->is_active
                     ? '<span class="badge bg-success">Active</span>'
                     : '<span class="badge bg-secondary">Inactive</span>';
             })
-            ->addColumn('action', fn($a) => view('setting.base_unit.action', compact('a')))
+            ->addColumn('action', fn($row) => view('setting.base_unit.action', compact('row')))
 
             ->rawColumns(['is_active', 'action'])
             ->setRowId('id');
@@ -75,7 +77,10 @@ class BaseUnitDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('id')->visible(false),
+            Column::computed('DT_RowIndex')
+                ->title(__('No'))
+                ->width(60)
+                ->addClass('text-center'),
             Column::make('from_code')->title('From Unit'),
             Column::make('to_code')->title('To Unit'),
             Column::make('numerator')->title('Ratio'),

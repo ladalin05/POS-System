@@ -1,8 +1,8 @@
 <?php
 
-namespace App\DataTables\Adjustment;
+namespace App\DataTables\Stocks;
 use Carbon\Carbon;
-use App\Models\Adjustment\Adjustment;
+use App\Models\Stocks\Adjustment;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\EloquentDataTable;
@@ -19,8 +19,10 @@ class AdjustmentDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query))
-            ->addColumn('action', fn($a) => view('adjustment.action', compact('a')))
+        return datatables()
+            ->eloquent($query)
+            ->addIndexColumn()
+            ->addColumn('action', fn($row) => view('stocks.adjustment.action', compact('row')))
             ->editColumn('date', function ($row) {
                 if (empty($row->date)) {
                     return '';
@@ -28,7 +30,7 @@ class AdjustmentDataTable extends DataTable
                 $d = $row->date instanceof Carbon ? $row->date : Carbon::parse($row->date);
                 return $d->setTimezone('Asia/Phnom_Penh')->format('Y-m-d H:i');
             })
-            ->addColumn('warehouse', fn($a) => $a->warehouse->name ?? '-')
+            ->addColumn('warehouse', fn($row) => $row->warehouse->name ?? '-')
 
 
             ->editColumn('status', function ($row) {
@@ -80,7 +82,10 @@ class AdjustmentDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('id'),
+            Column::computed('DT_RowIndex')
+                ->title(__('global.n_o'))
+                ->width(60)
+                ->addClass('text-center'),
             Column::make('date'),
             Column::make('reference_no')
                 ->title('Reference No'),

@@ -14,8 +14,10 @@ class CashAccountDataTable extends DataTable
 {
     public function dataTable($query): EloquentDataTable
     {
-        return (new EloquentDataTable($query))
-            ->addColumn('action', fn($a) => view('other.cash_accounts.action', compact('a')))
+        return datatables()
+            ->eloquent($query)
+            ->addIndexColumn()
+            ->addColumn('action', fn($row) => view('other.cash_accounts.action', compact('row')))
             ->rawColumns(['action']);
     }
 
@@ -38,7 +40,10 @@ class CashAccountDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('id'),
+            Column::computed('DT_RowIndex')
+                ->title(__('No'))
+                ->width(60)
+                ->addClass('text-center'),
             Column::make('code'),
             Column::make('name'),
             Column::make('type'),
