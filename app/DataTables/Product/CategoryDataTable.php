@@ -21,10 +21,17 @@ class CategoryDataTable extends DataTable
         return datatables()
             ->eloquent($query)
             ->addIndexColumn()
+            ->addColumn('image', function ($row) {
+                $path = ltrim($row->image ?? '', '/');
+                if (!$path || !file_exists(public_path($path))) {
+                    $path = 'assets/images/no_image.png';
+                }
+                return '<img src="' . asset($path) . '" class="img-thumbnail" style="width:35px; height:35px;" />';
+            })
             ->addColumn('action', fn ($row) => view('product.categories.action', compact('row')))
             ->addColumn('api', fn($row) => clipboard(url("api/v1/{$row->endpoint}")))
             ->addColumn('endpoint', fn($row) => clipboard("{$row->url}"))
-            ->rawColumns(['action', 'api', 'endpoint'])
+            ->rawColumns(['action', 'api', 'endpoint', 'image'])
             ->setRowId('id');
     }
 

@@ -21,7 +21,6 @@
             padding: 30px;
         }
 
-        /* Gradient Header Section */
         .welcome-banner {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-radius: 20px;
@@ -31,13 +30,12 @@
             box-shadow: 0 10px 30px rgba(67, 97, 238, 0.3);
         }
 
-        /* Premium KPI Cards */
         .kpi-card {
             border: none;
             border-radius: 16px;
+            min-height: 224px;
             background: var(--glass-white);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+            transition: all 0.3s ease;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
@@ -57,12 +55,10 @@
             margin-bottom: 15px;
         }
 
-        /* Chart Containers */
         .chart-box {
             background: #ffffff;
             border-radius: 20px;
             padding: 25px;
-            border: none;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
             height: 100%;
         }
@@ -74,14 +70,6 @@
             margin-bottom: 20px;
         }
 
-        .chart-header h4 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--dark-text);
-            margin: 0;
-        }
-
-        /* Decorative Badge */
         .status-badge {
             padding: 5px 12px;
             border-radius: 20px;
@@ -93,79 +81,125 @@
     </style>
 
     <div class="dashboard-container">
+
+        {{-- HEADER --}}
         <div class="welcome-banner d-flex justify-content-between align-items-center">
             <div>
                 <h1 class="h3 fw-bold mb-1">Business Overview</h1>
-                <p class="mb-0 opacity-75">Analytics for the current fiscal period</p>
+                <p class="mb-0 opacity-75">
+                    Analytics for {{ now()->format('F Y') }}
+                </p>
             </div>
         </div>
 
+        {{-- KPI SECTION --}}
         <div class="row g-4 mb-5">
+
+            {{-- TOTAL REVENUE --}}
             <div class="col-xl-3 col-md-6">
                 <div class="card kpi-card p-4">
                     <div class="kpi-icon-circle bg-primary text-white">
                         <i class="fas fa-chart-line fa-lg"></i>
                     </div>
                     <span class="text-muted small fw-bold text-uppercase">Total Revenue</span>
-                    <h2 class="fw-bold mt-1">$24,580</h2>
-                    <span class="text-success small"><i class="fas fa-arrow-up me-1"></i>12% vs last week</span>
+                    <h2 class="fw-bold mt-1">
+                        ${{ number_format($totalRevenue, 2) }}
+                    </h2>
+                    <span class="{{ $percentage >= 0 ? 'text-success' : 'text-danger' }} small"><i class="fas fa-{{ $percentage >= 0 ? 'arrow-up' : 'arrow-down' }} me-1"></i>{{ number_format($percentage, 0) }}% vs last week</span>
                 </div>
             </div>
+
+            {{-- STOCK LEVEL --}}
             <div class="col-xl-3 col-md-6">
                 <div class="card kpi-card p-4">
                     <div class="kpi-icon-circle bg-success text-white">
                         <i class="fas fa-box-open fa-lg"></i>
                     </div>
                     <span class="text-muted small fw-bold text-uppercase">Stock Level</span>
-                    <h2 class="fw-bold mt-1">847</h2>
+                    <h2 class="fw-bold mt-1">
+                        {{ number_format($stockLevel) }}
+                    </h2>
+
+                    @php
+                        $maxStock = 1000; // adjust if needed
+                        $percent = min(100, ($stockLevel / $maxStock) * 100);
+                    @endphp
+
                     <div class="progress mt-2" style="height: 6px;">
-                        <div class="progress-bar bg-success" style="width: 75%"></div>
+                        <div class="progress-bar bg-success" style="width: {{ $percent }}%"></div>
                     </div>
                 </div>
             </div>
+
+            {{-- ORDERS TODAY --}}
             <div class="col-xl-3 col-md-6">
                 <div class="card kpi-card p-4">
                     <div class="kpi-icon-circle bg-info text-white">
                         <i class="fas fa-shopping-cart fa-lg"></i>
                     </div>
                     <span class="text-muted small fw-bold text-uppercase">Orders Today</span>
-                    <h2 class="fw-bold mt-1">156</h2>
-                    <span class="text-muted small">Target: 200</span>
+                    <h2 class="fw-bold mt-1">
+                        {{ $ordersToday }}
+                    </h2>
+                    <span class="text-muted small">
+                        {{ now()->format('d M Y') }}
+                    </span>
                 </div>
             </div>
+
+            {{-- LOW STOCK --}}
             <div class="col-xl-3 col-md-6">
                 <div class="card kpi-card p-4">
                     <div class="kpi-icon-circle bg-danger text-white">
                         <i class="fas fa-exclamation-circle fa-lg"></i>
                     </div>
                     <span class="text-muted small fw-bold text-uppercase">Low Stock Alert</span>
-                    <h2 class="fw-bold mt-1 text-danger">23</h2>
-                    <span class="status-badge">Action Required</span>
+                    <h2 class="fw-bold mt-1 text-danger">
+                        {{ $lowStock }}
+                    </h2>
+
+                    @if($lowStock > 0)
+                        <span class="status-badge">Action Required</span>
+                    @else
+                        <span class="text-success small">All Good</span>
+                    @endif
                 </div>
             </div>
+
         </div>
 
+        {{-- CHART SECTION --}}
         <div class="row g-4">
+
+            {{-- PERFORMANCE TIMELINE --}}
             <div class="col-lg-8">
                 <div class="chart-box">
                     <div class="chart-header">
-                        <h4><i class="fas fa-wave-square me-2 text-primary"></i>Performance Timeline</h4>
-                        <div class="dropdown">
-                            <button class="btn btn-outline-secondary btn-sm dropdown-toggle rounded-pill" type="button" data-bs-toggle="dropdown">Last 7 Days</button>
-                        </div>
+                        <h4>
+                            <i class="fas fa-wave-square me-2 text-primary"></i>
+                            Performance Timeline
+                        </h4>
+                        <span class="text-muted small">
+                            Last 7 Days
+                        </span>
                     </div>
                     <div id="daily-trends-chart" style="height: 400px;"></div>
                 </div>
             </div>
 
+            {{-- REVENUE MIX --}}
             <div class="col-lg-4">
                 <div class="chart-box">
                     <div class="chart-header">
-                        <h4><i class="fas fa-pie-chart me-2 text-primary"></i>Revenue Mix</h4>
+                        <h4>
+                            <i class="fas fa-pie-chart me-2 text-primary"></i>
+                            Revenue Mix
+                        </h4>
                     </div>
                     <div id="sales-category-chart" style="height: 400px;"></div>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -175,26 +209,17 @@
         <script>
             document.addEventListener('DOMContentLoaded', function () {
 
-                // Data from Laravel
                 const timelineLabels = @json($timelineLabels);
                 const timelineData   = @json($timelineData);
                 const revenueMix     = @json($revenueMix);
 
-                /* ============================
-                * Performance Timeline
-                * ============================ */
+                /* Timeline Chart */
                 const timelineChart = echarts.init(
                     document.getElementById('daily-trends-chart')
                 );
 
                 timelineChart.setOption({
                     tooltip: { trigger: 'axis' },
-                    grid: {
-                        left: '3%',
-                        right: '4%',
-                        bottom: '3%',
-                        containLabel: true
-                    },
                     xAxis: {
                         type: 'category',
                         data: timelineLabels
@@ -207,19 +232,12 @@
                         type: 'line',
                         smooth: true,
                         data: timelineData,
-                        lineStyle: {
-                            width: 4,
-                            color: '#4361ee'
-                        },
-                        areaStyle: {
-                            color: 'rgba(67,97,238,0.15)'
-                        }
+                        lineStyle: { width: 4, color: '#4361ee' },
+                        areaStyle: { color: 'rgba(67,97,238,0.15)' }
                     }]
                 });
 
-                /* ============================
-                * Revenue Mix
-                * ============================ */
+                /* Revenue Mix */
                 const revenueChart = echarts.init(
                     document.getElementById('sales-category-chart')
                 );
@@ -236,14 +254,6 @@
                     series: [{
                         type: 'pie',
                         radius: ['40%', '70%'],
-                        itemStyle: {
-                            borderRadius: 10,
-                            borderColor: '#fff',
-                            borderWidth: 2
-                        },
-                        label: {
-                            formatter: '{b}\n{d}%'
-                        },
                         data: revenueMix
                     }]
                 });
@@ -252,7 +262,8 @@
                     timelineChart.resize();
                     revenueChart.resize();
                 });
+
             });
         </script>
-        @endpush
+    @endpush
 </x-app-layout>
