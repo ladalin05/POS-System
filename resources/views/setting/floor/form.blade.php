@@ -1,24 +1,10 @@
-<x-app-layout>
-    <x-basic.breadcrumb>
-    </x-basic.breadcrumb>
-    <!-- Content area -->
-    <div class="content">
-        <x-basic.card :title="$title">
-            <x-basic.form action="{{ route('setting.floor.save', $form?->id) }}" novalidate>
-                <div class="row">
-                    <div class="col-md-4">
-                        <x-basic.form.text label="{{ __('global.name') }}" name="name"
-                            value="{{ $form?->name }}" :required="true" />
-                    </div>
-                </div>
-                <div class="text-end mt-3">
-                    <a href="{{ route('setting.floor.index') }}"
-                        class="btn btn-warning">{{ __('global.cancel') }}</a>
-                    <button type="submit" class="btn btn-primary">{{ __('global.save') }}</button>
-                </div>
+<div class="container mt-4">
+    <form action="save_room.php" method="POST">
+        <div class="mb-3">
+            <label>{{ __('global.name') }}</label>
+            <input type="text" name="name" value="{{ $form->name ?? '' }}" class="form-control">
+        </div>
 
-            </x-basic.form>
-        </x-basic.card>
-    </div>
-    <!-- /content area -->
-</x-app-layout>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+</div>

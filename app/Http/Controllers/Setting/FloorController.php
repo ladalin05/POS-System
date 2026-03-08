@@ -14,63 +14,131 @@ class FloorController extends Controller
         return $dataTable->render('setting.floor.index');
     }
 
-    public function add()
+    public function create(Request $request)
     {
-        $title = __('global.add_new');
-        $form = new Floor();
-        // $projects = Project::all();
-        return view('setting.floor.form', compact('title', 'form'));
-    }
-    public function edit($id)
-    {
-        $title = __('global.edit');
-        $form = Floor::find($id);
+        try {
 
-        return view('setting.floor.form', compact('title', 'form'));
-    }
-    // save user
-    public function save(Request $request, $id = null)
-    {
-        try {
-            $request->validate([
-                'name' => 'required',
-            ]);
-            $data = [
-                'name' => $request->name
-            ];
-            Floor::updateOrCreate(['id' => $id], $data);
-            return json([
-                'status' => 'success',
-                'message' => !empty($id) ? __('messages.user_updated') : __('messages.user_saved'),
-                'redirect' => route('setting.floor.index'),
-            ]);
-        } catch (\Exception $e) {
-            return json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
-        }
-    }
-    public function delete($id)
-    {
-        try {
-            if ($id == 1) {
-                return json([
-                    'status' => 'error',
-                    'message' => __('messages.user_cannot_delete'),
+            if ($request->isMethod('get')) {
+
+                $title = __('global.add_new');
+                $form = new Floor();
+                $action = route('setting.floors.add');
+
+                return response()->json([
+                    'title' => $title,
+                    'status' => 'success',
+                    'message' => 'success',
+                    'html' => view('setting.floors.form', compact('title', 'form', 'action'))->render(),
+                    'modal' => 'action-modal',
                 ]);
             }
-            $form = Floor::find($id);
+
+            if ($request->isMethod('post')) {
+
+                $request->validate([
+                    'name' => 'required|string|max:255',
+                ]);
+
+                Floor::create([
+                    'name' => $request->name,
+                ]);
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => __('messages.create_success'),
+                    'redirect' => route('setting.floors.index'),
+                    'modal' => 'action-modal',
+                ]);
+            }
+
+            return response()->json([
+                'status' => 'error',
+                'message' => __('messages.405'),
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+
+        }
+    }
+    
+    public function update(Request $request)
+    {
+        try {
+
+            $form = Floor::find($request->id);
+
+            if ($request->isMethod('get')) {
+
+                $title = __('global.edit');
+                $action = route('setting.floors.edit', ['id' => $request->id]);
+
+                return response()->json([
+                    'title' => $title,
+                    'status' => 'success',
+                    'message' => 'success',
+                    'html' => view('setting.floors.form', compact('title', 'form', 'action'))->render(),
+                    'modal' => 'action-modal',
+                ]);
+            }
+
+            if ($request->isMethod('post')) {
+
+                $request->validate([
+                    'name' => 'required|string|max:255',
+                ]);
+
+                $form->update([
+                    'name' => $request->name,
+                ]);
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => __('messages.update_success'),
+                    'redirect' => route('setting.floors.index'),
+                    'modal' => 'action-modal',
+                ]);
+            }
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+
+        }
+    }
+
+    public function delete(Request $request)
+    {
+        try {
+
+            $form = Floor::find($request->id);
+
+            if (!$form) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Floor not found',
+                ], 404);
+            }
+
             $form->delete();
-            return json([
-                'status' => 'success',
-                'message' => __('messages.user_deleted'),
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => __('messages.delete_success'),
+                'redirect' => route('setting.floors.index'),
             ]);
         } catch (\Exception $e) {
-            return json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
+            return response()->json([
+                'status'  => 'error',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 }

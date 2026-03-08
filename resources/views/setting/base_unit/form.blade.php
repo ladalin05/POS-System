@@ -1,58 +1,38 @@
-<x-app-layout>
-    <x-basic.breadcrumb></x-basic.breadcrumb>
+<div class="container mt-4">
+    <form action="save_room.php" method="POST">
+        <div class="mb-3">
+            <label>From Unit</label>
+            <select name="from_unit_id" class="form-control">
+                @foreach($units as $id => $name)
+                    <option value="{{ $id }}" {{ ($form->from_unit_id ?? '') == $id ? 'selected' : '' }}>
+                        {{ $name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
-    <div class="content">
-        <x-basic.card :title="$title">
-            <x-basic.form action="{{ route('setting.base-units.save', $form?->id) }}" method="POST" novalidate>
-                @csrf
-                <div class="row">
+        <div class="mb-3">
+            <label>To Unit</label>
+            <select name="to_unit_id" class="form-control">
+                @foreach($units as $id => $name)
+                    <option value="{{ $id }}" {{ ($form->to_unit_id ?? '') == $id ? 'selected' : '' }}>
+                        {{ $name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
-                   
+        <div class="mb-3">
+            <label>Numerator</label>
+            <input type="number" name="numerator" value="{{ $form->numerator ?? '' }}" class="form-control">
+        </div>
 
-                    <div class="col-md-4">
-                        <x-basic.form.select label="{{ __('From Unit') }}" name="from_unit_id"
-                            :options="$units" :selected="$form?->from_unit_id" :required="true" />
-                    </div>
-
-                     <div class="col-md-4">
-                        <x-basic.form.select label="{{ __('To Unit') }}" name="to_unit_id"
-                            :options="$units" :selected="$form?->to_unit_id" :required="true" />
-                    </div>
-
-                 
-
-                    <div class="col-md-4">
-                        <x-basic.form.text
-                            label="{{ __('Numerator (ratio)') }}"
-                            name="numerator"
-                            type="number"
-                            min="1"
-                            step="1"
-                            value="{{ old('numerator', 1) }}"
-                            :required="true" />
-                        @error('numerator')<div class="text-danger small">{{ $message }}</div>@enderror
-                    </div>
-
-                    <div class="col-md-4 mt-3">
-                        <div class="form-check form-switch">
-                           <input class="form-check-input" type="checkbox" name="is_active" id="is_active" value="1"
-                                {{ old('is_active', 1) ? 'checked' : '' }}>
-                            <label class="form-check-label" for="is_active">{{ __('global.active') }}</label>
-                        </div>
-                        @error('is_active')<div class="text-danger small">{{ $message }}</div>@enderror
-                    </div>
-
-                </div>
-
-                <div class="text-end mt-3">
-                    <a href="{{ route('setting.units.index') }}" class="btn btn-warning">
-                        {{ __('global.cancel') }}
-                    </a>
-                    <button type="submit" class="btn btn-primary">
-                        {{ __('global.save') }}
-                    </button>
-                </div>
-            </x-basic.form>
-        </x-basic.card>
+        <div class="mb-3">
+            <label>Status</label>
+            <select name="is_active" class="form-control">
+                <option value="1" {{ ($form->is_active ?? 1) == 1 ? 'selected' : '' }}>Active</option>
+                <option value="0" {{ ($form->is_active ?? 1) == 0 ? 'selected' : '' }}>Inactive</option>
+            </select>
+        </div>
     </div>
-</x-app-layout>
+</div>

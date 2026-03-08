@@ -53,4 +53,7 @@ return [
     'create_unit_success' => 'Created Unit Success!',
     'update_unit_success' => 'Updated Unit Success!',
     'delete_unit_success' => 'Deleted Unit Success!',
+    'create_success' => 'Created Success!',
+    'update_success' => 'Updated Success!',
+    'delete_success' => 'Deleted Success!',
 ];

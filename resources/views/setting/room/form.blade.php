@@ -1,32 +1,21 @@
-<x-app-layout>
-    <x-basic.breadcrumb>
-    </x-basic.breadcrumb>
-    <!-- Content area -->
-    <div class="content">
-        <x-basic.card :title="$title">
-            <x-basic.form action="{{ route('setting.room.save', $form?->id) }}" novalidate>
-                <div class="row">
-                    <div class="col-md-4">
-                        <x-basic.form.text label="{{ __('global.code') }}" name="code"
-                            value="{{ $form?->code }}" :required="true" />
-                    </div>
-                    <div class="col-md-4">
-                        <x-basic.form.text label="{{ __('global.name') }}" name="name"
-                            value="{{ $form?->name }}" :required="true" />
-                    </div>
-                    <div class="col-md-4">
-                        <x-basic.form.select label="{{ __('global.floor') }}" name="floor_id"
-                            :options="$floor" :selected="$form?->floor_id" :required="true" />
-                    </div>
-                </div>
-                <div class="text-end mt-3">
-                    <a href="{{ route('setting.room.index') }}"
-                        class="btn btn-warning">{{ __('global.cancel') }}</a>
-                    <button type="submit" class="btn btn-primary">{{ __('global.save') }}</button>
-                </div>
+<div class="container mt-4">
+    <form action="save_room.php" method="POST">
+        
+        <div class="mb-3">
+            <label class="form-label">Room Code</label>
+            <input type="text" name="code" class="form-control" required>
+        </div>
 
-            </x-basic.form>
-        </x-basic.card>
-    </div>
-    <!-- /content area -->
-</x-app-layout>
+        <div class="mb-3">
+            <label class="form-label">Room Name</label>
+            <input type="text" name="name" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Floor ID</label>
+            <input type="number" name="floor_id" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+</div>

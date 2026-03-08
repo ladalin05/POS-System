@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Setting\Unit;
 
-class BaseUnitModel extends Model
+class BaseUnit extends Model
 {
     use HasFactory;
     use SoftDeletes;

@@ -7,136 +7,168 @@ use App\Http\Controllers\Controller;
 use App\Models\Setting\Unit;
 use App\Models\Setting\UnitConvert;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class UnitConvertController extends Controller
 {
-    /**
-     * List table view
-     */
+    
     public function index(UnitConvertDataTable $dataTable)
     {
         return $dataTable->render('setting.unit_convert.index');
     }
-
-    /**
-     * Create / Edit form (GET) and Save (POST)
-     */
-    public function save(Request $request, $id = null)
+    
+    public function create(Request $request)
     {
         try {
-            
+
             if ($request->isMethod('get')) {
-                $form = $id ? UnitConvert::findOrFail($id) : new UnitConvert();
-                $title = $id ? __('global.edit') : __('global.add_new');
-                $action = route('setting.unit_convert.save', ['id' => $id]);
-                $units = Unit::select('id', 'name')->orderBy('name')->get();
+
+                $title = __('global.add_new');
+                $form = new UnitConvert();
+                $action = route('setting.unit_converts.add');
+
+                $units = Unit::pluck('name', 'id');
 
                 return response()->json([
                     'title' => $title,
                     'status' => 'success',
                     'message' => 'success',
-                    'html' => view('setting.unit_convert.form', compact('title', 'form', 'units', 'action'))->render(),
+                    'html' => view('setting.unit_converts.form', compact('title','form','action','units'))->render(),
                     'modal' => 'action-modal',
                 ]);
             }
 
             if ($request->isMethod('post')) {
-                // Validation rules
-                $rules = [
-                    'unit_from_id' => ['required', 'integer', 'exists:units,id'],
-                    'unit_to_id' => ['required', 'integer', 'exists:units,id'],
-                    'numerator' => ['required'],
-                    'operator' => ['nullable', 'string', Rule::in(['*', '/'])],
-                ];
 
-                $messages = [
-                    'unit_from_id.required' => 'From unit is required.',
-                    'unit_to_id.required' => 'To unit is required.',
-                    'numerator.required' => 'Numerator / factor is required.',
-                    'numerator.gt' => 'Numerator must be greater than 0.',
-                ];
+                $request->validate([
+                    'unit_from_id' => 'required|exists:units,id',
+                    'unit_to_id' => 'required|exists:units,id|different:unit_from_id',
+                    'numerator' => 'required|numeric|min:0',
+                    'operator' => 'required|string|max:2',
+                    'name' => 'nullable|string|max:255',
+                    'is_active' => 'required|boolean',
+                ]);
 
-                $validator = Validator::make($request->all(), $rules, $messages);
+                UnitConvert::create([
+                    'unit_from_id' => $request->unit_from_id,
+                    'unit_to_id' => $request->unit_to_id,
+                    'numerator' => $request->numerator,
+                    'operator' => $request->operator,
+                    'name' => $request->name,
+                    'is_active' => $request->is_active,
+                    'created_by' => Auth::user()->id,
+                ]);
 
-                // extra rule: from != to
-                $validator->after(function ($v) use ($request) {
-                    if ($request->filled('unit_from_id') && $request->filled('unit_to_id')) {
-                        if ((int) $request->unit_from_id === (int) $request->unit_to_id) {
-                            $v->errors()->add('unit_from_id', 'From unit and To unit must be different.');
-                        }
-                    }
-                });
-
-                if ($validator->fails()) {
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => $validator->errors()->first(),
-                        'errors' => $validator->errors(),
-                    ], 422);
-                }
-
-                // Prepare data
-                $data = [
-                    'unit_from_id' => (int) $request->unit_from_id,
-                    'unit_to_id' => (int) $request->unit_to_id,
-                    'numerator' => (float) $request->numerator,
-                    'operator' => $request->filled('operator') ? $request->operator : '*',
-                    'is_active' => $request->has('is_active') ? (bool) $request->input('is_active') : true,
-                ];
-
-                // Optional human name
-                if ($request->filled('name')) {
-                    $data['name'] = $request->input('name');
-                } else {
-                    $from = Unit::find($data['unit_from_id']);
-                    $to = Unit::find($data['unit_to_id']);
-                    $data['name'] = ($from ? $from->name : 'Unit') . ' → ' . ($to ? $to->name : 'Base');
-                }
-
-                UnitConvert::updateOrCreate(['id' => $id], $data);
-                if ($request->ajax() || $request->wantsJson()) {
-                    return response()->json([
-                        'status' => 'success',
-                        'message' => __('messages.user_saved'),
-                        'redirect' => route('setting.unit_convert.index'),
-                        'modal' => 'action-modal',
-                    ]);
-                }
-                return redirect()
-                    ->route('setting.unit_convert.index')
-                    ->with('success', __('messages.user_saved'));
-
+                return response()->json([
+                    'status' => 'success',
+                    'message' => __('messages.create_success'),
+                    'redirect' => route('setting.unit_converts.index'),
+                    'modal' => 'action-modal',
+                ]);
             }
 
-
-
-        } catch (\Throwable $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage(),
+                'message' => __('messages.405'),
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
             ], 500);
+
         }
     }
 
-    /**
-     * Delete single record
-     */
-    public function delete($id)
+    public function update(Request $request)
     {
         try {
-            $row = UnitConvert::findOrFail($id);
-            $row->delete();
+
+            $form = UnitConvert::find($request->id);
+
+            if ($request->isMethod('get')) {
+
+                $title = __('global.edit');
+                $action = route('setting.unit_converts.edit',['id'=>$request->id]);
+
+                $units = Unit::pluck('name','id');
+
+                return response()->json([
+                    'title'=>$title,
+                    'status'=>'success',
+                    'message'=>'success',
+                    'html'=>view('setting.unit_converts.form',compact('title','form','action','units'))->render(),
+                    'modal'=>'action-modal',
+                ]);
+            }
+
+            if ($request->isMethod('post')) {
+
+                $request->validate([
+                    'unit_from_id' => 'required|exists:units,id',
+                    'unit_to_id' => 'required|exists:units,id|different:unit_from_id',
+                    'numerator' => 'required|numeric|min:0',
+                    'operator' => 'required|string|max:2',
+                    'name' => 'nullable|string|max:255',
+                    'is_active' => 'required|boolean',
+                ]);
+
+                $form->update([
+                    'unit_from_id' => $request->unit_from_id,
+                    'unit_to_id' => $request->unit_to_id,
+                    'numerator' => $request->numerator,
+                    'operator' => $request->operator,
+                    'name' => $request->name,
+                    'is_active' => $request->is_active,
+                    'updated_by' => Auth::user()->id,
+                ]);
+
+                return response()->json([
+                    'status'=>'success',
+                    'message'=>__('messages.update_success'),
+                    'redirect'=>route('setting.unit_converts.index'),
+                    'modal'=>'action-modal',
+                ]);
+            }
+
+        } catch (\Exception $e) {
 
             return response()->json([
-                'status' => 'success',
-                'message' => __('messages.user_deleted'),
-            ]);
-        } catch (\Throwable $e) {
+                'status'=>'error',
+                'message'=>$e->getMessage()
+            ],500);
+
+        }
+    }
+
+    public function delete(Request $request)
+    {
+        try {
+
+            $form = UnitConvert::find($request->id);
+
+            if (!$form) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'UnitConvert not found',
+                ], 404);
+            }
+
+            $form->delete();
+
             return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
+                'status'  => 'success',
+                'message' => __('messages.delete_success'),
+                'redirect' => route('setting.unit_converts.index'),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => $e->getMessage()
             ], 500);
         }
     }

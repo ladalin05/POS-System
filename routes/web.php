@@ -142,10 +142,9 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'floor.'
         ], function () {
             Route::get('/', [FloorController::class, 'index'])->name('index');
-            Route::get('add', [FloorController::class, 'add'])->name('add');
-            Route::get('edit/{id}', [FloorController::class, 'edit'])->name('edit');
-            Route::post('save/{id?}', [FloorController::class, 'save'])->name('save');
-            Route::post('delete/{id}', [FloorController::class, 'delete'])->name('delete');
+            Route::match(['get', 'post'], '/create', [FloorController::class, 'create'])->name('add');
+            Route::match(['get', 'post'], '/update', [FloorController::class, 'update'])->name('edit');
+            Route::post('delete', [FloorController::class, 'delete'])->name('delete');
         });
 
         Route::group([
@@ -153,10 +152,9 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'room.'
         ], function () {
             Route::get('/', [RoomController::class, 'index'])->name('index');
-            Route::get('add', [RoomController::class, 'add'])->name('add');
-            Route::get('edit/{id}', [RoomController::class, 'edit'])->name('edit');
-            Route::post('save/{id?}', [RoomController::class, 'save'])->name('save');
-            Route::post('delete/{id}', [RoomController::class, 'delete'])->name('delete');
+            Route::match(['get', 'post'], '/create', [RoomController::class, 'create'])->name('add');
+            Route::match(['get', 'post'], '/update', [RoomController::class, 'update'])->name('edit');
+            Route::post('delete', [RoomController::class, 'delete'])->name('delete');
         });
         
         Route::group([
@@ -164,10 +162,9 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'unit_convert.'
         ], function () {
             Route::get('/', [UnitConvertController::class, 'index'])->name('index');
-            Route::get('add', [UnitConvertController::class, 'add'])->name('add');
-            Route::get('edit/{id}', [UnitConvertController::class, 'edit'])->name('edit');
-            Route::post('save/{id?}', [UnitConvertController::class, 'save'])->name('save');
-            Route::post('delete/{id}', [UnitConvertController::class, 'delete'])->name('delete');
+            Route::match(['get', 'post'], '/create', [UnitConvertController::class, 'create'])->name('add');
+            Route::match(['get', 'post'], '/update', [UnitConvertController::class, 'update'])->name('edit');
+            Route::post('delete', [UnitConvertController::class, 'delete'])->name('delete');
         });
 
     });
