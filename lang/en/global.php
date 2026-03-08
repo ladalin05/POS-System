@@ -176,5 +176,7 @@ return [
     'unit_from' => 'Unit From',
     'unit_to' => 'Unit To',
     'operator' => 'Operator',
+    'dlt_warning' => 'Deleted Warning',
+    'dlt_confirm' => 'Deleted Confirm',
     
 ];

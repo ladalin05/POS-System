@@ -4,8 +4,7 @@
     'selected' => [],
     'label' => null,
 ])
-<div class="mb-3">
-    <label class="form-label">{{ $label }}</label>
+<div class="mb-3"> 
     <div class="input-group">
         <select @disabled($disabled) {{ $attributes->merge(['class' => 'form-control form-control-sm multiple-select', 'multiple' => 'multiple']) }}>
             @foreach ($options as $row)

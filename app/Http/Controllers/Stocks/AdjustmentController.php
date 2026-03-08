@@ -324,7 +324,7 @@ class AdjustmentController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => $id ? __('messages.user_updated') : __('messages.user_saved'),
-                'redirect' => route('stock.adjustment.index'),
+                'redirect' => route('stocks.adjustment.index'),
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();

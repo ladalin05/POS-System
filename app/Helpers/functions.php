@@ -4,6 +4,11 @@ use Illuminate\Support\Facades\DB;
 
 use App\Models\Admin\Menu;
 use App\Models\Admin\Permission;
+use App\Models\Other\Warehouses;
+use App\Models\Product\Category;
+use App\Models\Product\Product;
+use App\Models\Setting\Unit;
+use App\Models\User;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Event;
@@ -73,5 +78,84 @@ if (!function_exists('uploadImage')) {
         }
 
         return null;
+    }
+}
+
+
+if (!function_exists('getUsers')) {
+    function getUsers()
+    {
+        return User::pluck('name_en', 'id')->toArray();
+    }
+}
+ 
+if (!function_exists('getWarehouse')) {
+    function getWarehouse()
+    {
+        return Warehouses::pluck('name', 'id')->toArray();
+    }
+}
+ 
+if (!function_exists('getCategory')) {
+    function getCategory()
+    {
+        return Category::where('parent_id', null)->pluck('name', 'id')->toArray();
+    }
+}
+
+if (!function_exists('getBrands')) {
+    function getBrands()
+    {
+        return DB::table('brands')->pluck('name', 'id')->toArray();
+    }
+}
+
+if (!function_exists('getUnit')) {
+    function getUnit()
+    {
+        return Unit::pluck('name', 'id')->toArray();
+    }
+}
+
+if (!function_exists('getProducts')) {
+    function getProducts()
+    {
+        return Product::select('id', 'product_name', 'sku')->get();
+    }
+}
+
+if (!function_exists('uploadImage')) {
+    function uploadImage($file, $oldImagePath = null, $folder = 'images')
+    {
+        if ($file) {
+            if ($oldImagePath && Storage::disk('public')->exists($oldImagePath)) {
+                Storage::disk('public')->delete($oldImagePath);
+            }
+
+            $filename = $file->getClientOriginalName();
+            $path = $file->storeAs($folder, $filename, 'public');
+
+            return $path;
+        }
+
+        return null;
+    }
+}   
+
+if (!function_exists('updateImage')) {
+    function updateImage($file, $oldImagePath = null, $folder = 'images')
+    {
+        if ($file) {
+            if ($oldImagePath && Storage::disk('public')->exists($oldImagePath)) {
+                Storage::disk('public')->delete($oldImagePath);
+            }
+
+            $filename = $file->getClientOriginalName();
+            $path = $file->storeAs($folder, $filename, 'public');
+
+            return $path;
+
+        }
+        return $oldImagePath;
     }
 }

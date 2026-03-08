@@ -13,7 +13,7 @@
                 <img src="https://cdn-icons-png.flaticon.com/512/732/732220.png" width="24" alt="Excel">
             </button>
             
-            <a href="{{ route('stock.transfer.add') }}" class="btn btn-add-user d-flex align-items-center gap-2 text-white">
+            <a href="{{ route('stocks.transfer.add') }}" class="btn btn-add-user d-flex align-items-center gap-2 text-white">
                 <i class="ph ph-plus-circle"></i>
                 {{ __('global.add_new') }}
             </a>

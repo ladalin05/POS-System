@@ -44,5 +44,13 @@ return [
     'yes_restore' => 'Yes, Restore',
     'you_want_to_logout' => 'Are you sure you want to logout from this system',
     'yes_logout' => 'Yes, Logout',
-
+    'create_category_success' => 'Created Category Success!',
+    'update_category_success' => 'Updated Category Success!',
+    'delete_category_success' => 'Deleted Category Success!',
+    'create_stock_success' => 'Created Stock Success!',
+    'update_stock_success' => 'Updated Stock Success!',
+    'delete_stock_success' => 'Deleted Stock Success!',
+    'create_unit_success' => 'Created Unit Success!',
+    'update_unit_success' => 'Updated Unit Success!',
+    'delete_unit_success' => 'Deleted Unit Success!',
 ];

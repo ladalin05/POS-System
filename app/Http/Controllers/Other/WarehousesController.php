@@ -20,7 +20,6 @@ class WarehousesController extends Controller
     }
     public function add(Request $request, $id = null)
     {
-
         try {
             if ($request->isMethod('get')) {
                 $form = $id ? Warehouses::findOrFail($id) : new Warehouses();

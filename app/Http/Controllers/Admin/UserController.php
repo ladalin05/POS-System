@@ -41,25 +41,20 @@ class UserController extends Controller
     public function save(Request $request, $id = null)
     {
         try {
-
-            $avatar = $request->avatar;
-            if(!empty($avatar)){ 
-                if ($request->has('avatar') && preg_match('/^data:image\/(\w+);base64,/', $request->avatar, $type)) {
-                    $image = substr($request->avatar, strpos($request->avatar, ',') + 1);
-                    $image = base64_decode($image);
-                    $extension = $type[1];
-                    $filename = 'users/' . uniqid() . '.' . $extension;
-                    Storage::disk('public')->put($filename, $image);
-
-                    $imageUrl = Storage::url($filename);
-                    $imageUrl = str_replace('/storage', '', $imageUrl);
-                }
-            }
+            
             $request->validate([
                 'email' => 'required|email',
                 'phone' => 'required',
                 'role_id' => 'required',
             ]);
+            
+            if ($request->hasFile('avatar')) {
+                $file = $request->file('avatar');
+                $filename = 'images/users/' . uniqid() . '.' . $file->getClientOriginalExtension();
+                Storage::disk('public')->put($filename, file_get_contents($file));
+                $imageUrl = Storage::url($filename);
+            }
+
             $username = str_replace('@gmail.com', '', $request->email);
             $data = [
                 'name_en' => $request->name_en,

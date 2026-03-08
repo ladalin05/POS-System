@@ -11,99 +11,141 @@ class CategoryController extends Controller
     {
         return $dataTable->render('product.categories.index');
     }
-    public function api(Request $request)
+
+    public function create(Request $request)
     {
-        $endpoint = str_replace('api/v1/', '', $request->path());
-        $path = base_path("public/uploads/{$endpoint}.json");
-        if (!file_exists($path)) {
+        try{
+
+            if($request->isMethod('get')){
+                $title = __('global.add_new');
+                $form = new Category();
+                $action = route('products.categories.add');
+                return response()->json([
+                    'title' => $title,
+                    'status' => 'success',
+                    'message' => 'success',
+                    'html' => view('product.categories.form', compact('title', 'form', 'action'))->render(),
+                    'modal' => 'action-modal',
+                ]);
+            }
+
+            if($request->isMethod('post')){
+                $request->validate([
+                    'name' => 'required|string|max:255',
+                    'slug' => 'required|string|max:255',
+                ]);
+
+                
+                $category_image = null;
+                if ($request->hasFile('category_image')) {
+                    $category_image = uploadImage($request->file('category_image'), null, 'images/category');
+                }
+
+                Category::create([
+                    'name' => $request->name,
+                    'slug' => $request->slug,
+                    'parent_id' => $request->parent_id ?? null,
+                    'image' => $category_image,
+                ]);
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => __('messages.create_category_success'),
+                    'redirect' => route('products.categories.index'),
+                    'modal' => 'action-modal',
+                ]);
+            }
+
             return response()->json([
-                'code' => 404,
-                'discrption' => 'Not Found',
+                'status' => 'error',
+                'message' => __('messages.405'),
             ]);
+
+        } catch(\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => $e->getMessage()
+            ], 500);
         }
-        $data = file_get_contents($path);
-        return response()->json([
-            'code' => 200,
-            'discrption' => 'success',
-            'data' => json_decode($data)
-        ]);
     }
-    public function add()
+
+    public function update(Request $request)
     {
-        $title = __('global.add_new');
-        $form = new Category();
-        return view('product.categories.form', compact('title', 'form'));
+        try{
+
+            $form = Category::find($request->id);
+            
+            if($request->isMethod('get')){
+                $title = __('global.edit');
+                $action = route('products.categories.edit',  ['id' => $request->id]);
+                return response()->json([
+                    'title' => $title,
+                    'status' => 'success',
+                    'message' => 'success',
+                    'html' => view('product.categories.form', compact('title', 'form', 'action'))->render(),
+                    'modal' => 'action-modal',
+                ]);
+            }
+
+            if($request->isMethod('post')){
+                $request->validate([
+                    'name' => 'required|string|max:255',
+                    'slug' => 'required|string|max:255',
+                ]);
+                
+                $category_image = null;
+                if ($request->hasFile('category_image')) {
+                    $category_image = updateImage($request->file('category_image'), $form->image, 'images/category');
+                }
+
+                $form->update([
+                    'name' => $request->name,
+                    'slug' => $request->slug,
+                    'parent_id' => $request->parent_id ?? null,
+                    'image' => $category_image,
+                ]);
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => __('messages.update_category_success'),
+                    'redirect' => route('products.categories.index'),
+                    'modal' => 'action-modal',
+                ]);
+            }
+            
+        } catch(\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
-    public function edit($id)
-    {
-        $title = __('global.edit');
-        $form = Category::find($id);
-        $methods = (object) [
-            (object) ['id' => 'GET', 'name' => 'GET'],
-            (object) ['id' => 'POST', 'name' => 'POST'],
-            (object) ['id' => 'PUT', 'name' => 'PUT'],
-            (object) ['id' => 'PATCH', 'name' => 'PATCH'],
-            (object) ['id' => 'DELETE', 'name' => 'DELETE'],
-        ];
-        return view('product.categories.form', compact('title', 'form', 'methods'));
-    }
-    // save user
-    public function save(Request $request, $id = null)
+    
+    public function delete(Request $request)
     {
         try {
-            $request->validate([
-                // 'url' => 'required',
-                'code' => 'required',
-                'name' => 'required',
-                
-                // 'method' => 'required',
-                // 'project_id' => 'required',
-            ]);
-            // $project = Product::find($request->project_id);
-            $data = [
-                'code' => $request->code,
-                'name' => $request->name,
-            ];
-            // if($request->file('file')) {
-            // $path = base_path("public/uploads/{$project->slug}/{$request->url}.json");
-            // if(!is_dir(dirname($path))) {
-            //     mkdir(dirname($path), 0777, true);
-            // }
-            // $request->file('file')->move(dirname($path), basename($path));
-            // }
-            Category::updateOrCreate(['id' => $id], $data);
-            return json([
-                'status' => 'success',
-                'message' => !empty($id) ? __('messages.user_updated') : __('messages.user_saved'),
+
+            $form = Category::find($request->id);
+
+            if (!$form) {
+                return response()->json([
+                    'status'  => 'error',
+                    'message' => 'Category not found',
+                ], 404);
+            }
+
+            $form->delete();
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => __('messages.delete_category_success'),
                 'redirect' => route('products.categories.index'),
             ]);
         } catch (\Exception $e) {
-            return json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
-        }
-    }
-    public function delete($id)
-    {
-        try {
-            if ($id == 1) {
-                return json([
-                    'status' => 'error',
-                    'message' => __('messages.user_cannot_delete'),
-                ]);
-            }
-            $form = Category::find($id);
-            $form->delete();
-            return json([
-                'status' => 'success',
-                'message' => __('messages.user_deleted'),
-            ]);
-        } catch (\Exception $e) {
-            return json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
+            return response()->json([
+                'status'  => 'error',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 }

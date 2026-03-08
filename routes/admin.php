@@ -12,9 +12,4 @@ use App\Http\Controllers\Admin\LanguageController;
     return redirect()->back();
 })->name('clear-cache');
 
-
-Route::get('/send-test-email', function () {
-    Mail::to('chamnab.roeun.rc@gmail.com', 'CHAMNAB')->send(new Verification());
-});
-
 Route::get('change-language/{lang}', [LanguageController::class, 'index'])->name('lang');

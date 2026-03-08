@@ -3,37 +3,37 @@
 namespace App\Models\Product;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 class Category extends Model
 {
-    use HasFactory, Notifiable, SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'categories';
+
     protected $fillable = [
-        'code',
         'name',
+        'slug',
         'image',
-        'biller',
-        'project',
-        'warehouse_id',
         'parent_id',
-        'installment',
-        'type_id',
-        'type',
-        'stock_acc',
-        'adjustment_acc',
-        'usage_acc',
-        'cost_acc',
-        'convert_acc',
-        'discount_acc',
-        'sale_acc',
-        'expense_acc',
-        'pawn_acc',
-        'other_name',
-        'size',
-        'inactive',
-        'transfer_acc',
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+
+    // Parent Category
+    public function parent()
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
+
+    // Sub Categories
+    public function children()
+    {
+        return $this->hasMany(Category::class, 'parent_id');
+    }
 }

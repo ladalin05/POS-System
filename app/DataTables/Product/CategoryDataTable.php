@@ -21,17 +21,15 @@ class CategoryDataTable extends DataTable
         return datatables()
             ->eloquent($query)
             ->addIndexColumn()
-            ->addColumn('image', function ($row) {
-                $path = ltrim($row->image ?? '', '/');
+            ->editColumn('image', function ($row) {
+                $path = $row->image != null ? 'storage/'.$row->image : null;
                 if (!$path || !file_exists(public_path($path))) {
                     $path = 'assets/images/no_image.png';
                 }
                 return '<img src="' . asset($path) . '" class="img-thumbnail" style="width:35px; height:35px;" />';
             })
             ->addColumn('action', fn ($row) => view('product.categories.action', compact('row')))
-            ->addColumn('api', fn($row) => clipboard(url("api/v1/{$row->endpoint}")))
-            ->addColumn('endpoint', fn($row) => clipboard("{$row->url}"))
-            ->rawColumns(['action', 'api', 'endpoint', 'image'])
+            ->rawColumns(['action', 'image'])
             ->setRowId('id');
     }
 
@@ -40,6 +38,8 @@ class CategoryDataTable extends DataTable
      */
     public function query(Category $model): QueryBuilder
     {
+        $model = $model->leftJoin('categories as parent', 'categories.parent_id', '=', 'parent.id')
+                       ->select('categories.*', 'parent.name as parent_name');
         return $model->newQuery();
     }
 
@@ -76,9 +76,9 @@ class CategoryDataTable extends DataTable
                 ->width(60)
                 ->addClass('text-center'),
             Column::make('image'),
-            Column::make('code'),
             Column::make('name'),
-            Column::make('parent_id')
+            Column::make('slug'),
+            Column::make('parent_name')
                   ->title(__('Parent Category'))
                   ->searchable(false)
                   ->orderable(false),

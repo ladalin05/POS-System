@@ -34,7 +34,7 @@ class ProductStockDataTable extends DataTable
             })
 
             ->editColumn('alert_quantity', function ($row) {
-                return number_format($row->alert_quantity, 2);
+                return number_format($row->alert_quantity, 0);
             })
 
             ->addColumn('status', function ($row) {
@@ -69,7 +69,7 @@ class ProductStockDataTable extends DataTable
                 'product_stock.warehouse_id',
                 'product_stock.stock',
                 'product_stock.alert_quantity',
-                'products.name as product_name',
+                'products.product_name as product_name',
                 'warehouses.name as warehouse_name',
             ])
             ->orderBy('product_stock.id', 'desc');

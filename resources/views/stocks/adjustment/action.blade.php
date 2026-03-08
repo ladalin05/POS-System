@@ -10,7 +10,7 @@
     <div class="dropdown-menu dropdown-menu-end border-0 shadow-lg py-2" style="min-width: 160px; border-radius: 12px;">
         
         @can('stock.adjustment.edit')
-            <a href="{{ route('stock.adjustment.edit', $row->id) }}" class="dropdown-item py-2 px-3 d-flex align-items-center">
+            <a href="{{ route('stocks.adjustment.edit', $row->id) }}" class="dropdown-item py-2 px-3 d-flex align-items-center">
                 <div class="bg-primary-subtle rounded-circle p-1 me-2 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
                     <i class="ph ph-pencil me-2"></i>
                 </div>
@@ -24,7 +24,7 @@
                     <div class="dropdown-divider my-1 opacity-50"></div>
                 @endcan
 
-                <a href="{{ route('stock.adjustment.approve', $row->id) }}" 
+                <a href="{{ route('stocks.adjustment.approve', $row->id) }}" 
                    class="dropdown-item py-2 px-3 d-flex align-items-center text-success"
                    onclick="approveAdjustment(event)">
                     <div class="bg-success-subtle rounded-circle p-1 me-2 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
@@ -40,7 +40,7 @@
                 <div class="dropdown-divider my-1 opacity-50"></div>
             @endcan
 
-            <a href="{{ route('stock.adjustment.delete', $row->id) }}" 
+            <a href="{{ route('stocks.adjustment.delete', $row->id) }}" 
                class="dropdown-item py-2 px-3 d-flex align-items-center text-danger"
                onclick="deleteRecord(event)">
                 <div class="bg-danger-subtle rounded-circle p-1 me-2 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">

@@ -616,3 +616,64 @@ document.addEventListener('DOMContentLoaded', function() {
 window.addEventListener('load', function() {
     App.initAfterLoad();
 });
+
+
+function successAlert(message, redirect = null) {
+    swalInit.fire({
+        icon: 'success',
+        title: 'Success',
+        text: message,
+        timer: 2000,
+        showConfirmButton: false
+    });
+}
+
+function errorAlert(message) {
+    swalInit.fire({
+        icon: 'error',
+        title: 'Error',
+        text: message
+    });
+}
+
+function ajaxSubmit(formSelector) {
+    let form = $(formSelector);
+    let formData = new FormData(form[0]); 
+    
+    $.ajax({
+        url: form.attr('action'),
+        type: form.attr('method') || 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        cache: false,
+        dataType: 'json',
+        success: function (response) {
+            if (response.status === 'success') {
+                successAlert(response.message);
+                if (response.redirect) {
+                    window.location.href = response.redirect;
+                }
+            }
+
+            if (response.status === 'error') {
+                errorAlert(response.message || 'An error occurred');
+            }
+
+        },
+        error: function (xhr) {
+            if (xhr.status === 422) {
+                let errors = xhr.responseJSON.errors;
+                console.log(errors);
+                swalInit.fire({
+                    icon: 'warning',
+                    title: 'Validation Error',
+                    text: errorMessage
+                });
+            } else {
+                let errors = xhr.responseJSON.message;
+                errorAlert(errors || 'An unexpected error occurred');
+            }
+        }
+    });
+}

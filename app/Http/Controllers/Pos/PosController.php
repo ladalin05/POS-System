@@ -85,9 +85,9 @@ class PosController extends Controller
         // initial products
         $lim = (int) config('pos.pro_limit', 25);
         $products = Product::when($cat_id, fn($q) => $q->where('category_id', $cat_id))
-            ->orderBy('name')
+            ->orderBy('product_name')
             ->take($lim)
-            ->get(['id', 'code', 'name', 'image']);
+            ->get(['id', 'sku', 'product_name']);
 
         // rooms
         $rooms = Room::join('floor', 'floor.id', '=', 'rooms.floor_id')
@@ -99,7 +99,7 @@ class PosController extends Controller
         $selectedRoomId = $selectedTable['id'] ?? null;
         $selectedRoomName = $selectedTable['name'] ?? null;
         $sid = session('current_sid') ?? null;
-        return view('pos.index_new', compact(
+        return view('pos.index', compact(
             'warehouses',
             'billers',
             'categories',

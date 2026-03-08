@@ -1,7 +1,24 @@
 <x-app-layout> 
     <!-- Content area -->
+    <x-basic.breadcrumb>
+        <x-slot name="title">
+            <div class="d-flex align-items-center gap-3 ms-2">
+                <div>
+                    <h2 class="mb-0 fw-bold h4">{{ $form?->id ? 'Edit Role' : 'Create New Role' }}</h2>
+                    <p class="text-muted mb-0 small">Manage system access and profiles</p>
+                </div>
+            </div>
+        </x-slot>
+        
+        <div class="header-actions">
+            <a href="{{ route('users-management.roles.index') }}" class="btn btn-add-user bg-primary d-flex align-items-center gap-2 text-white">
+                <i class="fa-solid fa-arrow-left-long"></i>
+                {{ __('global.back_to_list') }}
+            </a>
+        </div>
+    </x-basic.breadcrumb>
     <div class="content">
-        <x-basic.card title="Create Role">
+        <x-basic.card>
             <form action="{{ route('users-management.roles.save', $form?->id) }}" class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
             @csrf
             

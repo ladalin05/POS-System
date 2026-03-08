@@ -72,7 +72,7 @@
         </x-slot>
         
         <div class="header-actions me-2">
-            <a href="{{ route('stock.manage.index') }}" class="btn btn-add-user bg-primary d-flex align-items-center gap-2 text-white">
+            <a href="{{ route('stocks.manage.index') }}" class="btn btn-add-user bg-primary d-flex align-items-center gap-2 text-white">
                 <i class="fa-solid fa-arrow-left"></i>
                 {{ __('global.back_to_list') }}
             </a>
@@ -80,7 +80,7 @@
     </x-basic.breadcrumb>
 
     <div class="content mt-3">
-        <x-basic.form action="{{ route('stock.manage.save', $form?->id) }}" novalidate enctype="multipart/form-data">
+        <x-basic.form action="{{ route('stocks.manage.save', $form?->id) }}" novalidate enctype="multipart/form-data">
             
             <div class="card shadow-sm mb-4">
                 <div class="card-body p-4">
@@ -176,7 +176,7 @@
             <div class="col-12">
                 <div class="card custom-card">
                     <div class="card-body p-3 text-end">
-                        <a href="{{ route('stock.manage.index') }}" class="btn btn-light px-4 me-2">
+                        <a href="{{ route('stocks.manage.index') }}" class="btn btn-light px-4 me-2">
                             {{ __('global.cancel') }}
                         </a>
                         <button type="submit" class="btn btn-primary px-3 fw-bold shadow-sm">
@@ -190,8 +190,8 @@
 
     <script>
     $(function () {
-        const URL_PRODUCTS       = "{{ route('stock.manage.ajaxProducts') }}";
-        const URL_PRODUCT_UNITS  = "{{ route('stock.manage.ajaxProductUnits') }}";
+        const URL_PRODUCTS       = "{{ route('stocks.manage.ajaxProducts') }}";
+        const URL_PRODUCT_UNITS  = "{{ route('stocks.manage.ajaxProductUnits') }}";
         let PRODUCTS = [];
 
         // 1. Initial Product Load

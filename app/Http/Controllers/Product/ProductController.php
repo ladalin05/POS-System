@@ -23,7 +23,7 @@ class ProductController extends Controller
         return $dataTable->render('product.products.index');
     }
 
-    public function add()
+    public function create()
     {
         $title = __('global.add_new');
         $form = new Product();
@@ -37,7 +37,7 @@ class ProductController extends Controller
         return view('product.products.form', compact('title', 'form', 'categories', 'units', 'branch'));
     }
 
-    public function edit($id)
+    public function update($id)
     {
         $title = __('global.edit');
         $form = Product::findOrFail($id);

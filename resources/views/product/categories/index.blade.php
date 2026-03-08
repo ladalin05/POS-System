@@ -81,7 +81,7 @@
             <button class="btn btn-icon-box" style="border: none">
                 <img src="https://cdn-icons-png.flaticon.com/512/732/732220.png" alt="Excel">
             </button>
-            <a href="{{ route('products.categories.add') }}" class="btn btn-add-user d-flex align-items-center gap-2 text-white">
+            <a href="{{ route('products.categories.add') }}" onclick="addCategory(event)" class="btn btn-add-user d-flex align-items-center gap-2 text-white">
                 <i class="ph ph-plus-circle me-2"></i>
                 {{ __('global.add_new') }}
             </a>
@@ -93,20 +93,24 @@
         </x-basic.datatables>
     </div>
     <!-- /content area -->
-    <x-basic.modal id="action-modal">
+    <x-basic.modal id="action-modal" size="modal-xl">
         <x-basic.form id="action-form" novalidate>
         </x-basic.form>
     </x-basic.modal>
     <!-- /content area -->
     @push('scripts')
         <script>
-            function changePassword(e) {
+            function showLoading() {
+                // You could trigger a spinner here
+            }
+            function addCategory(e) {
                 e.preventDefault();
-                var url = $(event.target).attr('href');
+                var url = $(e.currentTarget).attr('href');
                 $.ajax({
                     url: url,
                     type: 'GET',
-                    success: function(res) {
+                    beforeSend: showLoading,
+                    success: function (res) {
                         $('#action-modal #action-form').html('').removeClass('was-validated');
                         if (res.status == 'success') {
                             $('#action-modal .modal-title').text(res.title);
@@ -118,14 +122,16 @@
                 });
             }
 
-            function permission(e) {
+            
+            function editCategory(e) {
                 e.preventDefault();
-                var url = $(event.target).attr('href');
+                var url = $(e.currentTarget).attr('href');
                 $.ajax({
                     url: url,
                     type: 'GET',
-                    success: function(res) {
-                        $('#action-modal #action-form').removeClass('was-validated');
+                    beforeSend: showLoading,
+                    success: function (res) {
+                        $('#action-modal #action-form').html('').removeClass('was-validated');
                         if (res.status == 'success') {
                             $('#action-modal .modal-title').text(res.title);
                             $('#action-modal #action-form').html(res.html);
@@ -135,6 +141,7 @@
                     }
                 });
             }
+
         </script>
     @endpush
 </x-app-layout>

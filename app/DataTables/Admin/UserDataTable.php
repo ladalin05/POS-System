@@ -18,7 +18,11 @@ class UserDataTable extends DataTable
             ->eloquent($query)
             ->addIndexColumn()
             ->editColumn('avatar', function ($user) {
-                $img = $user->avatar ? Storage::url($user->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($user->name_en) . '&background=random';
+                if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+                    $img = asset('storage/' . $user->avatar);
+                } else {
+                    $img = 'https://ui-avatars.com/api/?name=' . urlencode($user->name_en) . '&background=random';
+                }
                 return '<div class="d-flex align-items-center">
                             <img src="'.$img.'" class="rounded me-3" style="width: 40px; height: 40px; object-fit: cover;">
                         </div>';

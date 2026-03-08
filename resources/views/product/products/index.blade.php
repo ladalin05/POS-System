@@ -1,7 +1,8 @@
 <x-app-layout>
     @push('css')
-
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Barcode+39&display=swap" rel="stylesheet">
     <style>
+        .barcode-font { font-family: 'Libre Barcode 39', cursive; font-size: 35px; }
         .card { border-radius: 12px; overflow: hidden; }
         .form-label { font-size: 0.9rem; color: #495057; font-weight: 600; }
 
