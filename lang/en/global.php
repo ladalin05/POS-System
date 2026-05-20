@@ -178,5 +178,6 @@ return [
     'operator' => 'Operator',
     'dlt_warning' => 'Deleted Warning',
     'dlt_confirm' => 'Deleted Confirm',
+    'back_to_list' => 'Back to List'
     
 ];

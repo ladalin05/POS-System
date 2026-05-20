@@ -20,6 +20,8 @@ use App\Models\Setting\Floor;
 use App\Models\Setting\Room;
 use App\Models\Setting\Unit;
 use App\Models\Suspend\Suspend;
+use App\Models\Sales\Order;
+use App\Models\Sales\Orderitem;
 use App\Models\Warehouses\Warehouses;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -28,94 +30,31 @@ use Illuminate\Support\Facades\Validator as FacadesValidator;
 class PosController extends Controller
 {
 
-    public function index(Request $request)
+    
+    public function index()
     {
-        // If a room_id query param is present, save the room as the selected table in session
-        if ($request->has('room_id')) {
-            $roomId = (int) $request->query('room_id');
-            $room = Room::find($roomId);
-            if ($room) {
-                // store full array so we have id + name available
-                session(['selected_table' => ['id' => $room->id, 'name' => $room->name]]);
-                // Redirect to same route *without* the query param to keep URL clean
-                return redirect()->route('pos.index');
-            }
+        $categories = Category::orderBy('name')->get();
+        $products   = Product::orderBy('product_name')->get();
+        $customers  = Customer::orderBy('name')->get();
+ 
+        $nextOrderNumber = '#' . str_pad((Order::max('id') ?? 0) + 1, 4, '0', STR_PAD_LEFT);
+ 
+        return view('pos.index', compact('categories', 'products', 'customers', 'nextOrderNumber'));
+    }
+
+    public function products(Request $request): JsonResponse
+    {
+        $query = Product::active();
+ 
+        if ($request->filled('category') && $request->category !== 'all') {
+            $query->byCategory($request->category);
         }
-        $countSuspend = Suspend::count();
-        $warehouses = Warehouses::all();
-        $currencies = Currencies::all();
-        $billers = Branch::all();
-
-
-
-        $suspend = Suspend::orderByDesc('id')->first();
-        $lastId = $suspend->id ?? 0;
-
-
-
-        $cash_accounts = CashAccount::select('id', 'name')->get();
-
-        // Build reusable HTML for <option> elements (server-side)
-        $cashOptionsHtml = '';
-        foreach ($cash_accounts as $acc) {
-            $rateAttr = isset($acc->rate) ? (float) $acc->rate : 1;
-            // Escape the name to be safe in HTML
-            $name = e($acc->name);
-            $cashOptionsHtml .= '<option value="' . $acc->id . '" data-rate="' . $rateAttr . '" cash_type="cash">' . $name . '</option>';
+ 
+        if ($request->filled('search')) {
+            $query->search($request->search);
         }
-
-
-
-
-
-        $pageSize = config('pos.categories_per_page', 100);
-        $offset = 0;
-        $cat_id = (int) $request->query('category_id', 0);
-
-        $categories = Category::orderBy('name')
-            ->skip($offset)
-            ->take($pageSize)
-            ->get(['id', 'name']);
-
-        // pick first category if not selected
-        if (!$cat_id) {
-            $cat_id = $categories->first()->id ?? 0;
-        }
-
-        // initial products
-        $lim = (int) config('pos.pro_limit', 25);
-        $products = Product::when($cat_id, fn($q) => $q->where('category_id', $cat_id))
-            ->orderBy('product_name')
-            ->take($lim)
-            ->get(['id', 'sku', 'product_name']);
-
-        // rooms
-        $rooms = Room::join('floor', 'floor.id', '=', 'rooms.floor_id')
-            ->select('rooms.*', 'floor.name as floor_name')
-            ->get();
-
-        // read selected table safely from session
-        $selectedTable = session('selected_table', null);
-        $selectedRoomId = $selectedTable['id'] ?? null;
-        $selectedRoomName = $selectedTable['name'] ?? null;
-        $sid = session('current_sid') ?? null;
-        return view('pos.index', compact(
-            'warehouses',
-            'billers',
-            'categories',
-            'cat_id',
-            'pageSize',
-            'products',
-            'rooms',
-            'selectedRoomId',
-            'selectedRoomName',
-            'countSuspend',
-            'sid',
-            'currencies',
-            'cash_accounts',
-            'cashOptionsHtml',   // << add this
-            'suspend',
-        ));
+ 
+        return response()->json($query->orderBy('product_name')->get());
     }
 
     public function ajaxCategoryData(Request $request)

@@ -62,7 +62,7 @@ class StockTransferDataTable extends DataTable
                 ->join('users', 'users.id', '=', 'stockmoves.created_by')
                 ->select([
                     'stockmoves.*',
-                    'products.name as product_name',
+                    'products.product_name as product_name',
                     'warehouses.name as warehouse_name',
                     'users.name_en as user_name_en',
                     'users.name_kh as user_name_kh',

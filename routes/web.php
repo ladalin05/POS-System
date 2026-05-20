@@ -231,9 +231,13 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'pos.',
         ], function () {
             Route::get('/', [PosController::class, 'index'])->name('index');
-            Route::get('/pos/init-data', [PosController::class,'initData'])->name('initData');
-            Route::get('/pos/products', [PosController::class,'products'])->name('products');
-            Route::post('/pos/store-order', [PosController::class,'storeOrder'])->name('storeOrder');
+            Route::get('/init-data', [PosController::class,'initData'])->name('initData');
+            Route::get('/products',         [PosController::class, 'products']    )->name('products');
+            Route::get('/products/{product}',[PosController::class, 'showProduct'])->name('products.show');
+            Route::post('/orders',          [PosController::class, 'storeOrder']  )->name('orders.store');
+            Route::get('/customers',        [PosController::class, 'customers']   )->name('customers.index');
+            Route::post('/customers',       [PosController::class, 'storeCustomer'])->name('customers.store');
+            Route::post('/store-order', [PosController::class,'storeOrder'])->name('storeOrder');
             Route::get('search-customer', [PosController::class, 'searchCustomer'])->name('searchCustomer');
             Route::get('getProductDataByCode', [PosController::class, 'getProductDataByCode'])->name('getProductDataByCode');
             Route::get('search-name', [PosController::class, 'searchProductByName'])->name('searchProductByName');

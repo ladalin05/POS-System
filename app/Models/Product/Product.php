@@ -33,6 +33,11 @@ class Product extends Model
         'mfg_date',
         'exp_date'
     ];
+    
+    public function scopeActive($query)
+    {
+        return $query->whereDate('exp_date', '>', now());
+    }
 
     public function category()
     {
