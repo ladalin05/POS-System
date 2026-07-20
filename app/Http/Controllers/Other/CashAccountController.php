@@ -4,78 +4,107 @@ namespace App\Http\Controllers\Other;
 
 use App\DataTables\Other\CashAccountDataTable;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Other\StoreCashAccountRequest;
+use App\Http\Requests\Other\UpdateCashAccountRequest;
 use App\Models\Other\CashAccount;
+use App\Services\BaseService;
 use Illuminate\Http\Request;
-use App\Models\Product\product;
-
+use Throwable;
 
 class CashAccountController extends Controller
 {
+
+    private BaseService $service;
+
+    public function __construct()
+    {
+        $this->service = new class extends BaseService {
+            protected function getQuery() { return CashAccount::query(); }
+        };
+    }
+
     public function index(CashAccountDataTable $dataTable)
     {
         return $dataTable->render('other.cash_accounts.index');
     }
-    public function add()
-    {
-        $title = __('global.add_new');
-        $form = new CashAccount();
-        return view("other.cash_accounts.form", compact('title', 'form'));
-    }
-    public function edit($id)
-    {
-        $title = __('global.edit');
-        $form = CashAccount::find($id);
-        $product = product::all();
-        return view("other.cash_accounts.form", compact('title', 'form'));
-    }
-    public function save(Request $request, $id = null)
+
+    public function create(Request $request)
     {
         try {
-            $request->validate([
-                'code' => 'required|string|max:255',
-                'name' => 'required|string|max:20',
-                'type' => 'required|string',
-            ]);
-            $data = [
-                'code' => $request->code,
-                'name' => $request->name,
-                'type' => $request->type,
-            ];
-           
-            CashAccount::updateOrCreate(['id' => $id], $data);
-            return json([
-                'status' => 'success',
-                'message' => !empty($id) ? __('messages.updated') : __('messages.saved'),
-                'redirect' => route('other.cash_accounts.index'),
-            ]);
-        } catch (\Exception $e) {
-            return json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
+            if ($request->isMethod('post')) {
+                $formRequest = app(StoreCashAccountRequest::class);
+                $this->service->create($formRequest->validated());
+
+                return $this->redirectResponse(
+                    message: __('messages.create_successfully'),
+                    route: route('other.cash_accounts.index'),
+                );
+            }
+
+            return $this->viewResponse(
+                view:   'other.cash_accounts.form',
+                action: route('other.cash_accounts.create'),
+                data:   [
+                    'title' => __('global.add_new'),
+                    'form' => new CashAccount(),
+                ],
+            );
+
+        } catch (Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
+        }
+    }
+
+    public function update(Request $request)
+    {
+        try {
+            $form = CashAccount::findOrFail($request->id);
+
+            if ($request->isMethod('post')) {
+                $formRequest = app(UpdateCashAccountRequest::class);
+                $this->service->update($formRequest->validated(), $request->id);
+
+                return $this->redirectResponse(
+                    message: __('messages.update_successfully'),
+                    route: route('other.cash_accounts.index'),
+                );
+            }
+
+            return $this->viewResponse(
+                view:   'other.cash_accounts.form',
+                action: route('other.cash_accounts.update', ['id' => $request->id]),
+                data:   [
+                    'title' => __('global.edit'),
+                    'form' => $form,
+                ],
+            );
+
+        } catch (Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
 
     public function delete($id)
     {
         try {
-            if ($id == 1) {
-                return json([
-                    'status' => 'error',
-                    'message' => __('messages.user_cannot_delete'),
-                ]);
-            }
-            $form = CashAccount::find($id);
+            $form = CashAccount::findOrFail($id);
             $form->delete();
-            return json([
-                'status' => 'success',
-                'message' => __('messages.deleted'),
-            ]);
-        } catch (\Exception $e) {
-            return json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
+
+            return $this->redirectResponse(
+                message: __('messages.delete_cash_account_successfully'),
+                route: route('other.cash_accounts.index'),
+            );
+        } catch (Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
 }

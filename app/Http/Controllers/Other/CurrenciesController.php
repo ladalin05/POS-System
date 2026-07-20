@@ -4,116 +4,106 @@ namespace App\Http\Controllers\Other;
 
 use App\DataTables\Other\CurrenciesDataTable;
 use App\Http\Controllers\Controller;
-use App\Models\Other\currencies; // <-- create this model/table
+use App\Http\Requests\Other\StoreCurrencyRequest;
+use App\Http\Requests\Other\UpdateCurrencyRequest;
+use App\Models\Other\Currencies;
+use App\Services\BaseService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class CurrenciesController extends Controller
 {
+    private BaseService $service;
+
+    public function __construct()
+    {
+        $this->service = new class extends BaseService {
+            protected function getQuery() { return Currencies::query(); }
+        };
+    }
+
     public function index(CurrenciesDataTable $dataTable)
     {
         return $dataTable->render('other.currencies.index');
     }
 
-    public function add()
+    public function create(Request $request)
     {
         try {
-            $form = new currencies(); 
-            $title = __('global.add_new');
+            if ($request->isMethod('post')) {
+                $formRequest = app(StoreCurrencyRequest::class);
+                $this->service->create($formRequest->validated());
 
-            return response()->json([
-                'title' => $title,
-                'status' => 'success',
-                'message' => 'success',
-                'html' => view('other.currencies.form', compact('title', 'form'))->render(),
-                'modal' => 'action-modal',
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
+                return $this->redirectResponse(
+                    message: __('messages.create_successfully'),
+                    route: route('other.currencies.index'),
+                );
+            }
+
+            return $this->viewResponse(
+                view:   'other.currencies.form',
+                action: route('other.currencies.create'),
+                data:   [
+                    'title' => __('global.add_new'),
+                    'form' => new Currencies(),
+                ],
+            );
+
+        } catch (Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
 
-   
-    public function edit($id)
+    public function update(Request $request)
     {
-        $form = Currencies::findOrFail($id);
-        $title = __('global.edit');
-
-        return response()->json([
-            'title' => $title,
-            'status' => 'success',
-            'message' => 'success',
-            'html' => view('other.currencies.form', compact('title', 'form'))->render(),
-        ]);
-    }
-
-    public function save(Request $request, $id = null)
-    {
-
         try {
-            if ($request->isMethod('get')) {
-                $form = $id ? Currencies::findOrFail($id) : new Currencies();
-                $title = $id ? __('global.edit') : __('global.add_new');
+            $form = Currencies::findOrFail($request->id);
 
-                $action = route('other.currencies.save', ['id' => $id]);
+            if ($request->isMethod('post')) {
+                $formRequest = app(UpdateCurrencyRequest::class);
+                $this->service->update($formRequest->validated(), $request->id);
 
-                return response()->json([
-                    'title' => $title,
-                    'status' => 'success',
-                    'message' => 'success',
-                    'html' => view('other.currencies.form', compact('title', 'form', 'action'))->render(),
-                    'modal' => 'action-modal',
-                ]);
-            }
-            if (request()->isMethod('post')) {
-                $rules = [
-                    'code' => 'required|string|max:255',
-                    'name' => 'nullable|string|max:255',
-                    'rate' => 'required|string|max:100',
-                ];
-                $data = $request->validate($rules);
-
-                currencies::updateOrCreate(['id' => $id], $data);
-
-                return response()->json([
-                    'status' => 'success',
-                    'message' => __('messages.user_saved'),
-                    'redirect' => route('other.currencies.index'),
-                    'modal' => 'action-modal',
-
-                ]);
+                return $this->redirectResponse(
+                    message: __('messages.update_successfully'),
+                    route: route('other.currencies.index'),
+                );
             }
 
-            return response()->json([
-                'status' => 'error',
-                'message' => __('messages.405'),
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
+            return $this->viewResponse(
+                view:   'other.currencies.form',
+                action: route('other.currencies.update', ['id' => $request->id]),
+                data:   [
+                    'title' => __('global.edit'),
+                    'form' => $form,
+                ],
+            );
+
+        } catch (Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
 
     public function delete($id)
     {
         try {
-            $currencies = Currencies::findOrFail($id);
-            $currencies->delete();
+            $form = Currencies::findOrFail($id);
+            $form->delete();
 
-            return response()->json([
-                'status' => 'success',
-                'message' => __('messages.user_deleted'),
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
+            return $this->redirectResponse(
+                message: __('messages.delete_currency_successfully'),
+                route: route('other.currencies.index'),
+            );
+        } catch (Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
 
@@ -121,24 +111,25 @@ class CurrenciesController extends Controller
     {
         try {
             $ids = $request->input('ids', []);
+
             if (empty($ids)) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'No items selected.',
-                ]);
+                return $this->errorResponse(
+                    message: 'No items selected.',
+                    code: 422,
+                );
             }
 
             Currencies::whereIn('id', $ids)->delete();
 
-            return response()->json([
-                'status' => 'success',
-                'message' => __('messages.user_deleted'),
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
+            return $this->redirectResponse(
+                message: __('messages.delete_currency_successfully'),
+                route: route('other.currencies.index'),
+            );
+        } catch (Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
 }

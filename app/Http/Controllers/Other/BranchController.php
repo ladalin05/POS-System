@@ -4,148 +4,118 @@ namespace App\Http\Controllers\Other;
 
 use App\DataTables\Other\BrancheDataTable;
 use App\Http\Controllers\Controller;
-use App\Models\Other\Branch; // <-- create this model/table
+use App\Http\Requests\Other\StoreBranchRequest;
+use App\Http\Requests\Other\UpdateBranchRequest;
+use App\Models\Other\Branch;
+use App\Services\BaseService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class BranchController extends Controller
 {
+    private BaseService $service;
+
+    public function __construct()
+    {
+        $this->service = new class extends BaseService {
+            protected function getQuery() { return Branch::query(); }
+        };
+    }
+
     public function index(BrancheDataTable $dataTable)
     {
         return $dataTable->render('other.branch.index');
     }
 
-    /**
-     * Open "Add Branch" modal (returns the form partial HTML)
-     */
-    public function add()
+    public function create(Request $request)
     {
         try {
-            $form = new Branch();
-            $title = __('global.add_new');
+            if ($request->isMethod('post')) {
+                $formRequest = app(StoreBranchRequest::class);
+                $data = $formRequest->validated();
 
-            return response()->json([
-                'title' => $title,
-                'status' => 'success',
-                'message' => 'success',
-                'html' => view('other.branch.form', compact('title', 'form'))->render(),
-                'modal' => 'action-modal',
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
+                if ($request->hasFile('logo')) {
+                    $data['logo'] = $this->storeLogo($request);
+                }
+
+                $this->service->create($data);
+
+                return $this->redirectResponse(
+                    message: __('messages.create_successfully'),
+                    route: route('other.branch.index'),
+                );
+            }
+
+            return $this->viewResponse(
+                view:   'other.branch.form',
+                action: route('other.branch.create'),
+                data:   [
+                    'title' => __('global.add_new'),
+                    'form' => new Branch(),
+                ],
+            );
+
+        } catch (Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
 
-    /**
-     * Open "Edit Branch" modal (returns the form partial HTML)
-     */
-    public function edit($id)
+    public function update(Request $request)
     {
-        $form = Branch::findOrFail($id);
-        $title = __('global.edit');
-
-        return response()->json([
-            'title' => $title,
-            'status' => 'success',
-            'message' => 'success',
-            'html' => view('other.branch.form', compact('title', 'form'))->render(),
-        ]);
-    }
-
-    public function save(Request $request, $id = null)
-    {
-
         try {
-            if ($request->isMethod('get')) {
-                $form = $id ? Branch::findOrFail($id) : new Branch();
-                $title = $id ? __('global.edit') : __('global.add_new');
+            $form = Branch::findOrFail($request->id);
 
-                $action = route('other.branch.save', ['id' => $id]);
+            if ($request->isMethod('post')) {
+                $formRequest = app(UpdateBranchRequest::class);
+                $data = $formRequest->validated();
 
-                return response()->json([
-                    'title' => $title,
-                    'status' => 'success',
-                    'message' => 'success',
-                    'html' => view('other.branch.form', compact('title', 'form', 'action'))->render(),
-                    'modal' => 'action-modal',
-                ]);
-            }
-            if (request()->isMethod('post')) {
-                $rules = [
-                    'name' => 'required|string|max:255',
-                    'name_kh' => 'nullable|string|max:255',
-                    'phone' => 'required|string|max:100',
-                    'phone_kh' => 'nullable|string|max:100',
-                    'address' => 'required|string|max:1000',
-                    'address_kh' => 'nullable|string|max:1000',
-                    'city' => 'required|string|max:120',
-                    'city_kh' => 'nullable|string|max:120',
-                    'country' => 'nullable|string|max:120',
-                    'country_kh' => 'nullable|string|max:120',
-                    'vat_number' => 'nullable|string|max:120',
-                    'vat_number_kh' => 'nullable|string|max:120',
-                    'email' => 'required|email|max:255',
-                    'prefix' => 'nullable|string|max:50',
-                    // 'default_cash'  => 'required|string|in:Cash,Card,Bank',
-                    'working_day' => 'nullable|integer|min:0',
-                    'invoice_footer' => 'nullable|string|max:2000',
-                    'logo' => 'nullable|image|max:2048',
-                ];
-                $data = $request->validate($rules);
-
-
-              
                 if ($request->hasFile('logo')) {
-                    $logo = $request->file('logo');
-                    $filename = time() . '_' . $logo->getClientOriginalName();
-                    $logo->move(public_path('uploads/branch_logos'), $filename);
-                    $data['logo'] = 'uploads/branch_logos/' . $filename;
+                    $data['logo'] = $this->storeLogo($request);
                 }
 
+                $this->service->update($data, $request->id);
 
-                // Save
-                Branch::updateOrCreate(['id' => $id], $data);
-
-
-                return response()->json([
-                    'status' => 'success',
-                    'message' => __('messages.user_saved'),
-                    'redirect' => route('other.branch.index'),
-                    'modal' => 'action-modal',
-
-                ]);
+                return $this->redirectResponse(
+                    message: __('messages.update_successfully'),
+                    route: route('other.branch.index'),
+                );
             }
 
-            return response()->json([
-                'status' => 'error',
-                'message' => __('messages.405'),
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
+            return $this->viewResponse(
+                view:   'other.branch.form',
+                action: route('other.branch.update', ['id' => $request->id]),
+                data:   [
+                    'title' => __('global.edit'),
+                    'form' => $form,
+                ],
+            );
+
+        } catch (Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
 
     public function delete($id)
     {
         try {
-            $branch = Branch::findOrFail($id);
-            $branch->delete();
+            $form = Branch::findOrFail($id);
+            $form->delete();
 
-            return response()->json([
-                'status' => 'success',
-                'message' => __('messages.user_deleted'),
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
+            return $this->redirectResponse(
+                message: __('messages.delete_branch_successfully'),
+                route: route('other.branch.index'),
+            );
+        } catch (Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
 
@@ -153,24 +123,34 @@ class BranchController extends Controller
     {
         try {
             $ids = $request->input('ids', []);
+
             if (empty($ids)) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'No items selected.',
-                ]);
+                return $this->errorResponse(
+                    message: 'No items selected.',
+                    code: 422,
+                );
             }
 
             Branch::whereIn('id', $ids)->delete();
 
-            return response()->json([
-                'status' => 'success',
-                'message' => __('messages.user_deleted'),
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
+            return $this->redirectResponse(
+                message: __('messages.delete_branch_successfully'),
+                route: route('other.branch.index'),
+            );
+        } catch (Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
+    }
+
+    protected function storeLogo(Request $request): string
+    {
+        $logo = $request->file('logo');
+        $filename = time() . '_' . $logo->getClientOriginalName();
+        $logo->move(public_path('uploads/branch_logos'), $filename);
+
+        return 'uploads/branch_logos/' . $filename;
     }
 }
