@@ -565,7 +565,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Add',
                 'name_kh' => 'បន្ថែម',
-                'slug' => 'settings.users-management.users.add',
+                'slug' => 'settings.users-management.users.create',
                 'menu_id' => $users,
                 'is_menu' => 0,
                 'created_at' => now(),
@@ -574,7 +574,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Edit',
                 'name_kh' => 'កែប្រែ',
-                'slug' => 'settings.users-management.users.edit',
+                'slug' => 'settings.users-management.users.update',
                 'menu_id' => $users,
                 'is_menu' => 0,
                 'created_at' => now(),
@@ -610,7 +610,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Add',
                 'name_kh' => 'បង្កើត',
-                'slug' => 'settings.users-management.roles.add',
+                'slug' => 'settings.users-management.roles.create',
                 'menu_id' => $roles,
                 'is_menu' => 0,
                 'created_at' => now(),
@@ -619,7 +619,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Edit',
                 'name_kh' => 'កែប្រែ',
-                'slug' => 'settings.users-management.roles.edit',
+                'slug' => 'settings.users-management.roles.update',
                 'menu_id' => $roles,
                 'is_menu' => 0,
                 'created_at' => now(),
@@ -899,7 +899,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Add',
                 'name_kh' => 'បង្កើត',
-                'slug' => 'people.suppliers.add',
+                'slug' => 'people.suppliers.create',
                 'menu_id' => $suppliers,
                 'is_menu' => 0,
                 'created_at' => now(),
@@ -908,7 +908,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Edit',
                 'name_kh' => 'កែប្រែ',
-                'slug' => 'people.suppliers.edit',
+                'slug' => 'people.suppliers.update',
                 'menu_id' => $suppliers,
                 'is_menu' => 0,
                 'created_at' => now(),
@@ -1118,7 +1118,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Add',
                 'name_kh' => 'បង្កើត',
-                'slug' => 'other.cash_accounts.add',
+                'slug' => 'other.cash_accounts.create',
                 'menu_id' => $cash_account,
                 'is_menu' => 0,
                 'created_at' => now(),
@@ -1127,7 +1127,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Edit',
                 'name_kh' => 'កែប្រែ',
-                'slug' => 'other.cash_accounts.edit',
+                'slug' => 'other.cash_accounts.update',
                 'menu_id' => $cash_account,
                 'is_menu' => 0,
                 'created_at' => now(),
@@ -1155,7 +1155,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Add',
                 'name_kh' => 'បង្កើត',
-                'slug' => 'other.branch.add',
+                'slug' => 'other.branch.create',
                 'menu_id' => $branch,
                 'is_menu' => 0,
                 'created_at' => now(),
@@ -1164,7 +1164,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Edit',
                 'name_kh' => 'កែប្រែ',
-                'slug' => 'other.branch.edit',
+                'slug' => 'other.branch.update',
                 'menu_id' => $branch,
                 'is_menu' => 0,
                 'created_at' => now(),
@@ -1192,7 +1192,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Add',
                 'name_kh' => 'បង្កើត',
-                'slug' => 'other.warehouses.add',
+                'slug' => 'other.warehouses.create',
                 'menu_id' => $warehouses,
                 'is_menu' => 0,
                 'created_at' => now(),
@@ -1201,7 +1201,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Edit',
                 'name_kh' => 'កែប្រែ',
-                'slug' => 'other.warehouses.edit',
+                'slug' => 'other.warehouses.update',
                 'menu_id' => $warehouses,
                 'is_menu' => 0,
                 'created_at' => now(),
@@ -1228,7 +1228,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Add',
                 'name_kh' => 'បង្កើត',
-                'slug' => 'other.currencies.add',
+                'slug' => 'other.currencies.create',
                 'menu_id' => $currencies,
                 'is_menu' => 0,
                 'created_at' => now(),
@@ -1237,7 +1237,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Edit',
                 'name_kh' => 'កែប្រែ',
-                'slug' => 'other.currencies.edit',
+                'slug' => 'other.currencies.update',
                 'menu_id' => $currencies,
                 'is_menu' => 0,
                 'created_at' => now(),

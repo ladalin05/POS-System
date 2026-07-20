@@ -81,7 +81,7 @@
             <button class="btn btn-icon-box" style="border: none">
                 <img src="https://cdn-icons-png.flaticon.com/512/732/732220.png" alt="Excel">
             </button>
-            <a href="{{ route('users-management.users.add') }}" class="btn btn-add-user d-flex align-items-center gap-2 text-white">
+            <a href="{{ route('users-management.users.create') }}" class="btn btn-add-user d-flex align-items-center gap-2 text-white">
                 <i class="ph ph-plus-circle me-2"></i>
                 {{ __('global.add_new') }}
             </a>

@@ -95,7 +95,7 @@
 
     <div class="content pb-5">
         <div class="container-fluid">
-            <x-basic.form action="{{ route('people.customers.add', $form?->id) }}" enctype="multipart/form-data" novalidate>
+            <x-basic.form action="{{ route('people.customers.create', $form?->id) }}" enctype="multipart/form-data" novalidate>
                 <div class="row g-4">
                     {{-- Left Column: Primary Info --}}
                     <div class="col-lg-8">

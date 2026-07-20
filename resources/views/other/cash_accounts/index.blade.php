@@ -83,7 +83,7 @@
                 <img src="https://cdn-icons-png.flaticon.com/512/732/732220.png" width="24" alt="Excel">
             </button>
             
-            <a href="{{ route('other.cash_accounts.add') }}" class="btn btn-add-user d-flex align-items-center gap-2 text-white">
+            <a href="{{ route('other.cash_accounts.create') }}" class="btn btn-add-user d-flex align-items-center gap-2 text-white">
                 <i class="ph ph-plus-circle"></i>
                 {{ __('global.add_new') }}
             </a>

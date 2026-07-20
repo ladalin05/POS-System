@@ -69,7 +69,7 @@
 
     <div class="container-fluid px-4 pb-5">
         <x-basic.card>
-            <x-basic.form action="{{ route('users-management.users.save', $form?->id) }}" class="needs-validation" novalidate>
+            <x-basic.form action="{{ $action }}" class="needs-validation" novalidate>
                 <div class="section-title">
                     <div class="section-accent"></div>
                     <h6 class="text-uppercase fs-7 fw-bold text-dark mb-0 ls-1">{{ __('global.personal_information') }}</h6>

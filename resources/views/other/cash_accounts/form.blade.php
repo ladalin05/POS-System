@@ -19,7 +19,7 @@
 
     <div class="content">
         <div class="card custom-card">
-            <x-basic.form class="card-body p-4" action="{{ route('other.cash_accounts.save', $form?->id) }}" novalidate>
+            <x-basic.form class="card-body p-4" action="{{ $action }}" novalidate>
                 <div class="row g-3">
                     <div class="col-md-4">
                         <x-basic.form.text 

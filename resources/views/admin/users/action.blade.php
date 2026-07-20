@@ -3,8 +3,8 @@
         <i class="ph ph-list"></i>
     </a>
     <div class="dropdown-menu dropdown-menu-end" style="">
-        @can('users-management.users.edit')
-            <a href="{{ route('users-management.users.edit', $user->id) }}" class="dropdown-item">
+        @can('users-management.users.update')
+            <a href="{{ route('users-management.users.update', $user->id) }}" class="dropdown-item">
                 <i class="ph ph-pencil me-2"></i>
                 {{ __('global.edit') }}
             </a>

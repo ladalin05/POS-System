@@ -9,8 +9,8 @@
 
     <div class="dropdown-menu dropdown-menu-end border-0 shadow-lg py-2" style="min-width: 160px; border-radius: 12px;">
         
-        @can('people.customers.edit')
-            <a href="{{ route('people.customers.edit', $row->id) }}" class="dropdown-item py-2 px-3 d-flex align-items-center">
+        @can('people.customers.update')
+            <a href="{{ route('people.customers.update', $row->id) }}" class="dropdown-item py-2 px-3 d-flex align-items-center">
                 <div class="bg-primary-subtle rounded-circle p-1 me-2 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
                     <i class="ph ph-pencil me-2"></i>
                 </div>
@@ -19,7 +19,7 @@
         @endcan
 
         @can('people.customers.delete')
-            @can('people.customers.edit')
+            @can('people.customers.update')
                 <div class="dropdown-divider my-1 opacity-50"></div>
             @endcan
 

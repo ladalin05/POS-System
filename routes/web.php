@@ -62,10 +62,9 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'users.',
         ], function () {
             Route::get('/', [UserController::class, 'index'])->name('index');
-            Route::get('add', [UserController::class, 'add'])->name('add');
-            Route::get('edit/{id}', [UserController::class, 'edit'])->name('edit');
-            Route::post('save/{id?}', [UserController::class, 'save'])->name('save');
-            Route::post('delete/{id}', [UserController::class, 'delete'])->name('delete');
+            Route::match(['get', 'post'], '/create', [UserController::class, 'create'])->name('create');
+            Route::match(['get', 'post'], '/update', [UserController::class, 'update'])->name('update');
+            Route::post('delete', [UserController::class, 'delete'])->name('delete');
             Route::match(['get', 'post'], 'permission/{id}', [UserController::class, 'permission'])->name('permission');
             Route::match(['get', 'post'], 'change-password/{id}', [UserController::class, 'changePassword'])->name('change-password');
             Route::get('account', [UserController::class, 'account'])->name('account');
@@ -76,12 +75,10 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'prefix' => 'roles',
             'as' => 'roles.',
         ], function () {
-
             Route::get('/', [RoleController::class, 'index'])->name('index');
-            Route::get('add', [RoleController::class, 'add'])->name('add');
-            Route::get('edit/{id}', [RoleController::class, 'edit'])->name('edit');
-            Route::post('save/{id?}', [RoleController::class, 'save'])->name('save');
-            Route::post('delete/{id}', [RoleController::class, 'delete'])->name('delete');
+            Route::match(['get', 'post'], '/create', [RoleController::class, 'create'])->name('create');
+            Route::match(['get', 'post'], '/update', [RoleController::class, 'update'])->name('update');
+            Route::post('/delete', [RoleController::class, 'delete'])->name('delete');
         });
     });
 
@@ -288,9 +285,8 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'cash_accounts.',
         ], function () {
             Route::get('/', [CashAccountController::class, 'index'])->name('index');
-            Route::get('add', [CashAccountController::class, 'add'])->name('add');
-            Route::get('edit/{id}', [CashAccountController::class, 'edit'])->name('edit');
-            Route::post('save/{id?}', [CashAccountController::class, 'save'])->name('save');
+            Route::match(['get', 'post'], '/create', [CashAccountController::class, 'create'])->name('create');
+            Route::match(['get', 'post'], '/update', [CashAccountController::class, 'update'])->name('update');
             Route::post('delete/{id}', [CashAccountController::class, 'delete'])->name('delete');
         });
         
@@ -299,9 +295,8 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'branch.',
         ], function () {
             Route::get('/', [BranchController::class, 'index'])->name('index');
-            Route::get('add', [BranchController::class, 'add'])->name('add');
-            Route::get('edit/{id}', [BranchController::class, 'edit'])->name('edit');
-            Route::match(['get', 'post'], 'save/{id?}', [BranchController::class, 'save'])->name('save');
+            Route::match(['get', 'post'], '/create', [BranchController::class, 'create'])->name('create');
+            Route::match(['get', 'post'], '/update', [BranchController::class, 'update'])->name('update');
             Route::post('delete/{id}', [BranchController::class, 'delete'])->name('delete');
             Route::post('bulk-delete', [BranchController::class, 'bulkDelete'])->name('bulk-delete');
         });
@@ -311,9 +306,8 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'warehouses.',
         ], function () {
             Route::get('/', [WarehousesController::class, 'index'])->name('index');
-            Route::get('add', [WarehousesController::class, 'add'])->name('add');
-            Route::get('edit/{id}', [WarehousesController::class, 'edit'])->name('edit');
-            Route::match(['get', 'post'], 'save/{id?}', [WarehousesController::class, 'save'])->name('save');
+            Route::match(['get', 'post'], '/create', [WarehousesController::class, 'create'])->name('create');
+            Route::match(['get', 'post'], '/update', [WarehousesController::class, 'update'])->name('update');
             Route::post('delete/{id}', [WarehousesController::class, 'delete'])->name('delete');
             Route::post('bulk-delete', [WarehousesController::class, 'bulkDelete'])->name('bulk-delete');
         });
@@ -323,11 +317,10 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'currencies.',
         ], function () {
             Route::get('/', [CurrenciesController::class, 'index'])->name('index');
-            Route::get('add', [CurrenciesController::class, 'add'])->name('add');
-            Route::get('edit/{id}', [CurrenciesController::class, 'edit'])->name('edit');
-            Route::match(['get', 'post'], 'save/{id?}', [CurrenciesController::class, 'save'])->name('save');
-            Route::post('delete/{id}', [CurrenciesController::class, 'delete'])->name('delete');
-            Route::post('bulk-delete', [CurrenciesController::class, 'bulkDelete'])->name('bulk-delete');
+            Route::match(['get', 'post'], '/create', [CurrenciesController::class, 'create'])->name('create');
+            Route::match(['get', 'post'], '/update', [CurrenciesController::class, 'update'])->name('update');
+            Route::post('/delete', [CurrenciesController::class, 'delete'])->name('delete');
+            Route::post('/bulk-delete', [CurrenciesController::class, 'bulkDelete'])->name('bulk-delete');
         });
     });
     
@@ -341,10 +334,9 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'customers.',
         ], function () {
             Route::get('/', [CustomerController::class, 'index'])->name('index');
-            Route::get('add', [CustomerController::class, 'add'])->name('add');
-            Route::get('edit/{id}', [CustomerController::class, 'edit'])->name('edit');
-            Route::post('save/{id?}', [CustomerController::class, 'save'])->name('save');
-            Route::post('delete/{id}', [CustomerController::class, 'delete'])->name('delete');
+            Route::match(['get', 'post'], '/create', [CustomerController::class, 'create'])->name('create');
+            Route::match(['get', 'post'], '/update', [CustomerController::class, 'update'])->name('update');
+            Route::post('/delete', [CustomerController::class, 'delete'])->name('delete');
         });
         
         Route::group([
@@ -352,11 +344,9 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'suppliers.',
         ], function () {
             Route::get('/', [SuppliersController::class, 'index'])->name('index');
-            Route::get('add', [SuppliersController::class, 'add'])->name('add');
-            Route::get('edit/{id}', [SuppliersController::class, 'edit'])->name('edit');
-            Route::match(['get', 'post'], 'save/{id?}', [BranchController::class, 'save'])->name('save');
-            Route::post('delete/{id}', [BranchController::class, 'delete'])->name('delete');
-            Route::post('bulk-delete', [BranchController::class, 'bulkDelete'])->name('bulk-delete');
+            Route::match(['get', 'post'], '/create', [SuppliersController::class, 'create'])->name('create');
+            Route::match(['get', 'post'], '/update', [SuppliersController::class, 'update'])->name('update');
+            Route::post('/delete', [SuppliersController::class, 'delete'])->name('delete');
         });
 
     });

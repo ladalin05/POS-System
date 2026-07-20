@@ -19,7 +19,7 @@
     </x-basic.breadcrumb>
     <div class="content">
         <x-basic.card>
-            <form action="{{ route('users-management.roles.save', $form?->id) }}" class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
+            <form action="{{ $action }}" class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
             @csrf
             
             <div class="row g-3 mb-4">

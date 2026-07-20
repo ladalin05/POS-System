@@ -4,96 +4,113 @@ namespace App\Http\Controllers\People;
 
 use App\DataTables\People\SuppliersDataTable;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\People\StoreSupplierRequest;
+use App\Http\Requests\People\UpdateSupplierRequest;
 use App\Models\People\Suppliers;
+use App\Services\BaseService;
 use Illuminate\Http\Request;
+use Throwable;
 
 class SuppliersController extends Controller
 {
+    private BaseService $service;
+
+    public function __construct()
+    {
+        $this->service = new class extends BaseService {
+            protected function getQuery() { return Suppliers::query(); }
+        };
+    }
+
     public function index(SuppliersDataTable $dataTable)
     {
         return $dataTable->render('people.suppliers.index');
     }
 
-    public function add()
-    {
-        $title = __('global.add_new');
-        $form = new Suppliers();
-        return view('people.suppliers.form', compact('title', 'form'));
-    }
-    public function edit($id)
-    {
-        $title = __('global.edit');
-        $form = Suppliers::find($id);
-
-        return view('people.suppliers.form', compact('title', 'form'));
-    }
-    // save user
-    public function save(Request $request, $id = null)
+    public function create(Request $request)
     {
         try {
-            $request->validate([
-                'code' => 'required',
-                'company' => 'required',
-                'name' => 'required',
-                'phone' => 'required',
-                'address' => 'required',
-                'city' => 'required',
-                'state' => 'required',
-                'email_address' => 'required|email',
-                'vat_number' => 'required',
-                'postal_code' => 'required',
-                'country' => 'required',
-            ]);
+            if ($request->isMethod('post')) {
+                $formRequest = app(StoreSupplierRequest::class);
+                $this->service->create($formRequest->validated());
 
-            $data = [
-                'code' => $request->code,
-                'company' => $request->company,
-                'name' => $request->name,
-                'phone' => $request->phone,
-                'address' => $request->address,
-                'city' => $request->city,
-                'state' => $request->state,
-                'email_address' => $request->email_address,
-                'vat_number' => $request->vat_number,
-                'postal_code' => $request->postal_code,
-                'country' => $request->country,
-            ];
+                return $this->redirectResponse(
+                    message: __('messages.suppliers_saved'),
+                    route: route('people.suppliers.index'),
+                );
+            }
 
-            Suppliers::updateOrCreate(['id' => $id], $data);
+            return $this->viewResponse(
+                view:   'people.suppliers.form',
+                action: route('people.suppliers.create'),
+                data:   [
+                    'title' => __('global.add_new'),
+                    'form'  => new Suppliers(),
+                ],
+            );
 
-            return response()->json([
-                'status' => 'success',
-                'message' => $id ? __('messages.suppliers_updated') : __('messages.suppliers_saved'),
-                'redirect' => route('people.suppliers.index'),
-            ]);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
+        } catch (Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
+
+    public function update(Request $request)
+    {
+        try {
+            $form = Suppliers::findOrFail($request->id);
+
+            if ($request->isMethod('post')) {
+                $formRequest = app(UpdateSupplierRequest::class);
+                $this->service->update($formRequest->validated(), $request->id);
+
+                return $this->redirectResponse(
+                    message: __('messages.suppliers_updated'),
+                    route: route('people.suppliers.index'),
+                );
+            }
+
+            return $this->viewResponse(
+                view:   'people.suppliers.form',
+                action: route('people.suppliers.update', ['id' => $request->id]),
+                data:   [
+                    'title' => __('global.edit'),
+                    'form'  => $form,
+                ],
+            );
+
+        } catch (Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
+        }
+    }
+
     public function delete($id)
     {
         try {
             if ($id == 1) {
-                return json([
-                    'status' => 'error',
-                    'message' => __('messages.user_cannot_delete'),
-                ]);
+                return $this->errorResponse(
+                    message: __('messages.user_cannot_delete'),
+                    code: 422,
+                );
             }
-            $form = Suppliers::find($id);
+
+            $form = Suppliers::findOrFail($id);
             $form->delete();
-            return json([
-                'status' => 'success',
-                'message' => __('messages.user_deleted'),
-            ]);
-        } catch (\Exception $e) {
-            return json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
+
+            return $this->redirectResponse(
+                message: __('messages.user_deleted'),
+                route: route('people.suppliers.index'),
+            );
+        } catch (Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
 }

@@ -4,148 +4,153 @@ namespace App\Http\Controllers\People;
 
 use App\DataTables\People\CustomerDataTable;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\People\StoreCustomerRequest;
+use App\Http\Requests\People\UpdateCustomerRequest;
 use App\Models\People\Customer;
 use App\Models\People\GroupCustomer;
+use App\Services\BaseService;
 use Illuminate\Http\Request;
+use Throwable;
 
 class CustomerController extends Controller
 {
+    private BaseService $service;
+
+    public function __construct()
+    {
+        $this->service = new class extends BaseService {
+            protected function getQuery() { return Customer::query(); }
+        };
+    }
+
     public function index(CustomerDataTable $dataTable)
     {
         return $dataTable->render('people.customer.index');
     }
 
-    public function add()
-    {
-        $title = __('global.add_new');
-        $form = new Customer();
-        $group_customer = GroupCustomer::select('id', 'group_name as name')->get();
-
-        return view('people.customer.form', compact('title', 'form', 'group_customer'));
-    }
-    public function edit($id)
-    {
-        $title = __('global.edit');
-        $form = Customer::find($id);
-        $group_customer = GroupCustomer::select('id', 'group_name as name')->get();
-
-        return view('people.customer.form', compact('title', 'form', 'group_customer'));
-    }
-    // save user
-    public function save(Request $request, $id = null)
+    public function create(Request $request)
     {
         try {
-            $request->validate([
-                'customer_group_id' => 'required|exists:group_customers,id',
-                'code' => 'required|string|max:255',
-                'company' => 'required|string|max:255',
-                'name' => 'required|string|max:255',
-                'phone' => 'required|string|max:50',
-                'address' => 'required|string|max:255',
-                'city' => 'nullable|string|max:255',
-                'state' => 'nullable|string|max:255',
-                'email_address' => 'nullable|email|max:255',
-                'vat_number' => 'nullable|string|max:100',
-                'postal_code' => 'nullable|string|max:50',
-                'country' => 'nullable|string|max:100',
-                'credit_day' => 'nullable|integer',
-                'credit_amount' => 'nullable|numeric',
-                // 'price_group_id' => 'nullable|exists:price_groups,id',
-                // 'salesman_id' => 'nullable|exists:users,id',
-                'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf,docx|max:2048',
-            ]);
+            if ($request->isMethod('post')) {
+                $formRequest = app(StoreCustomerRequest::class);
+                $data = $formRequest->validated();
 
-            $data = $request->only([
-                'customer_group_id',
-                'code',
-                'company',
-                'name',
-                'phone',
-                'address',
-                'city',
-                'state',
-                'email_address',
-                'vat_number',
-                'postal_code',
-                'country',
-                'credit_day',
-                'credit_amount',
-                // 'price_group_id',
-                // 'salesman_id',
-            ]);
+                if ($request->hasFile('attachment')) {
+                    $data['attachment'] = $request->file('attachment')->store('attachments/customers', 'public');
+                }
 
-            if ($request->hasFile('attachment')) {
-                $file = $request->file('attachment');
-                $path = $file->store('attachments/customers', 'public');
-                $data['attachment'] = $path;
+                $this->service->create($data);
+
+                return $this->redirectResponse(
+                    message: __('messages.customer_saved'),
+                    route: route('people.customer.index'),
+                );
             }
 
-            Customer::updateOrCreate(['id' => $id], $data);
+            return $this->viewResponse(
+                view:   'people.customer.form',
+                action: route('people.customer.create'),
+                data:   [
+                    'title' => __('global.add_new'),
+                    'form'  => new Customer(),
+                    'group_customer' => GroupCustomer::select('id', 'group_name as name')->get(),
+                ],
+            );
 
-            return response()->json([
-                'status' => 'success',
-                'message' => $id ? __('messages.customer_updated') : __('messages.customer_saved'),
-                'redirect' => route('people.customer.index'),
-            ]);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
+        } catch (Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
+
+    public function update(Request $request)
+    {
+        try {
+            $form = Customer::findOrFail($request->id);
+
+            if ($request->isMethod('post')) {
+                $formRequest = app(UpdateCustomerRequest::class);
+                $data = $formRequest->validated();
+
+                if ($request->hasFile('attachment')) {
+                    $data['attachment'] = $request->file('attachment')->store('attachments/customers', 'public');
+                }
+
+                $this->service->update($data, $request->id);
+
+                return $this->redirectResponse(
+                    message: __('messages.customer_updated'),
+                    route: route('people.customer.index'),
+                );
+            }
+
+            return $this->viewResponse(
+                view:   'people.customer.form',
+                action: route('people.customer.update', ['id' => $request->id]),
+                data:   [
+                    'title' => __('global.edit'),
+                    'form'  => $form,
+                    'group_customer' => GroupCustomer::select('id', 'group_name as name')->get(),
+                ],
+            );
+
+        } catch (Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
+        }
+    }
+
     public function delete($id)
     {
         try {
             if ($id == 1) {
-                return json([
-                    'status' => 'error',
-                    'message' => __('messages.user_cannot_delete'),
-                ]);
+                return $this->errorResponse(
+                    message: __('messages.user_cannot_delete'),
+                    code: 422,
+                );
             }
-            $form = Customer::find($id);
+
+            $form = Customer::findOrFail($id);
             $form->delete();
-            return json([
-                'status' => 'success',
-                'message' => __('messages.user_deleted'),
-            ]);
-        } catch (\Exception $e) {
-            return json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
+
+            return $this->redirectResponse(
+                message: __('messages.user_deleted'),
+                route: route('people.customer.index'),
+            );
+        } catch (Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
 
     public function getCustomer($id)
     {
         $c = Customer::findOrFail($id);
+
         $item = [
             'id' => $c->id,
             'text' => $c->name,
-            // any extra fields your UI needs:
             'phone' => $c->phone,
             'email' => $c->email,
         ];
 
-        // callback(data[0]) expects an array:
         return response()->json([$item]);
     }
 
-    /**
-     * select2 ajax suggestions: return { results: [...] }
-     */
     public function suggestions(Request $request, $term = null)
     {
-        // read either the URL segment or query-param ‘term’
         $q = $term ?? $request->query('term', '');
 
         $customers = Customer::where('name', 'like', "%{$q}%")
             ->limit(10)
             ->get();
 
-        // map to { id, text } for Select2 v3
         $results = $customers->map(fn($c) => [
             'id' => $c->id,
             'text' => $c->name,
