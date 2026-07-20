@@ -2,106 +2,105 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Admin\Menu;
-use App\Models\Admin\Role;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
 use App\DataTables\Admin\RoleDataTable;
-use App\Models\Admin\Permission;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreRoleRequest;
+use App\Http\Requests\Admin\UpdateRoleRequest;
+use App\Models\Admin\Role;
+use App\Services\RoleService;
+use Illuminate\Http\Request;
+use Throwable;
 
 class RoleController extends Controller
 {
+    protected RoleService $roleService;
+
+    public function __construct(RoleService $roleService)
+    {
+        $this->roleService = $roleService;
+    }
+
     public function index(RoleDataTable $dataTable)
     {
         return $dataTable->render('admin.roles.index');
     }
-    public function add()
+
+    public function create(Request $request)
     {
-        $form = new Role();
-        $menus = Menu::with('children')->whereNull('parent_id')->orderBy('order')->get();
-        $access = [];
-        $title = __('global.add_new');
-        return view('admin.roles.form', compact('form', 'access', 'menus', 'title'));
-    }
-    public function edit($id)
-    {
-        $form = Role::find($id);
-        $menus = Menu::with('children')->whereNull('parent_id')->orderBy('order')->get();
-        $permissions = $form->permissions;
-        $access = [];
-        foreach ($permissions as $permission) {
-            $access[$permission->slug] = $permission->id;
-            $access[$permission->menu_id] = $permission->id;
-        }
-        return view('admin.roles.form', compact('form', 'access', 'menus'));
-    }
-    public function save(Request $request, $id = null)
-    {
-        $request->validate([
-            'name_en' => 'required'
-        ]);
-        $permissions = json_decode($request->permissions, true);
-        $administrator = $request->administrator ? 1 : 0;
-        $rolePermission = [];
-        $data = [
-            'name_en' => $request->name_en,
-            'name_kh' => $request->name_kh,
-            'administrator' => $administrator,
-            'description' => $request->description
-        ];
-        $role = Role::updateOrCreate(['id' => $id], $data);
-        $id = $role->id;
-        if ($role->users->count() > 0) {
-            foreach ($role->users as $user) {
-                revoke_session($user->id);
+        try {
+            if ($request->isMethod('post')) {
+                $formRequest = app(StoreRoleRequest::class);
+                $this->roleService->save($formRequest->validated(), $formRequest);
+
+                return $this->redirectResponse(
+                    message: __('messages.role_saved'),
+                    route: route('users-management.roles.index'),
+                );
             }
+
+            return $this->viewResponse(
+                view:   'admin.roles.form',
+                action: route('users-management.roles.create'),
+                data:   [
+                    'title' => __('global.add_new'),
+                    'form' => new Role(),
+                    ...$this->roleService->getFormOptions(),
+                ],
+            );
+
+        } catch (Throwable $e) {
+            return $this->errorResponse($e->getMessage(), 500);
         }
-        DB::table('role_permission')->where('role_id', $id)->delete();
-        $permissions = array_filter(array_unique($permissions));
-        if ($administrator == 0 && $permissions) {
-            foreach ($permissions as $permission_id) {
-                if($permission_id == 'all') {
-                    continue;
-                }
-                $rolePermission[] = [
-                    'role_id' => $id,
-                    'permission_id' => $permission_id,
-                    'created_at' => now(),
-                ];
-            }
-            DB::table('role_permission')->insert($rolePermission);
-        }
-        return json([
-            'status' => 'success',
-            'message' => !empty($id) ? __('messages.role_updated') : __('messages.role_saved'),
-            'redirect' => route('users-management.roles.index')
-        ]);
     }
+
+    public function update(Request $request)
+    {
+        try {
+            $form = Role::findOrFail($request->id);
+
+            if ($request->isMethod('post')) {
+                $formRequest = app(UpdateRoleRequest::class);
+                $this->roleService->save($formRequest->validated(), $formRequest, $request->id);
+
+                return $this->redirectResponse(
+                    message: __('messages.role_updated'),
+                    route: route('users-management.roles.index'),
+                );
+            }
+
+            return $this->viewResponse(
+                view:   'admin.roles.form',
+                action: route('users-management.roles.update', ['id' => $request->id]),
+                data:   [
+                    'title' => __('global.edit'),
+                    'form' => $form,
+                    ...$this->roleService->getFormOptions($form->id),
+                ],
+            );
+
+        } catch (Throwable $e) {
+            return $this->errorResponse($e->getMessage(), 500);
+        }
+    }
+
     public function permission($id)
     {
         return view('admin.roles.permission');
     }
-    public function detele($id)
+
+    public function delete($id)
     {
         try {
-            if($id == 1) {
-                return json([
-                    'status' => 'error',
-                    'message' => __('messages.role_cannot_delete')
-                ]);
+            if ((int) $id === 1) {
+                return $this->errorResponse(__('messages.role_cannot_delete'));
             }
-            $role = Role::find($id);
+
+            $role = Role::findOrFail($id);
             $role->delete();
-            return json([
-                'status' => 'success',
-                'message' => __('messages.role_deleted')
-            ]);
-        } catch (\Exception $e) {
-            return json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
+
+            return $this->successResponse(__('messages.role_deleted'));
+        } catch (Throwable $e) {
+            return $this->errorResponse($e->getMessage(), 500);
         }
     }
 }

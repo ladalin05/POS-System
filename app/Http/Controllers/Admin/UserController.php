@@ -2,96 +2,118 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\User;
-use App\Models\Admin\Role;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Hash;
 use App\DataTables\Admin\UserDataTable;
-use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Users\StoreUserRequest;
+use App\Http\Requests\Users\UpdateUserRequest;
+use App\Models\Admin\Role;
+use App\Models\User;
+use App\Services\UserService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Throwable;
 
 class UserController extends Controller
 {
+    protected UserService $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
     public function index(UserDataTable $dataTable)
     {
         return $dataTable->render('admin.users.index');
     }
-    public function add()
+
+    public function create(Request $request)
     {
-        $title = __('global.add_user');
-        $form = new User();
-        $roles = Role::all();
-        return view('admin.users.form', compact('title', 'form', 'roles'));
+        try {
+            if ($request->isMethod('post')) {
+                $formRequest = app(StoreUserRequest::class);
+                $this->userService->save($formRequest->validated(), $formRequest);
+
+                return $this->redirectResponse(
+                    message: __('messages.user_saved'),
+                    route: route('users-management.users.index'),
+                );
+            }
+
+            return $this->viewResponse(
+                view:   'admin.users.form',
+                action: route('users-management.users.create'),
+                data:   [
+                    'title' => __('global.add_user'),
+                    'form' => new User(),
+                    ...$this->userService->getFormOptions(),
+                ],
+            );
+
+        } catch (Throwable $e) {
+            return $this->errorResponse($e->getMessage(), 500);
+        }
     }
+
+    public function update(Request $request)
+    {
+        try {
+            $form = User::findOrFail($request->id);
+
+            if ($request->isMethod('post')) {
+                $formRequest = app(UpdateUserRequest::class);
+                $this->userService->save($formRequest->validated(), $formRequest, $request->id);
+
+                return $this->redirectResponse(
+                    message: __('messages.user_updated'),
+                    route: route('users-management.users.index'),
+                );
+            }
+
+            return $this->viewResponse(
+                view:   'admin.users.form',
+                action: route('users-management.users.update', ['id' => $request->id]),
+                data:   [
+                    'title' => __('global.edit'),
+                    'form' => $form,
+                    ...$this->userService->getFormOptions($form->id),
+                ],
+            );
+
+        } catch (Throwable $e) {
+            return $this->errorResponse($e->getMessage(), 500);
+        }
+    }
+
     public function account()
     {
         $form = new User();
         $roles = Role::all();
         return view('admin.users.account', compact('form', 'roles'));
     }
-    public function edit($id)
-    {
-        $title = __('global.edit');
-        $form = User::find($id);
-        $roles = Role::all();
-        return view('admin.users.form', compact('title', 'form', 'roles'));
-    }
-    // save user
-    public function save(Request $request, $id = null)
+
+    public function delete($id)
     {
         try {
-            
-            $request->validate([
-                'email' => 'required|email',
-                'phone' => 'required',
-                'role_id' => 'required',
-            ]);
-            
-            if ($request->hasFile('avatar')) {
-                $file = $request->file('avatar');
-                $filename = 'images/users/' . uniqid() . '.' . $file->getClientOriginalExtension();
-                Storage::disk('public')->put($filename, file_get_contents($file));
-                $imageUrl = Storage::url($filename);
+            if ((int) $id === 1) {
+                return $this->errorResponse(__('messages.user_cannot_delete'));
             }
 
-            $username = str_replace('@gmail.com', '', $request->email);
-            $data = [
-                'name_en' => $request->name_en,
-                'name_kh' => $request->name_kh,
-                'username' => $username,
-                'avatar' => $imageUrl ?? null,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'address' => $request->address,
-                'address_kh' => $request->address_kh,
-            ];
-            if ($request->password) {
-                $request->validate([
-                    'password' => 'required|min:6'
-                ]);
-                $data['password'] = Hash::make($request->password);
-            }
-            $form = User::updateOrCreate(['id' => $id], $data);
-            $form->roles()->sync($request->role_id);
-            revoke_session($form->id);
-            return json([
-                'status' => 'success',
-                'message' => !empty($id) ? __('messages.user_updated') : __('messages.user_saved'),
-                'redirect' => route('users-management.users.index'),
-            ]);
-        } catch (\Exception $e) {
-            return json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
+            $form = User::findOrFail($id);
+            $form->delete();
+
+            return $this->successResponse(__('messages.user_deleted'));
+        } catch (Throwable $e) {
+            return $this->errorResponse($e->getMessage(), 500);
         }
     }
+
     public function permission($id)
     {
         try {
             $form = User::find($id);
             $roles = Role::all();
+
             if (request()->isMethod('get')) {
                 return json([
                     'title' => __('global.permission'),
@@ -100,8 +122,10 @@ class UserController extends Controller
                     'html' => view('admin.users.permission', compact('form', 'roles'))->render(),
                 ]);
             }
+
             if (request()->isMethod('post')) {
                 $form->roles()->sync(request()->role_id);
+
                 return json([
                     'status' => 'success',
                     'message' => __('messages.user_updated'),
@@ -109,18 +133,16 @@ class UserController extends Controller
                     'modal' => 'action-modal',
                 ]);
             }
-        } catch (\Exception $e) {
-            return json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
+        } catch (Throwable $e) {
+            return $this->errorResponse($e->getMessage(), 500);
         }
     }
-    // delete user
+
     public function changePassword($id)
     {
         try {
             $form = User::find($id);
+
             if (request()->isMethod('get')) {
                 return json([
                     'title' => __('global.change_password'),
@@ -129,14 +151,17 @@ class UserController extends Controller
                     'html' => view('admin.users.change-password', compact('form'))->render(),
                 ]);
             }
+
             if (request()->isMethod('post')) {
                 $request = request();
                 $request->validate([
                     'new_password' => 'required|min:6',
                     'confirm_password' => 'required|same:new_password',
                 ]);
+
                 $form->password = Hash::make($request->new_password);
                 $form->save();
+
                 return json([
                     'status' => 'success',
                     'message' => __('messages.password_changed'),
@@ -144,37 +169,10 @@ class UserController extends Controller
                     'modal' => 'action-modal',
                 ]);
             }
-            return json([
-                'status' => 'error',
-                'message' => __('messages.405'),
-            ]);
-        } catch (\Exception $e) {
-            return json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
-        }
-    }
-    public function delete($id)
-    {
-        try {
-            if ($id == 1) {
-                return json([
-                    'status' => 'error',
-                    'message' => __('messages.user_cannot_delete'),
-                ]);
-            }
-            $form = User::find($id);
-            $form->delete();
-            return json([
-                'status' => 'success',
-                'message' => __('messages.user_deleted'),
-            ]);
-        } catch (\Exception $e) {
-            return json([
-                'status' => 'error',
-                'message' => $e->getMessage(),
-            ]);
+
+            return $this->errorResponse(__('messages.405'), 405);
+        } catch (Throwable $e) {
+            return $this->errorResponse($e->getMessage(), 500);
         }
     }
 }

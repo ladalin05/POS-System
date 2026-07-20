@@ -178,27 +178,25 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'manage.',
         ], function () {
             Route::get('/', [ManageStockController::class, 'index'])->name('index');
-            Route::match(['get', 'post'], '/create', [ManageStockController::class, 'create'])->name('add');
-            Route::match(['get', 'post'], '/update', [ManageStockController::class, 'update'])->name('edit');
+            Route::match(['get', 'post'], '/create', [ManageStockController::class, 'create'])->name('create');
+            Route::match(['get', 'post'], '/update', [ManageStockController::class, 'update'])->name('update');
             Route::post('delete', [ManageStockController::class, 'delete'])->name('delete');
         });
+
         Route::group([
             'prefix' => 'adjustment',
             'as' => 'adjustment.',
         ], function () {
             Route::get('/', [AdjustmentController::class, 'index'])->name('index');
-            Route::get('add', [AdjustmentController::class, 'add'])->name('add');
-            Route::get('edit/{id}', [AdjustmentController::class, 'edit'])->name('edit');
-            Route::post('save/{id?}', [AdjustmentController::class, 'save'])->name('save');
-            Route::post('delete/{id}', [AdjustmentController::class, 'delete'])->name('delete');
-            Route::post('{id}/approve', [AdjustmentController::class, 'approve'])->name('approve');
-            Route::get('/modal_view/{id}', [AdjustmentController::class, 'modalView'])->name('modal_view');
-            Route::get('add', [AdjustmentController::class, 'add'])->name('add');
-            Route::get('ajaxQoh', [AdjustmentController::class, 'ajaxQoh'])->name('ajaxQoh');
-            Route::get('ajaxProducts', [AdjustmentController::class, 'ajaxProducts'])->name('ajaxProducts');
-            Route::get('ajaxUnits', [AdjustmentController::class, 'ajaxUnits'])->name('ajaxUnits');
-            Route::get('ajaxProductUnits', [AdjustmentController::class, 'ajaxProductUnits'])->name('ajaxProductUnits');
-
+            Route::match(['get', 'post'], '/create', [AdjustmentController::class, 'create'])->name('create');
+            Route::match(['get', 'post'], '/update', [AdjustmentController::class, 'update'])->name('update');
+            Route::post('/delete/{id}', [AdjustmentController::class, 'delete'])->name('delete');
+            Route::post('/approve/{id}', [AdjustmentController::class, 'approve'])->name('approve');
+            Route::get('/modal_view/{id}', [AdjustmentController::class, 'modal'])->name('modal_view');
+            Route::get('/ajaxQoh', [AdjustmentController::class, 'ajaxQoh'])->name('ajaxQoh');
+            Route::get('/ajaxProducts', [AdjustmentController::class, 'ajaxProducts'])->name('ajaxProducts');
+            Route::get('/ajaxUnits', [AdjustmentController::class, 'ajaxUnits'])->name('ajaxUnits');
+            Route::get('/ajaxProductUnits', [AdjustmentController::class, 'ajaxProductUnits'])->name('ajaxProductUnits');
         });
         Route::group([
             'prefix' => 'transfer',
@@ -276,8 +274,7 @@ Route::middleware(['auth', 'abilities'])->group(function () {
         'prefix' => 'reports',
         'as' => 'reports.',
     ], function () {
-        Route::get('product-sales-report', [ReportController::class, 'productSales'])->name('product-sales-report');
-        Route::get('product-sales', [ReportController::class, 'exportProductSales'])->name('product_sales');
+        Route::get('product-sales', [ReportController::class, 'productSales'])->name('product_sales');
         Route::get('product-sales/export', [ReportController::class, 'exportProductSales'])->name('product_sales.export');
     });
 

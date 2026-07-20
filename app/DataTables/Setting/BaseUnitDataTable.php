@@ -1,8 +1,7 @@
 <?php
 namespace App\DataTables\Setting;
 
-use App\Models\BaseUnit;
-use App\Models\Setting\BaseUnitModel;
+use App\Models\Setting\BaseUnit;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -44,7 +43,7 @@ class BaseUnitDataTable extends DataTable
     /**
      * Get the query source of dataTable.
      */
-    public function query(BaseUnitModel $model): QueryBuilder
+    public function query(BaseUnit $model): QueryBuilder
     {
         return $model->newQuery()->with(['fromUnit:id,code,name', 'toUnit:id,code,name']);
     }

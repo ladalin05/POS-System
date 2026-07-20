@@ -9,8 +9,8 @@
 
     <div class="dropdown-menu dropdown-menu-end border-0 shadow-lg py-2" style="min-width: 160px; border-radius: 12px;">
         
-        @can('stocks.manage.edit')
-            <a href="{{ route('stocks.manage.edit', ['id' => $row->id]) }}" 
+        @can('stocks.manage.update')
+            <a href="{{ route('stocks.manage.update', ['id' => $row->id]) }}" 
                 class="dropdown-item py-2 px-3 d-flex align-items-center"
                 onclick="editStock(event)" >
                 <div class="bg-primary-subtle rounded-circle p-1 me-2 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
@@ -21,7 +21,7 @@
         @endcan
         
         @can('stocks.manage.delete')
-            @can('stocks.manage.edit')
+            @can('stocks.manage.update')
                 <div class="dropdown-divider my-1 opacity-50"></div>
             @endcan
 

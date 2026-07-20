@@ -17,19 +17,18 @@ class InvoicesController extends Controller
         return $dataTable->render('sales.invoices.index');
     }
 
-
     public function modal_view($id)
     {
-        $sale = Sales::findOrFail($id);
-        $branch = Branch::find($sale->branch_id);
-        // filter by sale_id
+        $sale      = Sales::findOrFail($id);
+        $branch    = Branch::find($sale->branch_id);
         $saleItems = SaleItems::where('sale_id', $id)
-            ->with('unit')
-            ->orderBy('id')
-            ->get();
+                    ->with('unit')
+                    ->orderBy('id')
+                    ->get();
 
         return view('sales.modal_view', compact('sale', 'saleItems', 'branch'));
     }
+
     public function delete($id)
     {
         try {

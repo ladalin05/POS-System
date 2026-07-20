@@ -9,6 +9,7 @@ use App\Exports\ProductSalesExport;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
+
 class ReportController extends Controller
 {
     public function productSales(Request $request)
@@ -33,8 +34,8 @@ class ReportController extends Controller
             c.name AS category_name,
             w.name AS warehouse_name,
             p.id AS product_id,
-            p.name AS product_name,
-            p.code AS product_code, 
+            p.product_name AS product_name,
+            p.sku AS product_code,
             si.qty AS sale_qty,
             si.unit_price AS unit_price,
             u_sale.name AS sale_unit_name,
@@ -52,7 +53,7 @@ class ReportController extends Controller
                 WHEN uc.operator = '/' THEN si.qty / NULLIF(uc.numerator,0)
                 ELSE si.qty
                 END
-            ) * p.cost AS total_cost,
+            ) * COALESCE(pc.avg_cost, 0) AS total_cost,
 
             (si.qty * si.unit_price) AS total_price,
 
@@ -62,7 +63,7 @@ class ReportController extends Controller
                     WHEN uc.operator = '/' THEN si.qty / NULLIF(uc.numerator,0)
                     ELSE si.qty
                 END
-                ) * p.cost
+                ) * COALESCE(pc.avg_cost, 0)
             ) AS gross_profit,
 
             s.biller_id, s.customer_id, s.warehouse_id
@@ -76,7 +77,12 @@ class ReportController extends Controller
                 AND uc.is_active = 1
             LEFT JOIN categories c ON c.id = p.category_id
             LEFT JOIN sales s ON s.id = si.sale_id
-            LEFT JOIN warehouses w ON w.id = s.warehouse_id 
+            LEFT JOIN warehouses w ON w.id = s.warehouse_id
+            LEFT JOIN (
+                SELECT product_id, AVG(net_unit_cost) AS avg_cost
+                FROM purchase_items
+                GROUP BY product_id
+            ) pc ON pc.product_id = p.id
             WHERE 1=1
             SQL;
 
@@ -84,8 +90,8 @@ class ReportController extends Controller
 
         // apply filters (append SQL and bindings)
         if (!empty($product)) {
-            // search product by name or code
-            $sql .= "\n AND (p.name LIKE ? OR p.code LIKE ?)";
+            // search product by name or sku
+            $sql .= "\n AND (p.product_name LIKE ? OR p.sku LIKE ?)";
             $bindings[] = "%{$product}%";
             $bindings[] = "%{$product}%";
         }
@@ -116,7 +122,7 @@ class ReportController extends Controller
         }
 
         // ordering
-        $sql .= "\n ORDER BY c.name, p.name";
+        $sql .= "\n ORDER BY c.name, p.product_name";
 
         // fetch rows
         $rows = DB::select($sql, $bindings);
@@ -154,7 +160,6 @@ class ReportController extends Controller
         ]);
     }
 
-
     public function exportProductSales(Request $request)
     {
         $filters = $request->only(['product', 'branch', 'category', 'customer', 'warehouse', 'from', 'to']);
@@ -168,5 +173,4 @@ class ReportController extends Controller
             return back()->with('error', 'Export failed: ' . $e->getMessage());
         }
     }
-
 }

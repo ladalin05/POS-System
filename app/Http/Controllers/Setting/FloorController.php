@@ -4,11 +4,23 @@ namespace App\Http\Controllers\Setting;
 
 use App\DataTables\Setting\FloorDataTable;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\Setting\StoreFloorRequest;
+use App\Http\Requests\Setting\UpdateFloorRequest;
 use App\Models\Setting\Floor;
+use App\Services\BaseService;
+use Illuminate\Http\Request;
 
 class FloorController extends Controller
 {
+    private BaseService $service;
+
+    public function __construct()
+    {
+        $this->service = new class extends BaseService {
+            protected function getQuery() { return Floor::query(); }
+        };
+    }
+
     public function index(FloorDataTable $dataTable)
     {
         return $dataTable->render('setting.floor.index');
@@ -18,127 +30,80 @@ class FloorController extends Controller
     {
         try {
 
-            if ($request->isMethod('get')) {
-
-                $title = __('global.add_new');
-                $form = new Floor();
-                $action = route('setting.floors.add');
-
-                return response()->json([
-                    'title' => $title,
-                    'status' => 'success',
-                    'message' => 'success',
-                    'html' => view('setting.floors.form', compact('title', 'form', 'action'))->render(),
-                    'modal' => 'action-modal',
-                ]);
-            }
-
             if ($request->isMethod('post')) {
+                $formRequest = app(StoreFloorRequest::class);
+                $data = $formRequest->validated();
 
-                $request->validate([
-                    'name' => 'required|string|max:255',
-                ]);
+                $this->service->create($data);
 
-                Floor::create([
-                    'name' => $request->name,
-                ]);
-
-                return response()->json([
-                    'status' => 'success',
-                    'message' => __('messages.create_success'),
-                    'redirect' => route('setting.floors.index'),
-                    'modal' => 'action-modal',
-                ]);
+                return $this->redirectResponse(
+                    message: __('messages.create_success'),
+                    route: route('setting.floors.index'),
+                );
             }
 
-            return response()->json([
-                'status' => 'error',
-                'message' => __('messages.405'),
-            ]);
+            return $this->modalResponse(
+                title:  __('global.add_new'),
+                view:   'setting.floors.form',
+                data:   ['form' => new Floor()],
+                action: route('setting.floors.add'),
+            );
 
-        } catch (\Exception $e) {
-
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 500);
-
+        } catch (\Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
-    
+
     public function update(Request $request)
     {
         try {
-
-            $form = Floor::find($request->id);
-
-            if ($request->isMethod('get')) {
-
-                $title = __('global.edit');
-                $action = route('setting.floors.edit', ['id' => $request->id]);
-
-                return response()->json([
-                    'title' => $title,
-                    'status' => 'success',
-                    'message' => 'success',
-                    'html' => view('setting.floors.form', compact('title', 'form', 'action'))->render(),
-                    'modal' => 'action-modal',
-                ]);
-            }
+            $floor = Floor::findOrFail($request->id);
 
             if ($request->isMethod('post')) {
+                $formRequest = app(UpdateFloorRequest::class);
+                $data = $formRequest->validated();
 
-                $request->validate([
-                    'name' => 'required|string|max:255',
-                ]);
+                $this->service->update($data, $floor->id);
 
-                $form->update([
-                    'name' => $request->name,
-                ]);
-
-                return response()->json([
-                    'status' => 'success',
-                    'message' => __('messages.update_success'),
-                    'redirect' => route('setting.floors.index'),
-                    'modal' => 'action-modal',
-                ]);
+                return $this->redirectResponse(
+                    message: __('messages.update_success'),
+                    route: route('setting.floors.index'),
+                );
             }
 
-        } catch (\Exception $e) {
+            return $this->modalResponse(
+                title:  __('global.edit'),
+                view:   'setting.floors.form',
+                data:   ['form' => $floor],
+                action: route('setting.floors.edit', ['id' => $floor->id]),
+            );
 
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 500);
-
+        } catch (\Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
 
     public function delete(Request $request)
     {
         try {
+            $floor = Floor::findOrFail($request->id);
+            $floor->delete();
 
-            $form = Floor::find($request->id);
-
-            if (!$form) {
-                return response()->json([
-                    'status'  => 'error',
-                    'message' => 'Floor not found',
-                ], 404);
-            }
-
-            $form->delete();
-
-            return response()->json([
-                'status'  => 'success',
-                'message' => __('messages.delete_success'),
-                'redirect' => route('setting.floors.index'),
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => $e->getMessage()
-            ], 500);
+            return $this->redirectResponse(
+                message: __('messages.delete_success'),
+                route: route('setting.floors.index'),
+            );
+        } catch (\Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
 }

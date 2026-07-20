@@ -3,16 +3,26 @@
 namespace App\Http\Controllers\Setting;
 
 use App\DataTables\Setting\BaseUnitDataTable;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Setting\StoreBaseUnitRequest;
+use App\Http\Requests\Setting\UpdateBaseUnitRequest;
 use App\Models\Setting\BaseUnit;
 use App\Models\Setting\Unit;
+use App\Services\BaseService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class BaseUnitController extends Controller
 {
+    private BaseService $service;
+
+    public function __construct()
+    {
+        $this->service = new class extends BaseService {
+            protected function getQuery() { return BaseUnit::query(); }
+        };
+    }
 
     public function index(BaseUnitDataTable $dataTable)
     {
@@ -23,145 +33,88 @@ class BaseUnitController extends Controller
     {
         try {
 
-            if ($request->isMethod('get')) {
-
-                $title = __('global.add_new');
-                $form = new BaseUnit();
-                $action = route('setting.base_units.add');
-
-                $units = Unit::pluck('name', 'id');
-
-                return response()->json([
-                    'title' => $title,
-                    'status' => 'success',
-                    'message' => 'success',
-                    'html' => view('setting.base_units.form', compact('title', 'form', 'action','units'))->render(),
-                    'modal' => 'action-modal',
-                ]);
-            }
-
             if ($request->isMethod('post')) {
+                $formRequest = app(StoreBaseUnitRequest::class);
+                $data = $formRequest->validated();
+                $data['created_by'] = Auth::id();
 
-                $request->validate([
-                    'from_unit_id' => 'required|exists:units,id',
-                    'to_unit_id' => 'required|exists:units,id|different:from_unit_id',
-                    'numerator' => 'required|integer|min:1',
-                    'is_active' => 'required|boolean',
-                ]);
+                $this->service->create($data);
 
-                BaseUnit::create([
-                    'from_unit_id' => $request->from_unit_id,
-                    'to_unit_id' => $request->to_unit_id,
-                    'numerator' => $request->numerator,
-                    'is_active' => $request->is_active,
-                    'created_by' => Auth::user()->id,
-                ]);
-
-                return response()->json([
-                    'status' => 'success',
-                    'message' => __('messages.create_success'),
-                    'redirect' => route('setting.base_units.index'),
-                    'modal' => 'action-modal',
-                ]);
+                return $this->redirectResponse(
+                    message: __('messages.create_success'),
+                    route: route('setting.base-units.index'),
+                );
             }
 
-            return response()->json([
-                'status' => 'error',
-                'message' => __('messages.405'),
-            ]);
+            return $this->modalResponse(
+                title:  __('global.add_new'),
+                view:   'setting.base_unit.form',
+                data:   [
+                    'form' => new BaseUnit(),
+                    'units' => Unit::pluck('name', 'id'),
+                ],
+                action: route('setting.base-units.add'),
+            );
 
-        } catch (\Exception $e) {
-
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 500);
-
+        } catch (\Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
 
     public function update(Request $request)
     {
         try {
-
-            $form = BaseUnit::find($request->id);
-
-            if ($request->isMethod('get')) {
-
-                $title = __('global.edit');
-                $action = route('setting.base_units.edit', ['id' => $request->id]);
-
-                $units = Unit::pluck('name', 'id');
-
-                return response()->json([
-                    'title' => $title,
-                    'status' => 'success',
-                    'message' => 'success',
-                    'html' => view('setting.base_units.form', compact('title', 'form', 'action','units'))->render(),
-                    'modal' => 'action-modal',
-                ]);
-            }
+            $baseUnit = BaseUnit::findOrFail($request->id);
 
             if ($request->isMethod('post')) {
+                $formRequest = app(UpdateBaseUnitRequest::class);
+                $data = $formRequest->validated();
+                $data['updated_by'] = Auth::id();
 
-                $request->validate([
-                    'from_unit_id' => 'required|exists:units,id',
-                    'to_unit_id' => 'required|exists:units,id|different:from_unit_id',
-                    'numerator' => 'required|integer|min:1',
-                    'is_active' => 'required|boolean',
-                ]);
+                $this->service->update($data, $baseUnit->id);
 
-                $form->update([
-                    'from_unit_id' => $request->from_unit_id,
-                    'to_unit_id' => $request->to_unit_id,
-                    'numerator' => $request->numerator,
-                    'is_active' => $request->is_active,
-                    'updated_by' => Auth::user()->id,
-                ]);
-
-                return response()->json([
-                    'status' => 'success',
-                    'message' => __('messages.update_success'),
-                    'redirect' => route('setting.base_units.index'),
-                    'modal' => 'action-modal',
-                ]);
+                return $this->redirectResponse(
+                    message: __('messages.update_success'),
+                    route: route('setting.base-units.index'),
+                );
             }
 
-        } catch (\Exception $e) {
+            return $this->modalResponse(
+                title:  __('global.edit'),
+                view:   'setting.base_unit.form',
+                data:   [
+                    'form' => $baseUnit,
+                    'units' => Unit::pluck('name', 'id'),
+                ],
+                action: route('setting.base-units.edit', ['id' => $baseUnit->id]),
+            );
 
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 500);
-
+        } catch (\Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
 
     public function delete(Request $request)
     {
         try {
+            $baseUnit = BaseUnit::findOrFail($request->id);
+            $baseUnit->delete();
 
-            $form = BaseUnit::find($request->id);
-
-            if (!$form) {
-                return response()->json([
-                    'status'  => 'error',
-                    'message' => 'BaseUnit not found',
-                ], 404);
-            }
-
-            $form->delete();
-
-            return response()->json([
-                'status'  => 'success',
-                'message' => __('messages.delete_success'),
-                'redirect' => route('setting.base_units.index'),
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => $e->getMessage()
-            ], 500);
+            return $this->redirectResponse(
+                message: __('messages.delete_success'),
+                route: route('setting.base-units.index'),
+            );
+        } catch (\Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
 
@@ -197,7 +150,7 @@ class BaseUnitController extends Controller
     {
         $v = Validator::make($request->all(), [
             'from' => 'required|integer|exists:units,id',
-            'to'   => 'required|integer|exists:units,id'
+            'to'   => 'required|integer|exists:units,id',
         ]);
 
         if ($v->fails()) {
@@ -209,39 +162,39 @@ class BaseUnitController extends Controller
 
         // Try direct match
         $conv = BaseUnit::where('from_unit_id', $from)
-                             ->where('to_unit_id', $to)
-                             ->where('is_active', 1)
-                             ->first();
+            ->where('to_unit_id', $to)
+            ->where('is_active', 1)
+            ->first();
 
         if ($conv) {
             return response()->json([
                 'success' => true,
                 'factor' => (float) $conv->numerator,
                 'operator' => '*', // currently stored as multiply
-                'record' => $conv
+                'record' => $conv,
             ]);
         }
 
         // Try reverse and invert
         $rev = BaseUnit::where('from_unit_id', $to)
-                             ->where('to_unit_id', $from)
-                             ->where('is_active', 1)
-                             ->first();
+            ->where('to_unit_id', $from)
+            ->where('is_active', 1)
+            ->first();
 
-        if ($rev && (float)$rev->numerator != 0) {
+        if ($rev && (float) $rev->numerator != 0) {
             $factor = 1 / (float) $rev->numerator;
             return response()->json([
                 'success' => true,
                 'factor' => $factor,
                 'operator' => '/', // inverted
-                'record' => $rev
+                'record' => $rev,
             ]);
         }
 
         // Not found
         return response()->json([
             'success' => false,
-            'message' => 'Conversion not found'
+            'message' => 'Conversion not found',
         ], 404);
     }
 
@@ -250,12 +203,12 @@ class BaseUnitController extends Controller
      */
     public function listActive()
     {
-        $rows = BaseUnit::with(['fromUnit','toUnit'])
-                ->where('is_active', 1)
-                ->orderBy('id','desc')
-                ->get();
+        $rows = BaseUnit::with(['fromUnit', 'toUnit'])
+            ->where('is_active', 1)
+            ->orderBy('id', 'desc')
+            ->get();
 
-        $data = $rows->map(function($r) {
+        $data = $rows->map(function ($r) {
             return [
                 'id' => $r->id,
                 'from_unit_id' => $r->from_unit_id,

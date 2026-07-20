@@ -14,29 +14,25 @@
     <div class="card-body p-4">
         <div class="row g-4 mb-4">
             <div class="col-md-6">
-                <label class="form-label fw-bold text-secondary small uppercase">Warehouse</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-location-dot"></i></span>
-                    <select name="warehouse_id" class="form-select border-start-0 shadow-none" required>
-                        <option value="">Select Warehouse</option>
-                        @foreach (getWarehouse() as $id => $name )
-                            <option value="{{ $id }}" {{$id == $form?->warehouse_id ? 'selected' : ''}}>{{ $name }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                <x-forms.select
+                    name="warehouse_id"
+                    label="Warehouse"
+                    :options="getWarehouse()"
+                    placeholder="Select Warehouse"
+                    :value="old('warehouse_id', $form?->warehouse_id ?? '')"
+                    required
+                />
             </div>
 
             <div class="col-md-6">
-                <label class="form-label fw-bold text-secondary small">Responsible Person</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-user"></i></span>
-                    <select name="respon_person_id" class="form-select border-start-0 shadow-none" required>
-                        <option value="">Select Person</option>
-                        @foreach (getUsers() as $id => $name_en )
-                            <option value="{{ $id }}" {{$id == $form?->respon_person_id ? 'selected' : ''}}>{{ $name_en }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                <x-forms.select
+                    name="respon_person_id"
+                    label="Responsible Person"
+                    :options="getUsers()"
+                    placeholder="Select Person"
+                    :value="old('respon_person_id', $form?->respon_person_id ?? '')"
+                    required
+                />
             </div>
         </div>
 
@@ -65,7 +61,7 @@
                             <th class="text-end pe-3">Action</th>
                         </tr>
                     </thead>
-                    
+
                     <tbody>
                         @if($form->product)
                             <tr id="row_{{$form->product_id}}">
@@ -79,11 +75,23 @@
                                     </div>
                                 </td>
                                 <td class="text-muted">{{$form->product->sku}}</td>
-                                <td class="text-center">
-                                        <input type="number" id="qty-{{$form->product_id}}" name="products[{{$form->product_id}}][qty]" value="{{(int) $form->stock}}" style="width: 50px" min="1">
+                                <td class="text-center" style="width:80px">
+                                    <x-forms.input
+                                        id="qty-{{$form->product_id}}"
+                                        name="products[{{$form->product_id}}][qty]"
+                                        type="number"
+                                        :value="old('products.'.$form->product_id.'.qty', (int) $form->stock)"
+                                        min="1"
+                                    />
                                 </td>
-                                <td class="text-center">
-                                        <input type="number" id="alert-qty-{{$form->product_id}}" name="products[{{$form->product_id}}][alert_qty]" value="{{(int) $form->alert_quantity}}" style="width: 50px" min="1">
+                                <td class="text-center" style="width:90px">
+                                    <x-forms.input
+                                        id="alert-qty-{{$form->product_id}}"
+                                        name="products[{{$form->product_id}}][alert_qty]"
+                                        type="number"
+                                        :value="old('products.'.$form->product_id.'.alert_qty', (int) $form->alert_quantity)"
+                                        min="1"
+                                    />
                                 </td>
                                 <td class="text-end pe-4">
                                     <button type="button"
@@ -97,13 +105,13 @@
                     </tbody>
                 </table>
             </div>
-            
+
             <div class="custom-status-bar">
                 <div class="status-grey"></div>
                 <div class="status-orange"></div>
             </div>
         </div>
-        
+
         <div class="d-flex justify-content-end align-items-center mt-4">
             <button type="submit" class="btn btn-primary btn-sm px-5 shadow-sm rounded-pill">
                 <i class="bi bi-check2-circle me-2"></i>Save
@@ -119,7 +127,6 @@
     }
 
     $(document).ready(function() {
-        
 
         function toggleEmptyState() {
             if ($('#product_table tbody tr:not(#empty_state)').length > 0) {
@@ -147,27 +154,27 @@
             }
 
             let row = `
-            <tr id="row_{{$form->product_id}}">
+            <tr id="row_${id}">
                 <td class="ps-4">
                     <div class="d-flex align-items-center">
                         <div class="product-img-container me-3" style="width:35px; height:35px;" >
                             <img src="{{asset('assets/images/no_image.png')}}" class="img-thumbnail" style="width:35px; height:35px;" />
                         </div>
                         <span class="fw-bold text-dark text-nowrap">${name}</span>
-                        <input type="hidden" name="products[{{$form->product_id}}][product_id]" value="{{$form->product_id}}">
+                        <input type="hidden" name="products[${id}][product_id]" value="${id}">
                     </div>
                 </td>
                 <td class="text-muted">${sku}</td>
                 <td class="text-center">
-                        <input type="number" id="qty-{{$form->product_id}}" name="products[{{$form->product_id}}][qty]" value="1" style="width: 50px" min="1">
+                        <input type="number" id="qty-${id}" name="products[${id}][qty]" value="1" style="width: 50px" min="1" class="form-control form-control-sm">
                 </td>
                 <td class="text-center">
-                        <input type="number" id="alert-qty-{{$form->product_id}}" name="products[{{$form->product_id}}][alert_qty]" value="1" style="width: 50px" min="1">
+                        <input type="number" id="alert-qty-${id}" name="products[${id}][alert_qty]" value="1" style="width: 50px" min="1" class="form-control form-control-sm">
                 </td>
                 <td class="text-end pe-4">
                     <button type="button"
                         class="btn btn-outline-secondary btn-sm remove_row"
-                        data-id="{{$form->product_id}}">
+                        data-id="${id}">
                         <i class="fa-regular fa-trash-can"></i>
                     </button>
                 </td>

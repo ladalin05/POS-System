@@ -2,15 +2,26 @@
 
 namespace App\Http\Controllers\Setting;
 
-
 use App\DataTables\Setting\RoomDataTable;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\Setting\StoreRoomRequest;
+use App\Http\Requests\Setting\UpdateRoomRequest;
 use App\Models\Setting\Floor;
 use App\Models\Setting\Room;
+use App\Services\BaseService;
+use Illuminate\Http\Request;
 
 class RoomController extends Controller
 {
+    private BaseService $service;
+
+    public function __construct()
+    {
+        $this->service = new class extends BaseService {
+            protected function getQuery() { return Room::query(); }
+        };
+    }
+
     public function index(RoomDataTable $dataTable)
     {
         return $dataTable->render('setting.room.index');
@@ -20,135 +31,86 @@ class RoomController extends Controller
     {
         try {
 
-            if ($request->isMethod('get')) {
-
-                $title = __('global.add_new');
-                $form = new Room();
-                $action = route('setting.rooms.add');
-
-                return response()->json([
-                    'title' => $title,
-                    'status' => 'success',
-                    'message' => 'success',
-                    'html' => view('setting.rooms.form', compact('title', 'form', 'action'))->render(),
-                    'modal' => 'action-modal',
-                ]);
-            }
-
             if ($request->isMethod('post')) {
+                $formRequest = app(StoreRoomRequest::class);
+                $data = $formRequest->validated();
 
-                $request->validate([
-                    'code' => 'required|string|max:255',
-                    'name' => 'required|string|max:255',
-                    'floor_id' => 'required|integer|exists:floors,id',
-                ]);
+                $this->service->create($data);
 
-                Room::create([
-                    'code' => $request->code,
-                    'name' => $request->name,
-                    'floor_id' => $request->floor_id,
-                ]);
-
-                return response()->json([
-                    'status' => 'success',
-                    'message' => __('messages.create_success'),
-                    'redirect' => route('setting.rooms.index'),
-                    'modal' => 'action-modal',
-                ]);
+                return $this->redirectResponse(
+                    message: __('messages.create_success'),
+                    route: route('setting.rooms.index'),
+                );
             }
 
-            return response()->json([
-                'status' => 'error',
-                'message' => __('messages.405'),
-            ]);
+            return $this->modalResponse(
+                title:  __('global.add_new'),
+                view:   'setting.rooms.form',
+                data:   [
+                    'form' => new Room(),
+                    'floors' => Floor::pluck('name', 'id'),
+                ],
+                action: route('setting.rooms.add'),
+            );
 
-        } catch (\Exception $e) {
-
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 500);
-
+        } catch (\Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
 
     public function update(Request $request)
     {
         try {
-
-            $form = Room::find($request->id);
-
-            if ($request->isMethod('get')) {
-
-                $title = __('global.edit');
-                $action = route('setting.rooms.edit', ['id' => $request->id]);
-
-                return response()->json([
-                    'title' => $title,
-                    'status' => 'success',
-                    'message' => 'success',
-                    'html' => view('setting.rooms.form', compact('title', 'form', 'action'))->render(),
-                    'modal' => 'action-modal',
-                ]);
-            }
+            $room = Room::findOrFail($request->id);
 
             if ($request->isMethod('post')) {
+                $formRequest = app(UpdateRoomRequest::class);
+                $data = $formRequest->validated();
 
-                $request->validate([
-                    'code' => 'required|string|max:255',
-                    'name' => 'required|string|max:255',
-                    'floor_id' => 'required|integer|exists:floors,id',
-                ]);
+                $this->service->update($data, $room->id);
 
-                $form->update([
-                    'code' => $request->code,
-                    'name' => $request->name,
-                    'floor_id' => $request->floor_id,
-                ]);
-
-                return response()->json([
-                    'status' => 'success',
-                    'message' => __('messages.update_success'),
-                    'redirect' => route('setting.rooms.index'),
-                    'modal' => 'action-modal',
-                ]);
+                return $this->redirectResponse(
+                    message: __('messages.update_success'),
+                    route: route('setting.rooms.index'),
+                );
             }
 
-        } catch (\Exception $e) {
+            return $this->modalResponse(
+                title:  __('global.edit'),
+                view:   'setting.rooms.form',
+                data:   [
+                    'form' => $room,
+                    'floors' => Floor::pluck('name', 'id'),
+                ],
+                action: route('setting.rooms.edit', ['id' => $room->id]),
+            );
 
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 500);
-
+        } catch (\Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
-    
+
     public function delete(Request $request)
     {
         try {
+            $room = Room::findOrFail($request->id);
+            $room->delete();
 
-            $form = Room::find($request->id);
-
-            if (!$form) {
-                return response()->json([
-                    'status'  => 'error',
-                    'message' => 'Room not found',
-                ], 404);
-            }
-
-            $form->delete();
-
-            return response()->json([
-                'status'  => 'success',
-                'message' => __('messages.delete_success'),
-                'redirect' => route('setting.rooms.index'),
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => $e->getMessage()
-            ], 500);
+            return $this->redirectResponse(
+                message: __('messages.delete_success'),
+                route: route('setting.rooms.index'),
+            );
+        } catch (\Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
 }

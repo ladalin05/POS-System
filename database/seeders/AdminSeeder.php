@@ -230,7 +230,7 @@ class AdminSeeder extends Seeder
             'name_kh' => 'របាយការណ៍ លក់ផលិផល',
             'icon' => '',
             'order' => 1,
-            'url' => 'reports/product-sales-report',
+            'url' => 'reports/product-sales',
             'parent_id' => $reports,
             'created_by' => 1,
             'created_at' => now(),
@@ -1402,7 +1402,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'List',
                 'name_kh' => 'បញ្ជី',
-                'slug' => 'setting.base_units.index',
+                'slug' => 'setting.base_unit.index',
                 'menu_id' => $base_units,
                 'is_menu' => 1,
                 'created_at' => now(),

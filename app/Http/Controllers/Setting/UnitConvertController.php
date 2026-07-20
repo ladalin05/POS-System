@@ -4,172 +4,117 @@ namespace App\Http\Controllers\Setting;
 
 use App\DataTables\Setting\UnitConvertDataTable;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Setting\StoreUnitConvertRequest;
+use App\Http\Requests\Setting\UpdateUnitConvertRequest;
 use App\Models\Setting\Unit;
 use App\Models\Setting\UnitConvert;
+use App\Services\BaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class UnitConvertController extends Controller
 {
-    
+    private BaseService $service;
+
+    public function __construct()
+    {
+        $this->service = new class extends BaseService {
+            protected function getQuery() { return UnitConvert::query(); }
+        };
+    }
+
     public function index(UnitConvertDataTable $dataTable)
     {
         return $dataTable->render('setting.unit_convert.index');
     }
-    
+
     public function create(Request $request)
     {
         try {
 
-            if ($request->isMethod('get')) {
-
-                $title = __('global.add_new');
-                $form = new UnitConvert();
-                $action = route('setting.unit_converts.add');
-
-                $units = Unit::pluck('name', 'id');
-
-                return response()->json([
-                    'title' => $title,
-                    'status' => 'success',
-                    'message' => 'success',
-                    'html' => view('setting.unit_converts.form', compact('title','form','action','units'))->render(),
-                    'modal' => 'action-modal',
-                ]);
-            }
-
             if ($request->isMethod('post')) {
+                $formRequest = app(StoreUnitConvertRequest::class);
+                $data = $formRequest->validated();
+                $data['created_by'] = Auth::id();
 
-                $request->validate([
-                    'unit_from_id' => 'required|exists:units,id',
-                    'unit_to_id' => 'required|exists:units,id|different:unit_from_id',
-                    'numerator' => 'required|numeric|min:0',
-                    'operator' => 'required|string|max:2',
-                    'name' => 'nullable|string|max:255',
-                    'is_active' => 'required|boolean',
-                ]);
+                $this->service->create($data);
 
-                UnitConvert::create([
-                    'unit_from_id' => $request->unit_from_id,
-                    'unit_to_id' => $request->unit_to_id,
-                    'numerator' => $request->numerator,
-                    'operator' => $request->operator,
-                    'name' => $request->name,
-                    'is_active' => $request->is_active,
-                    'created_by' => Auth::user()->id,
-                ]);
-
-                return response()->json([
-                    'status' => 'success',
-                    'message' => __('messages.create_success'),
-                    'redirect' => route('setting.unit_converts.index'),
-                    'modal' => 'action-modal',
-                ]);
+                return $this->redirectResponse(
+                    message: __('messages.create_success'),
+                    route: route('setting.unit_converts.index'),
+                );
             }
 
-            return response()->json([
-                'status' => 'error',
-                'message' => __('messages.405'),
-            ]);
+            return $this->modalResponse(
+                title:  __('global.add_new'),
+                view:   'setting.unit_converts.form',
+                data:   [
+                    'form' => new UnitConvert(),
+                    'units' => Unit::pluck('name', 'id'),
+                ],
+                action: route('setting.unit_converts.add'),
+            );
 
-        } catch (\Exception $e) {
-
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 500);
-
+        } catch (\Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
 
     public function update(Request $request)
     {
         try {
-
-            $form = UnitConvert::find($request->id);
-
-            if ($request->isMethod('get')) {
-
-                $title = __('global.edit');
-                $action = route('setting.unit_converts.edit',['id'=>$request->id]);
-
-                $units = Unit::pluck('name','id');
-
-                return response()->json([
-                    'title'=>$title,
-                    'status'=>'success',
-                    'message'=>'success',
-                    'html'=>view('setting.unit_converts.form',compact('title','form','action','units'))->render(),
-                    'modal'=>'action-modal',
-                ]);
-            }
+            $unitConvert = UnitConvert::findOrFail($request->id);
 
             if ($request->isMethod('post')) {
+                $formRequest = app(UpdateUnitConvertRequest::class);
+                $data = $formRequest->validated();
+                $data['updated_by'] = Auth::id();
 
-                $request->validate([
-                    'unit_from_id' => 'required|exists:units,id',
-                    'unit_to_id' => 'required|exists:units,id|different:unit_from_id',
-                    'numerator' => 'required|numeric|min:0',
-                    'operator' => 'required|string|max:2',
-                    'name' => 'nullable|string|max:255',
-                    'is_active' => 'required|boolean',
-                ]);
+                $this->service->update($data, $unitConvert->id);
 
-                $form->update([
-                    'unit_from_id' => $request->unit_from_id,
-                    'unit_to_id' => $request->unit_to_id,
-                    'numerator' => $request->numerator,
-                    'operator' => $request->operator,
-                    'name' => $request->name,
-                    'is_active' => $request->is_active,
-                    'updated_by' => Auth::user()->id,
-                ]);
-
-                return response()->json([
-                    'status'=>'success',
-                    'message'=>__('messages.update_success'),
-                    'redirect'=>route('setting.unit_converts.index'),
-                    'modal'=>'action-modal',
-                ]);
+                return $this->redirectResponse(
+                    message: __('messages.update_success'),
+                    route: route('setting.unit_converts.index'),
+                );
             }
 
-        } catch (\Exception $e) {
+            return $this->modalResponse(
+                title:  __('global.edit'),
+                view:   'setting.unit_converts.form',
+                data:   [
+                    'form' => $unitConvert,
+                    'units' => Unit::pluck('name', 'id'),
+                ],
+                action: route('setting.unit_converts.edit', ['id' => $unitConvert->id]),
+            );
 
-            return response()->json([
-                'status'=>'error',
-                'message'=>$e->getMessage()
-            ],500);
-
+        } catch (\Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
 
     public function delete(Request $request)
     {
         try {
+            $unitConvert = UnitConvert::findOrFail($request->id);
+            $unitConvert->delete();
 
-            $form = UnitConvert::find($request->id);
-
-            if (!$form) {
-                return response()->json([
-                    'status'  => 'error',
-                    'message' => 'UnitConvert not found',
-                ], 404);
-            }
-
-            $form->delete();
-
-            return response()->json([
-                'status'  => 'success',
-                'message' => __('messages.delete_success'),
-                'redirect' => route('setting.unit_converts.index'),
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => $e->getMessage()
-            ], 500);
+            return $this->redirectResponse(
+                message: __('messages.delete_success'),
+                route: route('setting.unit_converts.index'),
+            );
+        } catch (\Throwable $e) {
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                code: 500,
+            );
         }
     }
 
