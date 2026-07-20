@@ -7,6 +7,7 @@ use App\Models\Other\Branch;
 use App\Models\People\Customer;
 use App\Models\People\Saleman;
 use App\Models\Warehouses\Warehouses;
+use App\Models\Sales\Payment;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -63,5 +64,10 @@ class Sales extends Model
     public function salesman()
     {
         return $this->belongsTo(Saleman::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'sale_id', 'id');
     }
 }

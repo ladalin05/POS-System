@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Models\Inventory;
+namespace App\Models\Product;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Inventory\AdjustmentItem;
+use App\Models\Product\AdjustmentItem;
 
 class Adjustment extends Model
 {

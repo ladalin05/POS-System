@@ -178,6 +178,8 @@ return [
     'operator' => 'Operator',
     'dlt_warning' => 'Deleted Warning',
     'dlt_confirm' => 'Deleted Confirm',
-    'back_to_list' => 'Back to List'
+    'back_to_list' => 'Back to List',
+    'create_new_product' => "Create New Product",
+    'update_product' => "Update Product",
     
 ];

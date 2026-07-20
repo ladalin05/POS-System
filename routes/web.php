@@ -95,10 +95,10 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'products.',
         ], function () {
             Route::get('/', [ProductController::class, 'index'])->name('index');
-            Route::match(['get', 'post'], '/create', [ProductController::class, 'create'])->name('add');
-            Route::match(['get', 'post'], '/edit/{id}', [ProductController::class, 'update'])->name('edit');
-            Route::post('delete/{id}', [ProductController::class, 'delete'])->name('delete');
-            Route::get('view/{id}', [ProductController::class, 'view'])->name('view');
+            Route::match(['get', 'post'], '/create', [ProductController::class, 'create'])->name('create');
+            Route::match(['get', 'post'], '/edit', [ProductController::class, 'update'])->name('update');
+            Route::post('delete', [ProductController::class, 'delete'])->name('delete');
+            Route::get('view', [ProductController::class, 'view'])->name('view');
             Route::get('alert_qty/index', [ProductController::class, 'alert_quantity'])->name('alert_quantity');
         });
 
@@ -231,28 +231,12 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'pos.',
         ], function () {
             Route::get('/', [PosController::class, 'index'])->name('index');
-            Route::get('/init-data', [PosController::class,'initData'])->name('initData');
-            Route::get('/products',         [PosController::class, 'products']    )->name('products');
-            Route::get('/products/{product}',[PosController::class, 'showProduct'])->name('products.show');
-            Route::post('/orders',          [PosController::class, 'storeOrder']  )->name('orders.store');
-            Route::get('/customers',        [PosController::class, 'customers']   )->name('customers.index');
-            Route::post('/customers',       [PosController::class, 'storeCustomer'])->name('customers.store');
-            Route::post('/store-order', [PosController::class,'storeOrder'])->name('storeOrder');
-            Route::get('search-customer', [PosController::class, 'searchCustomer'])->name('searchCustomer');
-            Route::get('getProductDataByCode', [PosController::class, 'getProductDataByCode'])->name('getProductDataByCode');
-            Route::get('search-name', [PosController::class, 'searchProductByName'])->name('searchProductByName');
-            Route::get('ajaxCategoryData', [PosController::class, 'ajaxCategoryData'])->name('ajaxCategoryData');
-            Route::get('table-form', [PosController::class, 'addTable'])->name('addTable');
-            Route::get('getWarehouses', [PosController::class, 'getWarehouses'])->name('getWarehouses');
-            Route::get('today_sale', [PosController::class, 'todaySale'])->name('today_sale');
-            Route::get('select-table/{id}', [PosController::class, 'selectTable'])->name('selectTable');
-            Route::get('clear-table', [PosController::class, 'clearTable'])->name('clearTable');
-            Route::post('save-suspend', [PosController::class, 'saveSuspend'])->name('saveSuspend');
-            Route::get('move-room', [PosController::class, 'moveRoom'])->name('moveRoom');
-            Route::get('opened_bills', [PosController::class, 'openedBills'])->name('opened_bills');
-            Route::get('openedBillsItems/{id}', [PosController::class, 'openedBillsItems'])->name('opened_bills_items');
-            Route::post('submit-sale', [PosController::class, 'submitSale'])->name('submitSale');
-            Route::get('modal_bill/{id}', [PosController::class, 'modal_bill'])->name('modal_bill');
+            Route::get('/products', [PosController::class, 'fetchProducts'])->name('products');
+            Route::get('/barcode/{code}', [PosController::class, 'findByBarcode'])->name('barcode');
+            Route::post('/checkout', [PosController::class, 'checkout'])->name('checkout');
+            Route::post('/hold', [PosController::class, 'holdOrder'])->name('hold');
+            Route::get('/holds', [PosController::class, 'listHolds'])->name('holds');
+            Route::get('/holds/{id}/resume', [PosController::class, 'resumeHold'])->name('holds.resume');
         });
         
         Route::group([

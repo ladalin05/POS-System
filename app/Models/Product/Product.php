@@ -24,6 +24,7 @@ class Product extends Model
         'manufacture_id',
         'barcode_type',
         'barcode',
+        'image',
         'product_type',
         'price',
         'tax_type',

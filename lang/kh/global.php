@@ -118,4 +118,6 @@ return [
     'url' => 'URL',
     'file' => 'ឯកសារ',
     'json' => 'JSON',
+    'create_new_product' => "បង្កើតផលិតផលថ្មី",
+    'update_product' => "កែប្រែផលិតផល",
 ];
