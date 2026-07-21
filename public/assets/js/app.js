@@ -617,7 +617,6 @@ window.addEventListener('load', function() {
     App.initAfterLoad();
 });
 
-
 function successAlert(message, redirect = null) {
     swalInit.fire({
         icon: 'success',
@@ -656,7 +655,7 @@ function ajaxSubmit(formSelector) {
                 }
             }
 
-            if (response.status === 'error') {
+            if (response.status === 'error' || response.status === 422) {
                 errorAlert(response.message || 'An error occurred');
             }
 
@@ -673,6 +672,127 @@ function ajaxSubmit(formSelector) {
             } else {
                 let errors = xhr.responseJSON.message;
                 errorAlert(errors || 'An unexpected error occurred');
+            }
+        }
+    });
+}
+
+$(document).on('submit', '.ajax-form', function (e) {
+    e.preventDefault();
+    
+    let form = $(this);
+
+    if (form.data('processing')) return;
+
+    form.data('processing', true);
+
+    let url = form.attr('action');
+    let method = form.attr('method') || 'POST';
+    let data = new FormData(this);
+
+    if (!url) {
+        console.error("Form action is missing!");
+        form.data('processing', false);
+        return;
+    }
+
+    $.ajax({
+        url: url,
+        type: method,
+        data: data,
+        contentType: false,
+        processData: false,
+        cache: false,
+        dataType: 'json',
+        success: function (response) {
+
+            if (response.status === 'success') {
+                successAlert(response.message);
+                if (response.redirect) {
+                    window.location.href = response.redirect;
+                }
+            }
+
+            if (response.status === 'error' || response.status === 422) {
+                errorAlert(response.message || 'An error occurred');
+            }
+        },
+
+        error: function (xhr) {
+
+            if (xhr.status === 422) {
+                let errors = xhr.responseJSON.errors;
+                console.log(errors);
+                swalInit.fire({
+                    icon: 'warning',
+                    title: 'Validation Error',
+                    text: errorMessage
+                });
+            } else {
+                let errors = xhr.responseJSON.message;
+                errorAlert(errors || 'An unexpected error occurred');
+            }
+        }
+    });
+});
+
+function showLoading() {
+    // You could trigger a spinner here
+}
+
+function showView(e) {
+    e.preventDefault();
+    var url = $(e.currentTarget).attr('href');
+    $.ajax({
+        url: url,
+        type: 'GET',
+        beforeSend: showLoading,
+        success: function (res) {
+            $('#action-modal #action-form').html('').removeClass('was-validated');
+            if (res.status == 'success') {
+                $('#action-modal .modal-title').text(res.title);
+                $('#action-modal #action-form').html(res.html);
+                $('#action-modal form').attr('action', url);
+                $('#action-modal').modal('show');
+            }
+        }
+    });
+}
+
+function addData(e) {
+    e.preventDefault();
+    var url = $(e.currentTarget).attr('href');
+    $.ajax({
+        url: url,
+        type: 'GET',
+        beforeSend: showLoading,
+        success: function (res) {
+            $('#action-modal #action-form').html('').removeClass('was-validated');
+            if (res.status == 'success') {
+                $('#action-modal .modal-title').text(res.title);
+                $('#action-modal #action-form').html(res.html);
+                $('#action-modal form').attr('action', url);
+                $('#action-modal').modal('show');
+            }
+        }
+    });
+}
+
+
+function editData(e) {
+    e.preventDefault();
+    var url = $(e.currentTarget).attr('href');
+    $.ajax({
+        url: url,
+        type: 'GET',
+        beforeSend: showLoading,
+        success: function (res) {
+            $('#action-modal #action-form').html('').removeClass('was-validated');
+            if (res.status == 'success') {
+                $('#action-modal .modal-title').text(res.title);
+                $('#action-modal #action-form').html(res.html);
+                $('#action-modal form').attr('action', url);
+                $('#action-modal').modal('show');
             }
         }
     });

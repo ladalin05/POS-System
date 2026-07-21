@@ -1,10 +1,6 @@
 <x-app-layout>
     <x-basic.breadcrumb>
         <x-basic.option>
-
-
-
-
         </x-basic.option>
     </x-basic.breadcrumb>
     <!-- Content area -->

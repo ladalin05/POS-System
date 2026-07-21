@@ -1,54 +1,56 @@
+
+<style>
+    .action-toggle {
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+    }
+
+    .action-toggle:hover {
+        background-color: #f1f1f1;
+    }
+
+    .dropdown-menu .dropdown-item {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+
+    .dropdown-menu .dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
+</style>
+
 <div class="dropdown">
-    <button class="btn btn-light btn-icon btn-sm dropdown-toggle hide-arrow shadow-sm" 
-            type="button" 
-            data-bs-toggle="dropdown" 
-            aria-expanded="false"
-            style="border-radius: 8px; padding: 0.5rem;">
+    <button type="button" class="btn btn-sm btn-light border action-toggle" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="fa-solid fa-bars"></i>
     </button>
 
-    <div class="dropdown-menu dropdown-menu-end border-0 shadow-lg py-2" style="min-width: 160px; border-radius: 12px;">
-        
-        @can('stock.adjustment.edit')
-            <a href="{{ route('stocks.adjustment.update', ['id' => $row->id]) }}" class="dropdown-item py-2 px-3 d-flex align-items-center">
-                <div class="bg-primary-subtle rounded-circle p-1 me-2 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
-                    <i class="ph ph-pencil me-2"></i>
-                </div>
-                {{ __('global.edit') }}
+    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+        <li>
+            <a href="{{ route('stocks.adjustment.update', ['id' => $row->id]) }}" class="dropdown-item" onclick="editData(event)">
+                <i class="ph ph-pencil-simple me-2 text-success"></i>
+                Edit
             </a>
-        @endcan
-
-        @can('stock.adjustment.approve')
-            @if(empty($row->status) || $row->status !== 'approved')
-                @can('stock.adjustment.edit')
-                    <div class="dropdown-divider my-1 opacity-50"></div>
-                @endcan
-
+        </li>
+        @if(empty($row->status) || $row->status !== 'approved')
+            <li>
                 <a href="{{ route('stocks.adjustment.approve', $row->id) }}" 
-                   class="dropdown-item py-2 px-3 d-flex align-items-center text-success"
-                   onclick="approveAdjustment(event)">
-                    <div class="bg-success-subtle rounded-circle p-1 me-2 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
-                        <i class="ph ph-check-circle text-success"></i>
-                    </div>
-                    <span class="fw-medium">{{ __('global.approve') }}</span>
+                    class="dropdown-item text-success" onclick="approveAdjustment(event)">
+                    <i class="ph ph-check-circle me-2 text-success"></i>
+                    {{ __('global.approve') }}
                 </a>
-            @endif
-        @endcan
-        
-        @can('stock.adjustment.delete')
-            @can('stock.adjustment.approve')
-                <div class="dropdown-divider my-1 opacity-50"></div>
-            @endcan
-
-            <a href="{{ route('stocks.adjustment.delete', $row->id) }}" 
-               class="dropdown-item py-2 px-3 d-flex align-items-center text-danger"
-               onclick="deleteRecord(event)">
-                <div class="bg-danger-subtle rounded-circle p-1 me-2 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
-                    <i class="ph ph-trash text-danger"></i>
-                </div>
-                <span class="fw-medium">{{ __('global.delete') }}</span>
-            </a>
-        @endcan
-
-    </div>
+            </li>
+        @endif
+        <li>
+            <button type="button" class="dropdown-item text-danger data_remove" data-url="{{ route('stocks.adjustment.delete', ['id' => $row->id]) }}" onclick="deleteData(event)">
+                <i class="fa fa-trash me-2"></i>
+                Delete
+            </button>
+        </li>
+    </ul>
 </div>

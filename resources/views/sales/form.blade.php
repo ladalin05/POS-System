@@ -63,7 +63,7 @@
   <x-basic.breadcrumb />
   <div class="content">
     <x-basic.card :title="$title">
-      <x-basic.form action="{{ route('purchases.save', $form?->id) }}" novalidate enctype="multipart/form-data">
+      <x-basic.form action="{{ $action }}" class="ajax-form" novalidate enctype="multipart/form-data">
         @csrf
 
         <div class="row g-3">

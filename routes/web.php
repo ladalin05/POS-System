@@ -10,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AccountController;
+use App\Http\Controllers\Admin\UploadController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\Product\CategoryController;
 use App\Http\Controllers\Other\WarehousesController;
@@ -104,8 +105,8 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'categories.',
         ], function () {
             Route::get('/', [CategoryController::class, 'index'])->name('index');
-            Route::match(['get', 'post'], '/create', [CategoryController::class, 'create'])->name('add');
-            Route::match(['get', 'post'], '/update', [CategoryController::class, 'update'])->name('edit');
+            Route::match(['get', 'post'], '/create', [CategoryController::class, 'create'])->name('create');
+            Route::match(['get', 'post'], '/update', [CategoryController::class, 'update'])->name('update');
             Route::post('delete', [CategoryController::class, 'delete'])->name('delete');
         });
     });
@@ -200,10 +201,9 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'transfer.',
         ], function () {
             Route::get('/', [StockTransferController::class, 'index'])->name('index');
-            Route::get('add', [StockTransferController::class, 'add'])->name('add');
-            Route::get('edit/{id}', [StockTransferController::class, 'edit'])->name('edit');
-            Route::post('delete/{id}', [StockTransferController::class, 'delete'])->name('delete');
-
+            Route::match(['get', 'post'], '/create', [StockTransferController::class, 'create'])->name('create');
+            Route::match(['get', 'post'], '/update', [StockTransferController::class, 'update'])->name('update');
+            Route::post('/delete/{id}', [StockTransferController::class, 'delete'])->name('delete');
         });
     });
 
@@ -368,10 +368,9 @@ Route::middleware(['auth', 'abilities'])->group(function () {
 
     });
 
-
-    
-
-
+    // File Upload & Delete
+    Route::post('/uploads', [UploadController::class, 'store'])->name('uploads.store');
+    Route::delete('/uploads', [UploadController::class, 'destroy'])->name('uploads.destroy');
 
 });
 

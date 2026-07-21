@@ -33,7 +33,7 @@
     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
         <li>
             <a href="{{route('products.products.view', ['id' => $row->id])}}" onclick="showView(event)" class="dropdown-item">
-                <i class="fa fa-eye"></i>
+                <i class="fa fa-eye me-2"></i>
                 View
             </a>
         </li>

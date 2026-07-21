@@ -8,7 +8,7 @@
     }
     .remove_row:hover { background-color: #fff5f5; color: #dc3545; }
 </style>
-<form action="{{ $action }}" method="POST" id="productStockForm" enctype="multipart/form-data" onsubmit="handleProductSubmit(event)" >
+<form action="{{ $action }}" method="POST" id="productStockForm" class="ajax-form" enctype="multipart/form-data">
     @csrf
 
     <div class="card-body p-4">
@@ -120,11 +120,6 @@
     </div>
 </form>
 <script>
-
-    function handleProductSubmit(e) {
-        e.preventDefault();
-        ajaxSubmit('#productStockForm');
-    }
 
     $(document).ready(function() {
 

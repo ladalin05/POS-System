@@ -1,66 +1,65 @@
 <!-- ================= CATEGORY FORM MODAL ================= -->
 <div class="modal-body">
-    <form method="POST" action="{{ $action }}" id="categoryForm" enctype="multipart/form-data" onsubmit="handleCategorySubmit(event)">
+    <form method="POST" action="{{ $action }}" id="categoryForm" enctype="multipart/form-data" class="ajax-form">
         @csrf
         <div class="modal-body p-0">
             <div class="row g-2">
                 <div class="col-md-12">
-                    <label class="form-label fw-semibold">
-                        Category Name <span class="text-danger">*</span>
-                    </label>
-                    <input type="text" name="name" class="form-control" value="{{ $form?->name }}" required>
+                    <x-forms.input
+                        label="Category Name"
+                        name="name"
+                        id="name"
+                        type="text"
+                        :value="old('name', $form->name ?? '')"
+                        placeholder="Enter category name"
+                        required
+                    />
                 </div>
                 <div class="col-md-12">
-                    <label class="form-label fw-semibold">
-                        Slug
-                    </label>
-                    <input type="text" name="slug" class="form-control" value="{{ $form?->slug }}">
+                    <x-forms.input
+                        label="Slug"
+                        name="slug"
+                        id="slug"
+                        type="text"
+                        :value="old('slug', $form->slug ?? '')"
+                        placeholder="Enter Slug"
+                        required
+                    />
                 </div>
                 <div class="col-md-12">
-                    <label class="form-label fw-semibold">
-                        Parent Category
-                    </label>
-                    <select class="form-select select2-basic" name="parent_id" >
-                        <option value="">None (Top Level)</option>
-                        @foreach (getCategory() as $id => $name)
-                            <option value="{{ $id }}" {{ $id == $form?->parent?->id ? 'selected' : ''}}>{{ $name }}</option>
-                        @endforeach
-                    </select>
+                    <x-forms.select
+                        name="parent_id"
+                        label="Parent Category"
+                        :options="getCategory()"
+                        placeholder="Select Parent Category"
+                        :value="old('parent_id', $form->parent_id ?? '')"
+                    />
                 </div>
                 <div class="col-md-12">
-                    <label class="form-label fw-semibold">
-                        Category Image
-                    </label>
-                    <div class="text-center">
-                        <div class="border rounded-3 bg-light d-flex align-items-center p-2 justify-content-center position-relative"
-                            style="height: 200px; overflow:hidden;">
-                            <img id="image-preview" src="{{ $form?->image ? asset($form->image) : '' }}"
-                                class="img-fluid object-fit-cover h-100 {{ $form?->image ? '' : 'd-none' }}">
-                            <i id="placeholder-icon"
-                                class="fa-solid fa-cloud-arrow-up fs-1 text-muted {{ $form?->image ? 'd-none' : '' }}">
-                            </i>
-                            <button type="button" id="remove-image"
-                                    class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2 {{ $form?->image ? '' : 'd-none' }}">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
+                    <div class="cf-eyebrow"><span class="cf-dot"></span> Category image</div>
+                    @php
+                        $hasImage  = !empty($form->image ?? null);
+                        $imageUrl  = $hasImage ? $form->image : '';
+                    @endphp
 
-                        <input type="file" name="category_image" id="category_image"
-                            class="form-control form-control-sm mt-3"
-                            accept="image/*">
-
-                        <small class="text-muted d-block mt-2">
-                            Recommended: Square image | Max 2MB
-                        </small>
-
+                    <div class="d-flex justify-content-center w-100"> 
+                        <x-basic.uploader
+                            input-name="image"
+                            :url="old('image', $imageUrl)"
+                            :path="old('image', $form->image ?? '')"
+                            folder="product/categories"
+                            width="200px"
+                            height="150px"
+                            caption="Recommended: 600×400px"
+                        />
                     </div>
                 </div>
 
             </div>
         </div>
-        <div class="modal-footer">
+        <div class="d-flex p-3 justify-content-end">
             <button type="button"
-                    class="btn btn-light"
+                    class="btn btn-light me-2"
                     data-bs-dismiss="modal">
                 Cancel
             </button>
@@ -74,12 +73,29 @@
 </div>
 
 <script>
-    function handleCategorySubmit(e) {
-        e.preventDefault();
-        ajaxSubmit('#categoryForm');
-    }
 
     $(document).ready(function () {
+        let slugManuallyEdited = {{ isset($form) && filled($form->slug) ? 'true' : 'false' }};
+        function updateSlugFromName(value) {
+            if (slugManuallyEdited) return;
+
+            const slug = value
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-');
+
+            $('#slug').val(slug);
+        }
+
+        $('#name').off('input.slug').on('input.slug', function () {
+            updateSlugFromName($(this).val());
+        });
+
+        $('#slug').off('input.slug').on('input.slug', function () {
+            slugManuallyEdited = true;
+        });
         $('#category_id').off('change').on('change', function() {
             let categoryId = $(this).val();
             if(categoryId === "") {

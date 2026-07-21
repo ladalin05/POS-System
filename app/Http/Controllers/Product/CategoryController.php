@@ -50,7 +50,7 @@ class CategoryController extends Controller
                 title:  __('global.add_new'),
                 view:   'product.categories.form',
                 data:   ['form' => new Category()],
-                action: route('products.categories.add'),
+                action: route('products.categories.create'),
             );
 
         } catch (\Throwable $e) {
@@ -86,7 +86,7 @@ class CategoryController extends Controller
                 title:  __('global.edit'),
                 view:   'product.categories.form',
                 data:   ['form' => $category],
-                action: route('products.categories.edit', ['id' => $category->id]),
+                action: route('products.categories.update', ['id' => $category->id]),
             );
 
         } catch (\Throwable $e) {

@@ -76,7 +76,7 @@
     </x-basic.breadcrumb>
 
     <div class="content mt-3">
-        <x-basic.form action="{{ $action }}" novalidate enctype="multipart/form-data">
+        <x-basic.form action="{{ $action }}" class="ajax-form" novalidate enctype="multipart/form-data">
 
             <div class="card shadow-sm mb-4">
                 <div class="card-body p-4">
