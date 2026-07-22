@@ -7,6 +7,7 @@ use App\Models\Admin\Permission;
 use App\Models\Other\Warehouses;
 use App\Models\Other\Branch;
 use App\Models\Product\Category;
+use App\Models\Other\Currencies;
 use App\Models\Product\Product;
 use App\Models\Setting\Unit;
 use App\Models\Product\Brand;
@@ -130,6 +131,13 @@ if (!function_exists('getProducts')) {
     function getProducts()
     {
         return Product::select('id', 'product_name', 'sku')->get();
+    }
+}
+
+if(!function_exists('getCurrencies')) {
+    function getCurrencies()
+    {
+        return Currencies::pluck('name', 'id')->toArray();
     }
 }
 

@@ -927,7 +927,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'List',
                 'name_kh' => 'បញ្ជី',
-                'slug' => 'people.customer.index',
+                'slug' => 'people.customers.index',
                 'menu_id' => $customer,
                 'is_menu' => 1,
                 'created_at' => now(),
@@ -936,7 +936,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Add',
                 'name_kh' => 'បង្កើត',
-                'slug' => 'people.customer.add',
+                'slug' => 'people.customers.add',
                 'menu_id' => $customer,
                 'is_menu' => 0,
                 'created_at' => now(),
@@ -945,7 +945,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Edit',
                 'name_kh' => 'កែប្រែ',
-                'slug' => 'people.customer.edit',
+                'slug' => 'people.customers.edit',
                 'menu_id' => $customer,
                 'is_menu' => 0,
                 'created_at' => now(),
@@ -954,7 +954,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Delete',
                 'name_kh' => 'លុប',
-                'slug' => 'people.customer.delete',
+                'slug' => 'people.customers.delete',
                 'menu_id' => $customer,
                 'is_menu' => 0,
                 'created_at' => now(),

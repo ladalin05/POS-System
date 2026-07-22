@@ -1,10 +1,9 @@
-<x-app-layout> 
+<x-app-layout>
     @push('css')
     <style>
         .ls-1 { letter-spacing: 0.5px; }
         .fs-7 { font-size: 0.78rem; }
-        
-        /* Modern Section Divider */
+
         .section-title {
             display: flex;
             align-items: center;
@@ -23,19 +22,18 @@
             border-radius: 10px;
         }
 
-        /* Form Styling */
         .form-label {
             font-size: 0.875rem;
             text-transform: none;
             letter-spacing: 0;
         }
-        
+
         .avatar-upload-zone {
             border: 2px dashed #dee2e6 !important;
             transition: all 0.3s ease;
             background: #fdfdfd !important;
         }
-        
+
         .avatar-upload-zone:hover {
             border-color: #4361ee !important;
             background: #f8f9ff !important;
@@ -58,7 +56,7 @@
                 </div>
             </div>
         </x-slot>
-        
+
         <div class="header-actions">
             <a href="{{ route('users-management.users.index') }}" class="btn btn-add-user bg-primary d-flex align-items-center gap-2 text-white">
                 <i class="fa-solid fa-arrow-left-long"></i>
@@ -69,7 +67,34 @@
 
     <div class="container-fluid px-4 pb-5">
         <x-basic.card>
-            <x-basic.form action="{{ $action }}" class="needs-validation" novalidate>
+            <x-basic.form action="{{ $action }}" enctype="multipart/form-data" class="needs-validation" novalidate>
+
+                {{-- Avatar --}}
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="avatar-upload-zone text-center p-4 rounded-4 border">
+                            <div class="uploader-avatar d-inline-block mb-2">
+                                <x-basic.uploader
+                                    inputName="avatar"
+                                    :url="$form?->avatar ? asset($form->avatar) . '?v=' . ($form->updated_at?->timestamp ?? time()) : ''"
+                                    :path="$form?->avatar ?? ''"
+                                    accept="image/*"
+                                    layout="block"
+                                    width="120px"
+                                    height="120px"
+                                    shape="circle"
+                                    folder="avatars"
+                                    :filenameHint="$form?->id ?? ''"
+                                />
+                            </div>
+                            <p class="text-muted small mt-2 mb-0">
+                                Click the camera icon to upload. Recommended: square image, max 2MB (JPG, PNG)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Personal Information --}}
                 <div class="section-title">
                     <div class="section-accent"></div>
                     <h6 class="text-uppercase fs-7 fw-bold text-dark mb-0 ls-1">{{ __('global.personal_information') }}</h6>
@@ -78,19 +103,29 @@
 
                 <div class="row g-4 mt-2">
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="form-label"><i class="fa-regular fa-id-badge me-2 text-muted"></i>{{ __('global.name_en') }} <span class="text-danger">*</span></label>
-                            <x-basic.form.text name="name_en" value="{{ $form?->name_en }}" :required="true" placeholder="Name EN" required />
-                        </div>
+                        <x-forms.input
+                            label="{{ __('global.name_en') }}"
+                            name="name_en"
+                            id="name_en"
+                            type="text"
+                            :value="old('name_en', $form->name_en ?? '')"
+                            placeholder="Name EN"
+                            required
+                        />
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="form-label"><i class="fa-solid fa-signature me-2 text-muted"></i>{{ __('global.name_kh') }}</label>
-                            <x-basic.form.text name="name_kh" value="{{ $form?->name_kh }}" placeholder="ឈ្មោះជាភាសាខ្មែរ" />
-                        </div>
+                        <x-forms.input
+                            label="{{ __('global.name_kh') }}"
+                            name="name_kh"
+                            id="name_kh"
+                            type="text"
+                            :value="old('name_kh', $form->name_kh ?? '')"
+                            placeholder="ឈ្មោះជាភាសាខ្មែរ"
+                        />
                     </div>
                 </div>
 
+                {{-- Account Details --}}
                 <div class="section-title mt-4">
                     <div class="section-accent"></div>
                     <h6 class="text-uppercase fs-7 fw-bold text-dark mb-0 ls-1">{{ __('global.account_details') }}</h6>
@@ -99,51 +134,50 @@
 
                 <div class="row g-4 mt-2">
                     <div class="col-md-5">
-                        <label class="form-label"><i class="fa-regular fa-envelope me-2 text-muted"></i>{{ __('global.email') }}</label>
-                        <x-basic.form.text name="email" type="email" value="{{ $form?->email }}" :required="true" />
+                        <x-forms.input
+                            label="{{ __('global.email') }}"
+                            name="email"
+                            id="email"
+                            type="email"
+                            :value="old('email', $form->email ?? '')"
+                            placeholder="Enter Email Address"
+                            required
+                        />
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label"><i class="fa-solid fa-phone-flip me-2 text-muted"></i>{{ __('global.phone_number') }}</label>
-                        <x-basic.form.text name="phone" value="{{ $form?->phone }}" />
+                        <x-forms.input
+                            label="{{ __('global.phone_number') }}"
+                            name="phone"
+                            id="phone"
+                            type="text"
+                            :value="old('phone', $form->phone ?? '')"
+                            placeholder="Enter Phone Number"
+                        />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label"><i class="fa-solid fa-shield-halved me-2 text-muted"></i>{{ __('global.role') }}</label>
-                        <x-basic.form.multiple-select name="role_id[]" :options="$roles" :selected="$form?->roles?->pluck('id')->toArray()" :required="true" />
+                        <x-basic.form.multiple-select
+                            name="role_id[]"
+                            :options="$roles"
+                            :selected="old('role_id', $form?->roles?->pluck('id')->toArray() ?? [])"
+                            :required="true"
+                        />
                     </div>
-                    
+
                     <div class="col-md-12">
-                        <label class="form-label"><i class="fa-solid fa-key me-2 text-muted"></i>{{ __('global.password') }}</label>
-                        <x-basic.form.text name="password" type="password" :required="!$form?->id" />
+                        <x-forms.input
+                            label="{{ __('global.password') }}"
+                            name="password"
+                            id="password"
+                            type="password"
+                            placeholder="{{ $form?->id ? '••••••••' : 'Enter Password' }}"
+                            :required="!$form?->id"
+                        />
                         @if($form?->id)
                             <div class="alert alert-light border-0 py-2 mt-2">
                                 <small class="text-muted"><i class="fa-solid fa-circle-info me-1"></i> {{ __('global.leave_blank_to_keep_current') }}</small>
                             </div>
                         @endif
-                    </div>
-                </div>
-                <div class="row mt-5">
-                    <div class="col-md-12">
-                        <div class="avatar-upload-zone text-center p-4 rounded-4 border">
-                            {{-- Preview --}}
-                            <div class="avatar-preview mb-3">
-                                <img id="avatarPreview"
-                                    src="{{ $form?->avatar ? asset($form->avatar) : asset('assets/images/default/male-avatar.jpg') }}"
-                                    class="rounded-circle shadow" style="width:120px;height:120px;object-fit:cover;">
-                            </div>
-                            {{-- Upload --}}
-                            <div class="mb-2">
-                                <label class="btn btn-primary btn-sm">
-                                    <i class="fa fa-upload me-1"></i> Upload Avatar
-                                    <input type="file" name="avatar" id="avatarInput"
-                                        accept="image/*" hidden>
-                                </label>
-                            </div>
-
-                            <p class="text-muted small mt-2">
-                                Recommended: Square image, max 2MB (JPG, PNG)
-                            </p>
-
-                        </div>
                     </div>
                 </div>
 
@@ -160,27 +194,4 @@
             </x-basic.form>
         </x-basic.card>
     </div>
-    @push('scripts')
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const input = document.querySelector('input[name="avatar"]');
-                const preview = document.getElementById('avatarPreview');
-
-                if (input && preview) {
-
-                    input.addEventListener('change', function (e) {
-
-                        const file = e.target.files[0];
-
-                        if (file) {
-                            preview.src = URL.createObjectURL(file);
-                        }
-
-                    });
-
-                }
-
-            });
-        </script>
-    @endpush
 </x-app-layout>

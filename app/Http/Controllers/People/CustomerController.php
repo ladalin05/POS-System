@@ -43,13 +43,13 @@ class CustomerController extends Controller
 
                 return $this->redirectResponse(
                     message: __('messages.customer_saved'),
-                    route: route('people.customer.index'),
+                    route: route('people.customers.index'),
                 );
             }
 
             return $this->viewResponse(
                 view:   'people.customer.form',
-                action: route('people.customer.create'),
+                action: route('people.customers.create'),
                 data:   [
                     'title' => __('global.add_new'),
                     'form'  => new Customer(),
@@ -82,13 +82,13 @@ class CustomerController extends Controller
 
                 return $this->redirectResponse(
                     message: __('messages.customer_updated'),
-                    route: route('people.customer.index'),
+                    route: route('people.customers.index'),
                 );
             }
 
             return $this->viewResponse(
                 view:   'people.customer.form',
-                action: route('people.customer.update', ['id' => $request->id]),
+                action: route('people.customers.update', ['id' => $request->id]),
                 data:   [
                     'title' => __('global.edit'),
                     'form'  => $form,
@@ -119,7 +119,7 @@ class CustomerController extends Controller
 
             return $this->redirectResponse(
                 message: __('messages.user_deleted'),
-                route: route('people.customer.index'),
+                route: route('people.customers.index'),
             );
         } catch (Throwable $e) {
             return $this->errorResponse(

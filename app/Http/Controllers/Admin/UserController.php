@@ -92,14 +92,14 @@ class UserController extends Controller
         return view('admin.users.account', compact('form', 'roles'));
     }
 
-    public function delete($id)
+    public function delete(Request $request)
     {
         try {
-            if ((int) $id === 1) {
+            if ((int) $request->id === 1) {
                 return $this->errorResponse(__('messages.user_cannot_delete'));
             }
 
-            $form = User::findOrFail($id);
+            $form = User::findOrFail($request->id);
             $form->delete();
 
             return $this->successResponse(__('messages.user_deleted'));
@@ -108,10 +108,10 @@ class UserController extends Controller
         }
     }
 
-    public function permission($id)
+    public function permission(Request $request)
     {
         try {
-            $form = User::find($id);
+            $form = User::find($request->id);
             $roles = Role::all();
 
             if (request()->isMethod('get')) {
@@ -138,10 +138,10 @@ class UserController extends Controller
         }
     }
 
-    public function changePassword($id)
+    public function changePassword(Request $request)
     {
         try {
-            $form = User::find($id);
+            $form = User::find($request->id);
 
             if (request()->isMethod('get')) {
                 return json([

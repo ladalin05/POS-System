@@ -21,10 +21,10 @@ class UserDataTable extends DataTable
                 if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
                     $img = asset('storage/' . $user->avatar);
                 } else {
-                    $img = 'https://ui-avatars.com/api/?name=' . urlencode($user->name_en) . '&background=random';
+                    $img = 'http://localhost:9000/pos-system/no-image.png';
                 }
                 return '<div class="d-flex align-items-center">
-                            <img src="'.$img.'" class="rounded me-3" style="width: 40px; height: 40px; object-fit: cover;">
+                            <img src="'.$img.'" class="rounded me-3" style="width: 40px; height: 40px; object-fit: cover;" onerror="this.style.display=\'none\'">
                         </div>';
             })
             ->editColumn('role', function ($user) {

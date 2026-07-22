@@ -4,26 +4,26 @@
     </a>
     <div class="dropdown-menu dropdown-menu-end" style="">
         @can('users-management.users.update')
-            <a href="{{ route('users-management.users.update', $user->id) }}" class="dropdown-item">
+            <a href="{{ route('users-management.users.update', ['id' => $user->id]) }}" class="dropdown-item">
                 <i class="ph ph-pencil me-2"></i>
                 {{ __('global.edit') }}
             </a>
         @endcan
         @can('users-management.users.change-password')
-            <a href="{{ route('users-management.users.change-password', $user->id) }}" class="dropdown-item" onclick="changePassword(event)">
+            <a href="{{ route('users-management.users.change-password', ['id' => $user->id]) }}" class="dropdown-item" onclick="changePassword(event)">
                 <i class="ph ph-password me-2"></i>
                 {{ __('global.change_password') }}
             </a>
         @endcan
         @can('users-management.users.permission')
-            <a href="{{ route('users-management.users.permission', $user->id) }}" class="dropdown-item" onclick="permission(event)">
+            <a href="{{ route('users-management.users.permission', ['id' => $user->id]) }}" class="dropdown-item" onclick="permission(event)">
                 <i class="ph ph-person-simple-circle me-2"></i>
                 {{ __('global.permission') }}
             </a>
         @endcan
         @can('users-management.users.delete')
             <div class="dropdown-divider"></div>
-            <a href="{{ route('users-management.users.delete', $user->id) }}" class="dropdown-item" onclick="deleteRecord(event)">
+            <a href="{{ route('users-management.users.delete', ['id' => $user->id]) }}" class="dropdown-item" onclick="deleteRecord(event)">
                 <i class="ph ph-trash text-danger me-2"></i>
                 {{ __('global.delete') }}
             </a>
