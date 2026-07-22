@@ -121,4 +121,5 @@ return [
     'create_new_product' => "បង្កើតផលិតផលថ្មី",
     'update_product' => "កែប្រែផលិតផល",
     'approve' => "អនុម័ត",
+    'symbol' => "និមិត្តសញ្ញា",
 ];

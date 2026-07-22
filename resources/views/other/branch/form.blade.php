@@ -1,19 +1,24 @@
-
 <form method="POST" action="{{ $action }}" id="baseUnitForm" enctype="multipart/form-data" class="ajax-form">
-    {{-- Logo Section - Styled as a Profile Upload --}}
+
+    {{-- Logo Section - Using new uploader component --}}
     <div class="row mb-4 align-items-center bg-light rounded p-3 mx-0 border-dashed">
         <div class="col-md-8">
             <h6 class="fw-bold mb-1"><i class="ph ph-image me-2"></i>{{ __('global.logo') }}</h6>
             <p class="text-muted small mb-2">Upload your warehouse logo. Recommended size: 250x120px.</p>
-            <x-basic.form.file id="logo-input" name="logo" accept="image/*" />
         </div>
-        <div class="col-md-4 text-center">
-            <div class="preview-container shadow-sm bg-white rounded d-flex align-items-center justify-content-center p-2" style="height: 120px; border: 1px solid #dee2e6;">
-                <img id="logo-preview"
-                    src="{{ $form->logo ? asset($form->logo) . '?v=' . ($form->updated_at?->timestamp ?? time()) : asset('assets/images/no_image.png') }}"
-                    alt="Logo preview"
-                    style="max-height: 100%; max-width: 100%; object-fit: contain;">
-            </div>
+        <div class="col-md-4 d-flex justify-content-center">
+            <x-basic.uploader
+                input-name="logo"
+                :url="old('logo', $form->logo ?? '')"
+                :path="old('logo', $form->logo ?? '')"
+                accept="image/*"
+                layout="block"
+                width="170px"
+                height="170px"
+                shape="rounded"
+                folder="other/branch"
+                caption="PNG or JPG, up to 2MB"
+            />
         </div>
     </div>
 
@@ -28,7 +33,7 @@
             <hr class="mt-0 mb-3 opacity-10">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <x-form.input
+                    <x-forms.input
                         name="name"
                         label="{{ __('global.name') }}"
                         type="text"
@@ -38,7 +43,7 @@
                     />
                 </div>
                 <div class="col-md-6">
-                    <x-form.input
+                    <x-forms.input
                         name="name_kh"
                         label="{{ __('global.name') }} (Khmer)"
                         type="text"
@@ -48,7 +53,7 @@
                     />
                 </div>
                 <div class="col-md-6">
-                    <x-form.input
+                    <x-forms.input
                         name="email"
                         label="{{ __('global.email_address') }}"
                         type="email"
@@ -58,7 +63,7 @@
                     />
                 </div>
                 <div class="col-md-6">
-                    <x-form.input
+                    <x-forms.input
                         name="prefix"
                         label="{{ __('global.prefix') }}"
                         type="text"
@@ -78,7 +83,7 @@
             <hr class="mt-0 mb-3 opacity-10">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <x-form.input
+                    <x-forms.input
                         name="phone"
                         label="{{ __('global.phone') }}"
                         type="text"
@@ -88,7 +93,7 @@
                     />
                 </div>
                 <div class="col-md-6">
-                    <x-form.input
+                    <x-forms.input
                         name="phone_kh"
                         label="{{ __('global.phone') }} (Khmer)"
                         type="text"
@@ -97,7 +102,7 @@
                     />
                 </div>
                 <div class="col-md-6">
-                    <x-form.input
+                    <x-forms.input
                         name="address"
                         label="{{ __('global.address') }}"
                         type="text"
@@ -107,7 +112,7 @@
                     />
                 </div>
                 <div class="col-md-6">
-                    <x-form.input
+                    <x-forms.input
                         name="address_kh"
                         label="{{ __('global.address') }} (Khmer)"
                         type="text"
@@ -116,7 +121,7 @@
                     />
                 </div>
                 <div class="col-md-3">
-                    <x-form.input
+                    <x-forms.input
                         name="city"
                         label="{{ __('global.city') }}"
                         type="text"
@@ -126,7 +131,7 @@
                     />
                 </div>
                 <div class="col-md-3">
-                    <x-form.input
+                    <x-forms.input
                         name="city_kh"
                         label="{{ __('global.city') }} (KH)"
                         type="text"
@@ -135,7 +140,7 @@
                     />
                 </div>
                 <div class="col-md-3">
-                    <x-form.input
+                    <x-forms.input
                         name="country"
                         label="{{ __('global.country') }}"
                         type="text"
@@ -144,7 +149,7 @@
                     />
                 </div>
                 <div class="col-md-3">
-                    <x-form.input
+                    <x-forms.input
                         name="country_kh"
                         label="{{ __('global.country') }} (KH)"
                         type="text"
@@ -164,7 +169,7 @@
             <hr class="mt-0 mb-3 opacity-10">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <x-form.input
+                    <x-forms.input
                         name="vat_number"
                         label="{{ __('global.vat_number') }}"
                         type="text"
@@ -173,7 +178,7 @@
                     />
                 </div>
                 <div class="col-md-6">
-                    <x-form.input
+                    <x-forms.input
                         name="vat_number_kh"
                         label="{{ __('global.vat_number') }} (Khmer)"
                         type="text"
@@ -195,6 +200,7 @@
         </button>
     </div>
 </form>
+
 <style>
     .bg-primary-light { background: rgba(13, 110, 253, 0.1); }
     .bg-success-light { background: rgba(25, 135, 84, 0.1); }

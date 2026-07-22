@@ -31,7 +31,7 @@
 
     <x-basic.modal id="action-modal" size="modal-lg">
         <x-basic.form id="action-form" novalidate>
-            </x-basic.form>
+        </x-basic.form>
     </x-basic.modal>
 
 </x-app-layout>

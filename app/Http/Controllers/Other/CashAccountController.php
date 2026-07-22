@@ -41,13 +41,11 @@ class CashAccountController extends Controller
                 );
             }
 
-            return $this->viewResponse(
+            return $this->modalResponse(
+                title:  __('global.add_new'),
                 view:   'other.cash_accounts.form',
+                data:   ['form' => new CashAccount()],
                 action: route('other.cash_accounts.create'),
-                data:   [
-                    'title' => __('global.add_new'),
-                    'form' => new CashAccount(),
-                ],
             );
 
         } catch (Throwable $e) {
@@ -73,13 +71,11 @@ class CashAccountController extends Controller
                 );
             }
 
-            return $this->viewResponse(
+            return $this->modalResponse(
+                title:  __('global.edit'),
                 view:   'other.cash_accounts.form',
+                data:   ['form' => $form],
                 action: route('other.cash_accounts.update', ['id' => $request->id]),
-                data:   [
-                    'title' => __('global.edit'),
-                    'form' => $form,
-                ],
             );
 
         } catch (Throwable $e) {

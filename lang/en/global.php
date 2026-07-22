@@ -182,5 +182,6 @@ return [
     'create_new_product' => "Create New Product",
     'update_product' => "Update Product",
     'approve' => "Approve",
+    'symbol' => "Symbol",
     
 ];

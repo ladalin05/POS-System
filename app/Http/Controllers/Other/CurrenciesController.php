@@ -40,13 +40,11 @@ class CurrenciesController extends Controller
                 );
             }
 
-            return $this->viewResponse(
+            return $this->modalResponse(
+                title:  __('global.add_new'),
                 view:   'other.currencies.form',
+                data:   ['form' => new Currencies()],
                 action: route('other.currencies.create'),
-                data:   [
-                    'title' => __('global.add_new'),
-                    'form' => new Currencies(),
-                ],
             );
 
         } catch (Throwable $e) {
@@ -72,13 +70,11 @@ class CurrenciesController extends Controller
                 );
             }
 
-            return $this->viewResponse(
+            return $this->modalResponse(
+                title:  __('global.edit'),
                 view:   'other.currencies.form',
+                data:   ['form' => $form],
                 action: route('other.currencies.update', ['id' => $request->id]),
-                data:   [
-                    'title' => __('global.edit'),
-                    'form' => $form,
-                ],
             );
 
         } catch (Throwable $e) {

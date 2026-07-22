@@ -48,7 +48,7 @@
     <div class="sidebar-content">
 
         <!-- Main navigation -->
-        <div class="sidebar-section">
+        <div class="sidebar-section pb-5">
             <ul class="nav nav-sidebar" data-nav-type="accordion">
                 <!-- Main -->
                 @php

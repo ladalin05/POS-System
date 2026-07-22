@@ -46,13 +46,11 @@ class BranchController extends Controller
                 );
             }
 
-            return $this->viewResponse(
+            return $this->modalResponse(
+                title:  __('global.add_new'),
                 view:   'other.branch.form',
+                data:   ['form' => new Branch()],
                 action: route('other.branch.create'),
-                data:   [
-                    'title' => __('global.add_new'),
-                    'form' => new Branch(),
-                ],
             );
 
         } catch (Throwable $e) {
@@ -84,13 +82,11 @@ class BranchController extends Controller
                 );
             }
 
-            return $this->viewResponse(
+            return $this->modalResponse(
+                title:  __('global.edit'),
                 view:   'other.branch.form',
+                data:   ['form' => $form],
                 action: route('other.branch.update', ['id' => $request->id]),
-                data:   [
-                    'title' => __('global.edit'),
-                    'form' => $form,
-                ],
             );
 
         } catch (Throwable $e) {

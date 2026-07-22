@@ -37,7 +37,7 @@
             <div class="uploader-spinner-ring"></div>
         </div>
 
-        <img src="{{ $url ?: '#' }}" class="uploader-preview {{ $hasImage ? '' : 'hidden' }}" alt="">
+        <img src="{{ $url ?: '#' }}" class="uploader-preview {{ $hasImage ? '' : 'hidden' }}" alt="" onerror="this.style.display='none'">
         <div class="uploader-placeholder {{ $hasImage ? 'hidden' : '' }}">
             <i class="fa fa-image"></i>
             <span>Add image</span>

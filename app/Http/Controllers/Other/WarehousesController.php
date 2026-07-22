@@ -41,14 +41,11 @@ class WarehousesController extends Controller
                 );
             }
 
-            return $this->viewResponse(
+            return $this->modalResponse(
+                title:  __('global.add_new'),
                 view:   'other.warehouses.form',
+                data:   ['form' => new Warehouses()],
                 action: route('other.warehouses.create'),
-                data:   [
-                    'title'  => __('global.add_new'),
-                    'form'   => new Warehouses(),
-                    'branch' => Branch::select('id', 'name')->get(),
-                ],
             );
 
         } catch (Throwable $e) {
@@ -74,14 +71,11 @@ class WarehousesController extends Controller
                 );
             }
 
-            return $this->viewResponse(
+            return $this->modalResponse(
+                title:  __('global.edit'),
                 view:   'other.warehouses.form',
+                data:   ['form' => $form],
                 action: route('other.warehouses.update', ['id' => $request->id]),
-                data:   [
-                    'title'  => __('global.edit'),
-                    'form'   => $form,
-                    'branch' => Branch::select('id', 'name')->get(),
-                ],
             );
 
         } catch (Throwable $e) {
