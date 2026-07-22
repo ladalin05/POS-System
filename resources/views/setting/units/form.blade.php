@@ -1,7 +1,6 @@
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
-    /* Custom touches to make it "Beautiful" */
+
     .card-custom {
         border: none;
         border-radius: 12px;
@@ -26,47 +25,69 @@
 
 <div class="container py-2">
     <div class="row justify-content-center">
-        <form method="POST" action="{{ $action }}" id="unitForm" enctype="multipart/form-data" onsubmit="handleUnitSubmit(event)">
-            
+        <form method="POST" action="{{ $action }}" id="unitForm" enctype="multipart/form-data" class="ajax-form">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label class="form-label">Code</label>
-                    <input type="text" name="code" class="form-control" placeholder="e.g. KG" maxlength="55" required>
+                    <x-forms.input
+                        label="Code"
+                        name="code"
+                        type="text"
+                        :value="old('code', $form->code ?? '')"
+                        placeholder="Enter product name"
+                        required
+                    />
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label">Name</label>
-                    <input type="text" name="name" class="form-control" placeholder="e.g. Kilogram" maxlength="55" required>
+                    <x-forms.input
+                        label="Name"
+                        name="name"
+                        type="text"
+                        :value="old('name', $form->name ?? '')"
+                        placeholder="Enter product name"
+                        required
+                    />
                 </div>
 
                 <div class="col-md-12">
-                    <label class="form-label">Base Unit</label>
-                    <select name="base_unit" class="form-select">
-                        <option selected disabled>Select Base Unit</option>
-                        <option value="1">Unit 1</option>
-                        <option value="2">Unit 2</option>
-                    </select>
+                    <x-forms.select
+                        name="base_unit"
+                        label="Base Unit"
+                        :options="getUnit()"
+                        :value="($form->base_unit ?? '')"
+                        placeholder="Select Base Unit"
+                        required
+                    />
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label">Operator</label>
-                    <select name="operator" class="form-select">
-                        <option value="">Select Operator</option>
-                        <option value="*">Multiply (*)</option>
-                        <option value="/">Divide (/)</option>
-                        <option value="+">Add (+)</option>
-                        <option value="-">Subtract (-)</option>
-                    </select>
+                    <x-forms.select
+                        name="operator"
+                        label="Operator"
+                        :options="[ '*' => 'Multiply (*)', '/' => 'Divide (/)', '+' => 'Add (+)', '-' => 'Subtract (-)']"
+                        :value="old('operator', $form->operator ?? '')"
+                        placeholder="Select Operator"
+                    />
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label">Unit Value</label>
-                    <input type="text" name="unit_value" class="form-control" placeholder="0.00" maxlength="55">
+                    <x-forms.input
+                        label="Unit Value"
+                        name="unit_value"
+                        type="text"
+                        :value="old('unit_value', $form->unit_value ?? '')"
+                        placeholder="0.00"
+                    />
                 </div>
 
                 <div class="col-md-4">
-                    <label class="form-label">Operation Value</label>
-                    <input type="text" name="operation_value" class="form-control" placeholder="0.00" maxlength="55">
+                    <x-forms.input
+                        label="Operation Value"
+                        name="operation_value"
+                        type="text"
+                        :value="old('operation_value', $form->operation_value ?? '')"
+                        placeholder="0.00"
+                    />
                 </div>
 
                 <div class="col-12 mt-4 text-end">
@@ -81,10 +102,3 @@
         </form>
     </div>
 </div>
-
-<script>
-    function handleUnitSubmit(e) {
-        e.preventDefault();
-        ajaxSubmit('#unitForm');
-    }
-</script>

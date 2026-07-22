@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Sales;
 use App\DataTables\Sales\StockCountDataTable;
 use App\DataTables\Sales\InvoiceDataTable;
 use App\Http\Controllers\Controller;
-use App\Models\Other\Branch;
-use App\Models\Sales\SaleItems;
-use App\Models\Sales\Sales;
+use Illuminate\Http\Request;
+use App\Models\Sales\Invoice;
+use App\Models\Sales\InvoiceDetail;
 
 class InvoicesController extends Controller
 {
@@ -17,22 +17,30 @@ class InvoicesController extends Controller
         return $dataTable->render('sales.invoices.index');
     }
 
-    public function modal_view($id)
+    public function modal_view(Request $request)
     {
-        $sale      = Sales::findOrFail($id);
-        $branch    = Branch::find($sale->branch_id);
-        $saleItems = SaleItems::where('sale_id', $id)
-                    ->with('unit')
-                    ->orderBy('id')
-                    ->get();
+        $invoice = Invoice::with(['customer', 'warehouse', 'currency'])
+            ->findOrFail($request->id);
 
-        return view('sales.modal_view', compact('sale', 'saleItems', 'branch'));
+        $invoiceDetails = InvoiceDetail::where('invoice_id', $invoice->id)
+            ->with('product')
+            ->orderBy('id')
+            ->get();
+
+        return $this->modalResponse(
+            title: ($invoice->invoice_no ?? '#' . $invoice->id),
+            view:  'sales.invoices.invoice',
+            data: [
+                'invoice'        => $invoice,
+                'invoiceDetails' => $invoiceDetails,
+            ],
+        );
     }
 
-    public function delete($id)
+    public function delete(Request $request)
     {
         try {
-            $form = Sales::findOrFail($id);
+            $form = Invoice::findOrFail($request->id);
             $form->delete();
 
             return response()->json([

@@ -71,8 +71,7 @@ class AdjustmentController extends Controller
                     message: __('messages.user_updated'),
                     route: route('stocks.adjustment.index'),
                 );
-            }
-
+            } 
             return $this->viewResponse(
                 view:   'stocks.adjustment.form',
                 action: route('stocks.adjustment.update', ['id' => $request->id]),
@@ -125,17 +124,16 @@ class AdjustmentController extends Controller
     public function ajaxProducts(Request $request)
     {
         $q = trim((string) $request->input('q', ''));
-        $limit = (int) $request->input('limit', 100);
 
-        $products = Product::select('id', 'name', 'code', 'quantity')
+        $products = Product::select('id', 'product_name', 'sku')
             ->when($q !== '', function ($qq) use ($q) {
                 $qq->where(function ($w) use ($q) {
-                    $w->where('name', 'like', "%{$q}%")
-                        ->orWhere('code', 'like', "%{$q}%");
+                    $w->where('product_name', 'like', "%{$q}%")
+                        ->orWhere('sku', 'like', "%{$q}%");
                 });
             })
-            ->orderBy('name')
-            ->limit($limit)
+            ->orderBy('product_name')
+            ->limit(100)
             ->get();
 
         return response()->json($products);
@@ -143,7 +141,7 @@ class AdjustmentController extends Controller
 
     public function ajaxProductUnits(Request $request)
     {
-        $productId = $request->integer('product_id');
+        $productId = $request->product_id;
         if (!$productId) {
             return response()->json([], 200);
         }

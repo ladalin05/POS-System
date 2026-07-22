@@ -42,11 +42,11 @@ class StockTransferDataTable extends DataTable
                 return $row->{'user_name_' . app()->getLocale()} ?? '-';
             })
 
-            ->addColumn('action', function ($row) {
-                return view('stocks.stock_transfer.action', compact('row'))->render();
-            })
+            // ->addColumn('action', function ($row) {
+            //     return view('stocks.stock_transfer.action', compact('row'))->render();
+            // })
 
-            ->rawColumns(['action'])
+            // ->rawColumns(['action'])
             ->setRowId('id');
     }
 
@@ -122,11 +122,11 @@ class StockTransferDataTable extends DataTable
             Column::computed('user_name')
                 ->title('Created By'),
 
-            Column::computed('action')
-                ->exportable(false)
-                ->printable(false)
-                ->width(80)
-                ->addClass('text-center'),
+            // Column::computed('action')
+            //     ->exportable(false)
+            //     ->printable(false)
+            //     ->width(80)
+            //     ->addClass('text-center'),
         ];
     }
 

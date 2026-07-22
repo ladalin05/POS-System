@@ -39,18 +39,18 @@ class RoomController extends Controller
 
                 return $this->redirectResponse(
                     message: __('messages.create_success'),
-                    route: route('setting.rooms.index'),
+                    route: route('setting.room.index'),
                 );
             }
 
             return $this->modalResponse(
                 title:  __('global.add_new'),
-                view:   'setting.rooms.form',
+                view:   'setting.room.form',
                 data:   [
                     'form' => new Room(),
                     'floors' => Floor::pluck('name', 'id'),
                 ],
-                action: route('setting.rooms.add'),
+                action: route('setting.room.create'),
             );
 
         } catch (\Throwable $e) {
@@ -74,18 +74,18 @@ class RoomController extends Controller
 
                 return $this->redirectResponse(
                     message: __('messages.update_success'),
-                    route: route('setting.rooms.index'),
+                    route: route('setting.room.index'),
                 );
             }
 
             return $this->modalResponse(
                 title:  __('global.edit'),
-                view:   'setting.rooms.form',
+                view:   'setting.room.form',
                 data:   [
                     'form' => $room,
                     'floors' => Floor::pluck('name', 'id'),
                 ],
-                action: route('setting.rooms.edit', ['id' => $room->id]),
+                action: route('setting.room.update', ['id' => $room->id]),
             );
 
         } catch (\Throwable $e) {
@@ -104,7 +104,7 @@ class RoomController extends Controller
 
             return $this->redirectResponse(
                 message: __('messages.delete_success'),
-                route: route('setting.rooms.index'),
+                route: route('setting.room.index'),
             );
         } catch (\Throwable $e) {
             return $this->errorResponse(

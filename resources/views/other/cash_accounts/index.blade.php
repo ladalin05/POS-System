@@ -83,7 +83,7 @@
                 <img src="https://cdn-icons-png.flaticon.com/512/732/732220.png" width="24" alt="Excel">
             </button>
             
-            <a href="{{ route('other.cash_accounts.create') }}" class="btn btn-add-user d-flex align-items-center gap-2 text-white">
+            <a href="{{ route('other.cash_accounts.create') }}" onclick="addData(event)" class="btn btn-add-user d-flex align-items-center gap-2 text-white">
                 <i class="ph ph-plus-circle"></i>
                 {{ __('global.add_new') }}
             </a>
@@ -100,43 +100,4 @@
         </x-basic.form>
     </x-basic.modal>
     <!-- /content area -->
-    @push('scripts')
-        <script>
-            function changePassword(e) {
-                e.preventDefault();
-                var url = $(event.target).attr('href');
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    success: function(res) {
-                        $('#action-modal #action-form').html('').removeClass('was-validated');
-                        if (res.status == 'success') {
-                            $('#action-modal .modal-title').text(res.title);
-                            $('#action-modal #action-form').html(res.html);
-                            $('#action-modal form').attr('action', url);
-                            $('#action-modal').modal('show');
-                        }
-                    }
-                });
-            }
-
-            function permission(e) {
-                e.preventDefault();
-                var url = $(event.target).attr('href');
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    success: function(res) {
-                        $('#action-modal #action-form').removeClass('was-validated');
-                        if (res.status == 'success') {
-                            $('#action-modal .modal-title').text(res.title);
-                            $('#action-modal #action-form').html(res.html);
-                            $('#action-modal form').attr('action', url);
-                            $('#action-modal').modal('show');
-                        }
-                    }
-                });
-            }
-        </script>
-    @endpush
 </x-app-layout>

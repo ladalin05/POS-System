@@ -46,7 +46,7 @@ class UnitsController extends Controller
                 title:  __('global.add_new'),
                 view:   'setting.units.form',
                 data:   ['form' => new Unit()],
-                action: route('setting.units.add'),
+                action: route('setting.units.create'),
             );
 
         } catch (\Throwable $e) {
@@ -78,7 +78,7 @@ class UnitsController extends Controller
                 title:  __('global.edit'),
                 view:   'setting.units.form',
                 data:   ['form' => $unit],
-                action: route('setting.units.edit', ['id' => $unit->id]),
+                action: route('setting.units.update', ['id' => $unit->id]),
             );
 
         } catch (\Throwable $e) {

@@ -2,7 +2,7 @@
 
 namespace App\Models\Sales;
 
-use App\Models\Biller\Biller;
+use App\Models\Other\Biller;
 use App\Models\Other\Branch;
 use App\Models\People\Customer;
 use App\Models\People\Saleman;
@@ -57,10 +57,16 @@ class Sales extends Model
         return $this->belongsTo(Warehouses::class);
     }
 
-    public function biller()
+    public function branch()
     {
         return $this->belongsTo(Branch::class);
     }
+
+    public function biller()
+    {
+        return $this->belongsTo(Biller::class);
+    }
+    
     public function salesman()
     {
         return $this->belongsTo(Saleman::class);

@@ -13,7 +13,7 @@
                 <img src="https://cdn-icons-png.flaticon.com/512/732/732220.png" width="24" alt="Excel">
             </button>
             
-            <a href="{{ route('other.currencies.create') }}" onclick="addCurrencies(event)" class="btn btn-add-user d-flex align-items-center gap-2 text-white">
+            <a href="{{ route('other.currencies.create') }}" onclick="addData(event)" class="btn btn-add-user d-flex align-items-center gap-2 text-white">
                 <i class="ph ph-plus-circle"></i>
                 {{ __('global.add_new') }}
             </a>
@@ -27,95 +27,4 @@
         <x-basic.form id="action-form" novalidate>
         </x-basic.form>
     </x-basic.modal>
-    @push('scripts')
-        <script>
-
-            function addCurrencies(e) {
-                e.preventDefault();
-                var url = $(event.target).attr('href');
-                $.ajax({
-                    url: url,
-                    // type: 'GET',
-                    success: function (res) {
-                        $('#action-modal #action-form').html('').removeClass('was-validated');
-                        
-                        if (res.status == 'success') {
-                            $('#action-modal .modal-title').text(res.title);
-                            $('#action-modal #action-form').html(res.html);
-                            $('#action-modal form').attr('action', url);
-                            $('#action-modal').modal('show');
-                        }
-                    }
-                });
-            }
-
-
-            function editcurrencies(e) {
-                e.preventDefault();
-                var url = $(event.target).attr('href');
-                $.ajax({
-                    url: url,
-                    // type: 'GET',
-                    success: function (res) {
-                        $('#action-modal #action-form').html('').removeClass('was-validated');
-                        if (res.status == 'success') {
-                            $('#action-modal .modal-title').text(res.title);
-                            $('#action-modal #action-form').html(res.html);
-                            $('#action-modal form').attr('action', url);
-                            $('#action-modal').modal('show');
-                        }
-                    }
-                });
-            }
-
-       
-            function delete_selected(e) {
-                e.preventDefault();
-                const ids = $('.row-checkbox:checked').map(function () {
-                    return $(this).val();
-                }).get();
-
-                swalInit.fire({
-                    title: '{{ __('messages.are_you_sure') }}',
-                    text: '{{ __('messages.you_want_to_delete') }}',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: '{{ __('messages.yes_delete') }}',
-                    cancelButtonText: '{{ __('messages.no_cancel') }}',
-                    buttonsStyling: false,
-                    customClass: {
-                        confirmButton: 'btn btn-primary',
-                        cancelButton: 'btn btn-danger'
-                    }
-                }).then(function (result) {
-                    if (ids.length === 0) return;
-                    $.ajax({
-                        url: "{{ route('other.currencies.bulk-delete') }}",
-                        type: "POST",
-                        data: {
-                            ids: ids,
-                            _token: "{{ csrf_token() }}"
-                        },
-                        success: function (res) {
-                            if (res.status === 'success') {
-                                $('#currencies-table').DataTable().ajax.reload();
-                                $('#delete-selected').prop('disabled', true);
-                                swalInit.fire({
-                                    icon: 'success',
-                                    title: 'Success',
-                                    html: res.message
-                                });
-                            }
-
-                        },
-                        error: function (err) {
-                            alert('Something went wrong.');
-                        }
-                    });
-
-                });
-            }
-
-        </script>
-    @endpush
 </x-app-layout>

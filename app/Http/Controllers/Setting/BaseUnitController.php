@@ -53,7 +53,7 @@ class BaseUnitController extends Controller
                     'form' => new BaseUnit(),
                     'units' => Unit::pluck('name', 'id'),
                 ],
-                action: route('setting.base-units.add'),
+                action: route('setting.base-units.create'),
             );
 
         } catch (\Throwable $e) {
@@ -89,7 +89,7 @@ class BaseUnitController extends Controller
                     'form' => $baseUnit,
                     'units' => Unit::pluck('name', 'id'),
                 ],
-                action: route('setting.base-units.edit', ['id' => $baseUnit->id]),
+                action: route('setting.base-units.update', ['id' => $baseUnit->id]),
             );
 
         } catch (\Throwable $e) {

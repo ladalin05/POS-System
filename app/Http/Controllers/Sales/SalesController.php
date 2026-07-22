@@ -19,27 +19,35 @@ class SalesController extends Controller
         return $dataTable->render('sales.index');
     }
 
-    public function modal_view($id)
+    public function modal_view(Request $request)
     {
         try {
-            $sale = Sales::findOrFail($id);
+            $sale = Sales::findOrFail($request->id);
             $branch = Branch::find($sale->branch_id);
-            $saleItems = SaleItems::where('sale_id', $id)
+            $saleItems = SaleItems::where('sale_id', $request->id)
                 ->with('unit')
                 ->orderBy('id')
                 ->get();
 
-            return view('sales.modal_view', compact('sale', 'saleItems', 'branch'));
+            return $this->modalResponse(
+                title:  __('global.view'),
+                view:   'sales.modal_view',
+                data:   [
+                    'sale' => $sale,
+                    'saleItems' => $saleItems,
+                    'branch' => $branch,
+                ],
+            );
 
         } catch (Throwable $e) {
             return $this->errorResponse($e->getMessage(), 500);
         }
     }
 
-    public function delete($id)
+    public function delete(Request $request)
     {
         try {
-            $form = Sales::findOrFail($id);
+            $form = Sales::findOrFail($request->id);
             $form->delete();
 
             return $this->successResponse(__('messages.user_deleted'));

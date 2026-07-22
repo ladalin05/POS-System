@@ -57,21 +57,17 @@
     </div>
 
 
-    <div class="modal fade" id="paymentView" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">view payment</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" id="paymentViewBody">
-                </div>
-            </div>
+    <x-basic.modal id="action-modal" size="xl" title="Sales Invoice" subtitle="Invoice #INV-0042">
+        <div id="action-form" class="p-1" novalidate>
         </div>
-    </div>
 
-
-
+        <x-slot:footer>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="window.print()">Print</button>
+        </x-slot:footer>
+    </x-basic.modal>
+    
+@push('scripts')
     <script>
         // Submit payment form via AJAX
         $(document).on('submit', '#paymentForm', function (e) {
@@ -130,5 +126,5 @@
         }
 
     </script>
-
+@endpush
 </x-app-layout>

@@ -1,21 +1,45 @@
 <div class="container mt-4">
-    <form action="save_room.php" method="POST">
+    <form method="POST" action="{{ $action }}" id="roomForm" enctype="multipart/form-data" class="ajax-form">
         
         <div class="mb-3">
-            <label class="form-label">Room Code</label>
-            <input type="text" name="code" class="form-control" required>
+            <x-forms.input
+                label="Room Code"
+                name="code"
+                type="text"
+                :value="old('code', $form->code ?? '')"
+                placeholder="Enter Room Code"
+                required
+            />
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Room Name</label>
-            <input type="text" name="name" class="form-control" required>
+            <x-forms.input
+                label="Room Name"
+                name="name"
+                type="text"
+                :value="old('name', $form->name ?? '')"
+                placeholder="Enter Room Name"
+                required
+            />
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Floor ID</label>
-            <input type="number" name="floor_id" class="form-control" required>
+            <x-forms.input
+                label="Floor ID"
+                name="floor_id"
+                type="number"
+                :value="old('floor_id', $form->floor_id ?? '')"
+                placeholder="Enter Floor ID"
+                required
+            />
         </div>
 
-        <button type="submit" class="btn btn-primary">Save</button>
+        <div class="col-12 mt-4 text-end">
+            <hr class="text-muted mb-4">
+            <button type="button" class="btn btn-light btn-save me-2">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-save shadow-sm">
+                <i class="bi bi-check-lg"></i> Save Room
+            </button>
+        </div>
     </form>
 </div>

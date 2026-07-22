@@ -81,7 +81,7 @@
             <button class="btn btn-icon-box" style="border: none">
                 <img src="https://cdn-icons-png.flaticon.com/512/732/732220.png" alt="Excel">
             </button>
-            <a href="{{ route('setting.unit_convert.add') }}" class="btn btn-add-user d-flex align-items-center gap-2 text-white">
+            <a href="{{ route('setting.unit_convert.create') }}" onclick="addData(event)" class="btn btn-add-user d-flex align-items-center gap-2 text-white">
                 <i class="ph ph-plus-circle me-2"></i>
                 {{ __('global.add_new') }}
             </a>
@@ -97,47 +97,4 @@
         <x-basic.form id="action-form" novalidate>
         </x-basic.form>
     </x-basic.modal>
-    @push('scripts')
-        <script>
-
-            function addUnitConvert(e) {
-                e.preventDefault();
-                var url = $(event.target).attr('href');
-                $.ajax({
-                    url: url,
-                    // type: 'GET',
-                    success: function (res) {
-                        $('#action-modal #action-form').html('').removeClass('was-validated');
-                        
-                        if (res.status == 'success') {
-                            $('#action-modal .modal-title').text(res.title);
-                            $('#action-modal #action-form').html(res.html);
-                            $('#action-modal form').attr('action', url);
-                            $('#action-modal').modal('show');
-                        }
-                    }
-                });
-            }
-
-
-            function editUnitConvert(e) {
-                e.preventDefault();
-                var url = $(event.target).attr('href');
-                $.ajax({
-                    url: url,
-                    // type: 'GET',
-                    success: function (res) {
-                        $('#action-modal #action-form').html('').removeClass('was-validated');
-                        if (res.status == 'success') {
-                            $('#action-modal .modal-title').text(res.title);
-                            $('#action-modal #action-form').html(res.html);
-                            $('#action-modal form').attr('action', url);
-                            $('#action-modal').modal('show');
-                        }
-                    }
-                });
-            }
-
-        </script>
-    @endpush
 </x-app-layout>

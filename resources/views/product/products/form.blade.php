@@ -305,7 +305,7 @@
     <div class="container-fluid px-0 py-4">
         <div class="container">
 
-            <form action="{{ $action }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ $action }}" method="POST" enctype="multipart/form-data" class="ajax-form">
                 @csrf
 
                 <div class="pf-rail">

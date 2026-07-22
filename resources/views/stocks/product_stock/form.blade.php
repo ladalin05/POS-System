@@ -8,7 +8,7 @@
     }
     .remove_row:hover { background-color: #fff5f5; color: #dc3545; }
 </style>
-<form action="{{ $action }}" method="POST" id="productStockForm" class="ajax-form" enctype="multipart/form-data">
+<form action="{{ $action }}" method="POST" id="productStockForm" enctype="multipart/form-data" class="ajax-form">
     @csrf
 
     <div class="card-body p-4">
@@ -75,27 +75,15 @@
                                     </div>
                                 </td>
                                 <td class="text-muted">{{$form->product->sku}}</td>
-                                <td class="text-center" style="width:80px">
-                                    <x-forms.input
-                                        id="qty-{{$form->product_id}}"
-                                        name="products[{{$form->product_id}}][qty]"
-                                        type="number"
-                                        :value="old('products.'.$form->product_id.'.qty', (int) $form->stock)"
-                                        min="1"
-                                    />
+                                <td class="text-center">
+                                    <input type="number" id="qty-{{$form->product_id}}" name="products[{{$form->product_id}}][qty]" value="{{old('products.'.$form->product_id.'.qty', (int) $form->stock)}}" style="width: 60px" min="1" class="form-control form-control-sm">
                                 </td>
-                                <td class="text-center" style="width:90px">
-                                    <x-forms.input
-                                        id="alert-qty-{{$form->product_id}}"
-                                        name="products[{{$form->product_id}}][alert_qty]"
-                                        type="number"
-                                        :value="old('products.'.$form->product_id.'.alert_qty', (int) $form->alert_quantity)"
-                                        min="1"
-                                    />
+                                <td class="text-center">
+                                    <input type="number" id="alert-qty-{{$form->product_id}}" name="products[{{$form->product_id}}][alert_qty]" value="{{old('products.'.$form->product_id.'.alert_qty', (int) $form->alert_quantity)}}" style="width: 60px" min="1" class="form-control form-control-sm">
                                 </td>
                                 <td class="text-end pe-4">
                                     <button type="button"
-                                        class="btn btn-outline-secondary btn-sm remove_row"
+                                        class="btn btn-outline-danger btn-sm remove_row"
                                         data-id="{{$form->product_id}}">
                                         <i class="fa-regular fa-trash-can"></i>
                                     </button>
@@ -161,14 +149,14 @@
                 </td>
                 <td class="text-muted">${sku}</td>
                 <td class="text-center">
-                        <input type="number" id="qty-${id}" name="products[${id}][qty]" value="1" style="width: 50px" min="1" class="form-control form-control-sm">
+                        <input type="number" id="qty-${id}" name="products[${id}][qty]" value="1" style="width: 60px" min="1" class="form-control form-control-sm">
                 </td>
                 <td class="text-center">
-                        <input type="number" id="alert-qty-${id}" name="products[${id}][alert_qty]" value="1" style="width: 50px" min="1" class="form-control form-control-sm">
+                        <input type="number" id="alert-qty-${id}" name="products[${id}][alert_qty]" value="1" style="width: 60px" min="1" class="form-control form-control-sm">
                 </td>
                 <td class="text-end pe-4">
                     <button type="button"
-                        class="btn btn-outline-secondary btn-sm remove_row"
+                        class="btn btn-outline-danger btn-sm remove_row"
                         data-id="${id}">
                         <i class="fa-regular fa-trash-can"></i>
                     </button>

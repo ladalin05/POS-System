@@ -38,15 +38,15 @@ class FloorController extends Controller
 
                 return $this->redirectResponse(
                     message: __('messages.create_success'),
-                    route: route('setting.floors.index'),
+                    route: route('setting.floor.index'),
                 );
             }
 
             return $this->modalResponse(
                 title:  __('global.add_new'),
-                view:   'setting.floors.form',
+                view:   'setting.floor.form',
                 data:   ['form' => new Floor()],
-                action: route('setting.floors.add'),
+                action: route('setting.floor.create'),
             );
 
         } catch (\Throwable $e) {
@@ -70,15 +70,15 @@ class FloorController extends Controller
 
                 return $this->redirectResponse(
                     message: __('messages.update_success'),
-                    route: route('setting.floors.index'),
+                    route: route('setting.floor.index'),
                 );
             }
 
             return $this->modalResponse(
                 title:  __('global.edit'),
-                view:   'setting.floors.form',
+                view:   'setting.floor.form',
                 data:   ['form' => $floor],
-                action: route('setting.floors.edit', ['id' => $floor->id]),
+                action: route('setting.floor.update', ['id' => $floor->id]),
             );
 
         } catch (\Throwable $e) {
@@ -97,7 +97,7 @@ class FloorController extends Controller
 
             return $this->redirectResponse(
                 message: __('messages.delete_success'),
-                route: route('setting.floors.index'),
+                route: route('setting.floor.index'),
             );
         } catch (\Throwable $e) {
             return $this->errorResponse(

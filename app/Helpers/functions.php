@@ -5,9 +5,11 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Admin\Menu;
 use App\Models\Admin\Permission;
 use App\Models\Other\Warehouses;
+use App\Models\Other\Branch;
 use App\Models\Product\Category;
 use App\Models\Product\Product;
 use App\Models\Setting\Unit;
+use App\Models\Product\Brand;
 use App\Models\User;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Auth;
@@ -106,7 +108,14 @@ if (!function_exists('getCategory')) {
 if (!function_exists('getBrands')) {
     function getBrands()
     {
-        return DB::table('brands')->pluck('name', 'id')->toArray();
+        return Brand::pluck('name', 'id')->toArray();
+    }
+}
+
+if (!function_exists('getBranch')) {
+    function getBranch()
+    {
+        return Branch::pluck('name', 'id')->toArray();
     }
 }
 

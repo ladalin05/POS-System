@@ -31,12 +31,14 @@
     </button>
 
     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-        <li>
-            <a href="{{ route('stocks.adjustment.update', ['id' => $row->id]) }}" class="dropdown-item" onclick="editData(event)">
-                <i class="ph ph-pencil-simple me-2 text-success"></i>
-                Edit
-            </a>
-        </li>
+        @if($row->status !== 'approved')
+            <li>
+                <a href="{{ route('stocks.adjustment.update', ['id' => $row->id]) }}" class="dropdown-item">
+                    <i class="ph ph-pencil-simple me-2 text-success"></i>
+                    Edit
+                </a>
+            </li>
+        @endif
         @if(empty($row->status) || $row->status !== 'approved')
             <li>
                 <a href="{{ route('stocks.adjustment.approve', $row->id) }}" 
@@ -46,11 +48,13 @@
                 </a>
             </li>
         @endif
-        <li>
-            <button type="button" class="dropdown-item text-danger data_remove" data-url="{{ route('stocks.adjustment.delete', ['id' => $row->id]) }}" onclick="deleteData(event)">
-                <i class="fa fa-trash me-2"></i>
-                Delete
-            </button>
-        </li>
+        @if($row->status !== 'approved')
+            <li>
+                <button type="button" class="dropdown-item text-danger data_remove" data-url="{{ route('stocks.adjustment.delete', ['id' => $row->id]) }}">
+                    <i class="fa fa-trash me-2"></i>
+                    Delete
+                </button>
+            </li>
+        @endif
     </ul>
 </div>

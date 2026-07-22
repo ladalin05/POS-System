@@ -1,4 +1,5 @@
 
+<form method="POST" action="{{ $action }}" id="baseUnitForm" enctype="multipart/form-data" class="ajax-form">
     {{-- Logo Section - Styled as a Profile Upload --}}
     <div class="row mb-4 align-items-center bg-light rounded p-3 mx-0 border-dashed">
         <div class="col-md-8">
@@ -27,16 +28,43 @@
             <hr class="mt-0 mb-3 opacity-10">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <x-basic.form.text label="{{ __('global.name') }}" name="name" :value="old('name', $form->name ?? '')" required />
+                    <x-form.input
+                        name="name"
+                        label="{{ __('global.name') }}"
+                        type="text"
+                        :value="old('name', $form->name ?? '')"
+                        placeholder="Enter Branch Name"
+                        required
+                    />
                 </div>
                 <div class="col-md-6">
-                    <x-basic.form.text label="{{ __('global.name') }} (Khmer)" name="name_kh" :value="old('name_kh', $form->name_kh ?? '')" required />
+                    <x-form.input
+                        name="name_kh"
+                        label="{{ __('global.name') }} (Khmer)"
+                        type="text"
+                        :value="old('name_kh', $form->name_kh ?? '')"
+                        placeholder="Enter Branch Name"
+                        required
+                    />
                 </div>
                 <div class="col-md-6">
-                    <x-basic.form.text label="{{ __('global.email_address') }}" name="email" type="email" :value="old('email', $form->email ?? '')" required />
+                    <x-form.input
+                        name="email"
+                        label="{{ __('global.email_address') }}"
+                        type="email"
+                        :value="old('email', $form->email ?? '')"
+                        placeholder="Enter Email Address"
+                        required
+                    />
                 </div>
                 <div class="col-md-6">
-                    <x-basic.form.text label="{{ __('global.prefix') }}" name="prefix" :value="old('prefix', $form->prefix ?? '')" placeholder="e.g., WH-01" />
+                    <x-form.input
+                        name="prefix"
+                        label="{{ __('global.prefix') }}"
+                        type="text"
+                        :value="old('prefix', $form->prefix ?? '')"
+                        placeholder="Enter Prefix"
+                    />
                 </div>
             </div>
         </div>
@@ -50,28 +78,79 @@
             <hr class="mt-0 mb-3 opacity-10">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <x-basic.form.text label="{{ __('global.phone') }}" name="phone" :value="old('phone', $form->phone ?? '')" required />
+                    <x-form.input
+                        name="phone"
+                        label="{{ __('global.phone') }}"
+                        type="text"
+                        :value="old('phone', $form->phone ?? '')"
+                        placeholder="Enter Phone Number"
+                        required
+                    />
                 </div>
                 <div class="col-md-6">
-                    <x-basic.form.text label="{{ __('global.phone') }} (Khmer)" name="phone_kh" :value="old('phone_kh', $form->phone_kh ?? '')" />
+                    <x-form.input
+                        name="phone_kh"
+                        label="{{ __('global.phone') }} (Khmer)"
+                        type="text"
+                        :value="old('phone_kh', $form->phone_kh ?? '')"
+                        placeholder="Enter Phone Number"
+                    />
                 </div>
                 <div class="col-md-6">
-                    <x-basic.form.text label="{{ __('global.address') }}" name="address" :value="old('address', $form->address ?? '')" required />
+                    <x-form.input
+                        name="address"
+                        label="{{ __('global.address') }}"
+                        type="text"
+                        :value="old('address', $form->address ?? '')"
+                        placeholder="Enter Address"
+                        required
+                    />
                 </div>
                 <div class="col-md-6">
-                    <x-basic.form.text label="{{ __('global.address') }} (Khmer)" name="address_kh" :value="old('address_kh', $form->address_kh ?? '')" />
+                    <x-form.input
+                        name="address_kh"
+                        label="{{ __('global.address') }} (Khmer)"
+                        type="text"
+                        :value="old('address_kh', $form->address_kh ?? '')"
+                        placeholder="Enter Address"
+                    />
                 </div>
                 <div class="col-md-3">
-                    <x-basic.form.text label="{{ __('global.city') }}" name="city" :value="old('city', $form->city ?? '')" required />
+                    <x-form.input
+                        name="city"
+                        label="{{ __('global.city') }}"
+                        type="text"
+                        :value="old('city', $form->city ?? '')"
+                        placeholder="Enter City"
+                        required
+                    />
                 </div>
                 <div class="col-md-3">
-                    <x-basic.form.text label="{{ __('global.city') }} (KH)" name="city_kh" :value="old('city_kh', $form->city_kh ?? '')" />
+                    <x-form.input
+                        name="city_kh"
+                        label="{{ __('global.city') }} (KH)"
+                        type="text"
+                        :value="old('city_kh', $form->city_kh ?? '')"
+                        placeholder="Enter City"
+                    />
                 </div>
                 <div class="col-md-3">
-                    <x-basic.form.text label="{{ __('global.country') }}" name="country" :value="old('country', $form->country ?? '')" />
+                    <x-form.input
+                        name="country"
+                        label="{{ __('global.country') }}"
+                        type="text"
+                        :value="old('country', $form->country ?? '')"
+                        placeholder="Enter Country"
+                    />
                 </div>
                 <div class="col-md-3">
-                    <x-basic.form.text label="{{ __('global.country') }} (KH)" name="country_kh" :value="old('country_kh', $form->country_kh ?? '')" />
+                    <x-form.input
+                        name="country_kh"
+                        label="{{ __('global.country') }} (KH)"
+                        type="text"
+                        :value="old('country_kh', $form->country_kh ?? '')"
+                        placeholder="Enter Country"
+                    />
                 </div>
             </div>
         </div>
@@ -85,10 +164,22 @@
             <hr class="mt-0 mb-3 opacity-10">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <x-basic.form.text label="{{ __('global.vat_number') }}" name="vat_number" :value="old('vat_number', $form->vat_number ?? '')" />
+                    <x-form.input
+                        name="vat_number"
+                        label="{{ __('global.vat_number') }}"
+                        type="text"
+                        :value="old('vat_number', $form->vat_number ?? '')"
+                        placeholder="Enter VAT Number"
+                    />
                 </div>
                 <div class="col-md-6">
-                    <x-basic.form.text label="{{ __('global.vat_number') }} (Khmer)" name="vat_number_kh" :value="old('vat_number_kh', $form->vat_number_kh ?? '')" />
+                    <x-form.input
+                        name="vat_number_kh"
+                        label="{{ __('global.vat_number') }} (Khmer)"
+                        type="text"
+                        :value="old('vat_number_kh', $form->vat_number_kh ?? '')"
+                        placeholder="Enter VAT Number"
+                    />
                 </div>
                 <div class="col-md-12">
                     <x-basic.form.textarea label="{{ __('global.invoice_footer') }}" name="invoice_footer" :value="old('invoice_footer', $form->invoice_footer ?? '')" rows="2" />
@@ -103,7 +194,7 @@
             <i class="ph ph-floppy-disk me-2"></i> {{ __('global.save') }}
         </button>
     </div>
-
+</form>
 <style>
     .bg-primary-light { background: rgba(13, 110, 253, 0.1); }
     .bg-success-light { background: rgba(25, 135, 84, 0.1); }
@@ -111,18 +202,3 @@
     .border-dashed { border: 2px dashed #dee2e6 !important; }
     .modal-body { max-height: 80vh; overflow-y: auto; }
 </style>
-
-<script>
-    // Improved Image Preview logic
-    document.getElementById('logo-input')?.addEventListener('change', function (e) {
-        if (this.files && this.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                const preview = document.getElementById('logo-preview');
-                preview.src = ev.target.result;
-                preview.style.display = 'block';
-            };
-            reader.readAsDataURL(this.files[0]);
-        }
-    });
-</script>

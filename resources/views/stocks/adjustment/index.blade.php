@@ -25,21 +25,10 @@
         </x-basic.datatables>
     </div>
     <!-- /content area -->
-    <div class="modal fade" id="adjustmentModal" tabindex="-1" aria-labelledby="adjustmentModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="adjustmentModalLabel">{{ __('global.adjustment') }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="{{ __('global.close') }}"></button>
-                </div>
-                <div class="modal-body" id="adjustmentModalBody">
-                    <div class="text-center">{{ __('global.loading') }}...</div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <x-basic.modal id="action-modal" size="modal-xl">
+        <x-basic.form id="action-form" novalidate>
+        </x-basic.form>
+    </x-basic.modal>
 
     <script>
         function approveAdjustment(e) {

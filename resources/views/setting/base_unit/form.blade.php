@@ -1,38 +1,52 @@
 <div class="container mt-4">
-    <form action="save_room.php" method="POST">
+    <form method="POST" action="{{ $action }}" id="baseUnitForm" enctype="multipart/form-data" class="ajax-form">
         <div class="mb-3">
-            <label>From Unit</label>
-            <select name="from_unit_id" class="form-control">
-                @foreach($units as $id => $name)
-                    <option value="{{ $id }}" {{ ($form->from_unit_id ?? '') == $id ? 'selected' : '' }}>
-                        {{ $name }}
-                    </option>
-                @endforeach
-            </select>
+            <x-forms.select
+                name="from_unit_id"
+                label="Convert From"
+                :options="getUnit()"
+                :value="old('from_unit_id', $form->from_unit_id ?? '')"
+                placeholder="Select Unit"
+            />
         </div>
 
         <div class="mb-3">
-            <label>To Unit</label>
-            <select name="to_unit_id" class="form-control">
-                @foreach($units as $id => $name)
-                    <option value="{{ $id }}" {{ ($form->to_unit_id ?? '') == $id ? 'selected' : '' }}>
-                        {{ $name }}
-                    </option>
-                @endforeach
-            </select>
+            <x-forms.select
+                name="to_unit_id"
+                label="Convert To"
+                :options="getUnit()"
+                :value="old('to_unit_id', $form->to_unit_id ?? '')"
+                placeholder="Select Unit"
+            />
         </div>
 
         <div class="mb-3">
-            <label>Numerator</label>
-            <input type="number" name="numerator" value="{{ $form->numerator ?? '' }}" class="form-control">
+            <x-forms.input
+                label="Numerator"
+                name="numerator"
+                type="number"
+                :value="old('numerator', $form->numerator ?? '')"
+                placeholder="Enter Numerator"
+                required
+            />
         </div>
 
         <div class="mb-3">
-            <label>Status</label>
-            <select name="is_active" class="form-control">
-                <option value="1" {{ ($form->is_active ?? 1) == 1 ? 'selected' : '' }}>Active</option>
-                <option value="0" {{ ($form->is_active ?? 1) == 0 ? 'selected' : '' }}>Inactive</option>
-            </select>
+            <x-forms.select
+                name="is_active"
+                label="Status"
+                :options="[ '1' => 'Active', '0' => 'Inactive']"
+                :value="old('is_active', $form->is_active ?? '')"
+                placeholder="Select Status"
+            />
         </div>
-    </div>
+
+        <div class="col-12 mt-4 text-end">
+            <hr class="text-muted mb-4">
+            <button type="button" class="btn btn-light btn-save me-2">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-save shadow-sm">
+                <i class="bi bi-check-lg"></i> Save Unit
+            </button>
+        </div>
+    </form>
 </div>

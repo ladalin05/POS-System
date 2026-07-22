@@ -790,7 +790,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Add',
                 'name_kh' => 'បង្កើត',
-                'slug' => 'setting.units.add',
+                'slug' => 'setting.units.create',
                 'menu_id' => $units,
                 'is_menu' => 0,
                 'created_at' => now(),
@@ -799,7 +799,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Edit',
                 'name_kh' => 'កែប្រែ',
-                'slug' => 'setting.units.edit',
+                'slug' => 'setting.units.update',
                 'menu_id' => $units,
                 'is_menu' => 0,
                 'created_at' => now(),
@@ -826,7 +826,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Add',
                 'name_kh' => 'បង្កើត',
-                'slug' => 'setting.floor.add',
+                'slug' => 'setting.floor.create',
                 'menu_id' => $floor,
                 'is_menu' => 0,
                 'created_at' => now(),
@@ -835,7 +835,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Edit',
                 'name_kh' => 'កែប្រែ',
-                'slug' => 'setting.floor.edit',
+                'slug' => 'setting.floor.update',
                 'menu_id' => $floor,
                 'is_menu' => 0,
                 'created_at' => now(),
@@ -862,7 +862,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Add',
                 'name_kh' => 'បង្កើត',
-                'slug' => 'setting.room.add',
+                'slug' => 'setting.room.create',
                 'menu_id' => $room,
                 'is_menu' => 0,
                 'created_at' => now(),
@@ -871,7 +871,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Edit',
                 'name_kh' => 'កែប្រែ',
-                'slug' => 'setting.room.edit',
+                'slug' => 'setting.room.update',
                 'menu_id' => $room,
                 'is_menu' => 0,
                 'created_at' => now(),
@@ -1457,7 +1457,7 @@ class AdminSeeder extends Seeder
             [
                 'name_en' => 'Edit',
                 'name_kh' => 'កែប្រែ',
-                'slug' => 'setting.unit_convert.edit',
+                'slug' => 'setting.unit_convert.update',
                 'menu_id' => $unit_convert,
                 'is_menu' => 0,
                 'created_at' => now(),

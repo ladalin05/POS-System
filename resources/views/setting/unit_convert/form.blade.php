@@ -1,51 +1,75 @@
 <div class="container mt-4">
-    <form action="save_room.php" method="POST">
+    <form method="POST" action="{{ $action }}" id="unitConvertForm" enctype="multipart/form-data" class="ajax-form">
+        @csrf
+        
         <div class="mb-3">
-            <label>Convert From</label>
-            <select name="unit_from_id" class="form-control">
-                @foreach($units as $id => $name)
-                    <option value="{{ $id }}" {{ ($form->unit_from_id ?? '') == $id ? 'selected' : '' }}>
-                        {{ $name }}
-                    </option>
-                @endforeach
-            </select>
+            <x-forms.select
+                name="unit_from_id"
+                label="Convert From"
+                :options="getUnit()"
+                :value="old('unit_from_id', $form->unit_from_id ?? '')"
+                placeholder="Select Unit"
+            />
         </div>
 
         <div class="mb-3">
-            <label>Convert To</label>
-            <select name="unit_to_id" class="form-control">
-                @foreach($units as $id => $name)
-                    <option value="{{ $id }}" {{ ($form->unit_to_id ?? '') == $id ? 'selected' : '' }}>
-                        {{ $name }}
-                    </option>
-                @endforeach
-            </select>
+            <x-forms.select
+                name="unit_to_id"
+                label="Convert To"
+                :options="getUnit()"
+                :value="old('unit_to_id', $form->unit_to_id ?? '')"
+                placeholder="Select Unit"
+            />
         </div>
 
         <div class="mb-3">
-            <label>Operator</label>
-            <select name="operator" class="form-control">
-                <option value="*" {{ ($form->operator ?? '') == '*' ? 'selected' : '' }}>* Multiply</option>
-                <option value="/" {{ ($form->operator ?? '') == '/' ? 'selected' : '' }}>/ Divide</option>
-            </select>
+            <x-forms.select
+                name="operator"
+                label="Operator"
+                :options="[ '*' => 'Multiply (*)', '/' => 'Divide (/)', '+' => 'Add (+)', '-' => 'Subtract (-)']"
+                :value="old('operator', $form->operator ?? '')"
+                placeholder="Select Operator"
+            />
         </div>
 
         <div class="mb-3">
-            <label>Numerator</label>
-            <input type="number" step="0.000001" name="numerator" value="{{ $form->numerator ?? '' }}" class="form-control">
+            <x-forms.input
+                label="Numerator"
+                name="numerator"
+                type="text"
+                :value="old('numerator', $form->numerator ?? '')"
+                placeholder="Enter Numerator"
+                required
+            />
         </div>
 
         <div class="mb-3">
-            <label>Name</label>
-            <input type="text" name="name" value="{{ $form->name ?? '' }}" class="form-control">
+            <x-forms.input
+                label="Name"
+                name="name"
+                type="text"
+                :value="old('name', $form->name ?? '')"
+                placeholder="Enter Name"
+                required
+            />
         </div>
 
         <div class="mb-3">
-            <label>Status</label>
-            <select name="is_active" class="form-control">
-                <option value="1" {{ ($form->is_active ?? 1) == 1 ? 'selected' : '' }}>Active</option>
-                <option value="0" {{ ($form->is_active ?? 1) == 0 ? 'selected' : '' }}>Inactive</option>
-            </select>
+            <x-forms.select
+                name="is_active"
+                label="Status"
+                :options="[ '1' => 'Active', '0' => 'Inactive']"
+                :value="old('is_active', $form->is_active ?? '')"
+                placeholder="Select Status"
+            />
         </div>
-    </div>
+
+        <div class="col-12 mt-4 text-end">
+            <hr class="text-muted mb-4">
+            <button type="button" class="btn btn-light btn-save me-2">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-save shadow-sm">
+                <i class="bi bi-check-lg"></i> Save Unit
+            </button>
+        </div>
+    </form>
 </div>

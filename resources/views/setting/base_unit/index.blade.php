@@ -81,7 +81,7 @@
             <button class="btn btn-icon-box" style="border: none">
                 <img src="https://cdn-icons-png.flaticon.com/512/732/732220.png" alt="Excel">
             </button>
-            <a href="{{ route('setting.base-units.add') }}" onclick="addBaseUnit(event)" class="btn btn-add-user d-flex align-items-center gap-2 text-white">
+            <a href="{{ route('setting.base-units.create') }}" onclick="addData(event)" class="btn btn-add-user d-flex align-items-center gap-2 text-white">
                 <i class="ph ph-plus-circle me-2"></i>
                 {{ __('global.add_new') }}
             </a>

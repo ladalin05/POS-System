@@ -1,10 +1,23 @@
 <div class="container mt-4">
-    <form action="save_room.php" method="POST">
+    <form method="POST" action="{{ $action }}" id="floorForm" enctype="multipart/form-data" class="ajax-form">
+        
         <div class="mb-3">
-            <label>{{ __('global.name') }}</label>
-            <input type="text" name="name" value="{{ $form->name ?? '' }}" class="form-control">
+            <x-forms.input
+                label="Name"
+                name="name"
+                type="text"
+                :value="old('name', $form->name ?? '')"
+                placeholder="Enter Floor Name"
+                required
+            />
         </div>
 
-        <button type="submit" class="btn btn-primary">Save</button>
+        <div class="col-12 mt-4 text-end">
+            <hr class="text-muted mb-4">
+            <button type="button" class="btn btn-light btn-save me-2">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-save shadow-sm">
+                <i class="bi bi-check-lg"></i> Save Floor
+            </button>
+        </div>
     </form>
 </div>

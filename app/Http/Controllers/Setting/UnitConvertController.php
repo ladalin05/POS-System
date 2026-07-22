@@ -42,18 +42,18 @@ class UnitConvertController extends Controller
 
                 return $this->redirectResponse(
                     message: __('messages.create_success'),
-                    route: route('setting.unit_converts.index'),
+                    route: route('setting.unit_convert.index'),
                 );
             }
 
             return $this->modalResponse(
                 title:  __('global.add_new'),
-                view:   'setting.unit_converts.form',
+                view:   'setting.unit_convert.form',
                 data:   [
                     'form' => new UnitConvert(),
                     'units' => Unit::pluck('name', 'id'),
                 ],
-                action: route('setting.unit_converts.add'),
+                action: route('setting.unit_convert.create'),
             );
 
         } catch (\Throwable $e) {
@@ -78,18 +78,18 @@ class UnitConvertController extends Controller
 
                 return $this->redirectResponse(
                     message: __('messages.update_success'),
-                    route: route('setting.unit_converts.index'),
+                    route: route('setting.unit_convert.index'),
                 );
             }
 
             return $this->modalResponse(
                 title:  __('global.edit'),
-                view:   'setting.unit_converts.form',
+                view:   'setting.unit_convert.form',
                 data:   [
                     'form' => $unitConvert,
                     'units' => Unit::pluck('name', 'id'),
                 ],
-                action: route('setting.unit_converts.edit', ['id' => $unitConvert->id]),
+                action: route('setting.unit_convert.update', ['id' => $unitConvert->id]),
             );
 
         } catch (\Throwable $e) {
@@ -108,7 +108,7 @@ class UnitConvertController extends Controller
 
             return $this->redirectResponse(
                 message: __('messages.delete_success'),
-                route: route('setting.unit_converts.index'),
+                route: route('setting.unit_convert.index'),
             );
         } catch (\Throwable $e) {
             return $this->errorResponse(

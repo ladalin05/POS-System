@@ -60,6 +60,11 @@ class Product extends Model
         return $this->belongsTo(Unit::class);
     }
 
+    public function productUnits()
+    {
+        return $this->hasMany(ProductUnit::class);
+    }
+
     // public function manufacture()
     // {
     //     return $this->belongsTo(Manufacture::class);

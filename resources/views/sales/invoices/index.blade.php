@@ -26,4 +26,14 @@
     </div>
     <!-- /content area -->
 
+    <x-basic.modal id="action-modal" size="lg" title="Sales Invoice" subtitle="Invoice #INV-0042">
+        <div id="action-form" class="p-1" novalidate>
+        </div>
+
+        <x-slot:footer>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="window.print()">Print</button>
+        </x-slot:footer>
+    </x-basic.modal>
+
 </x-app-layout>

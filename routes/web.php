@@ -120,8 +120,8 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'units.'
         ], function () {
             Route::get('/', [UnitsController::class, 'index'])->name('index');
-            Route::match(['get', 'post'], '/create', [UnitsController::class, 'create'])->name('add');
-            Route::match(['get', 'post'], '/update', [UnitsController::class, 'update'])->name('edit');
+            Route::match(['get', 'post'], '/create', [UnitsController::class, 'create'])->name('create');
+            Route::match(['get', 'post'], '/update', [UnitsController::class, 'update'])->name('update');
             Route::post('delete', [UnitsController::class, 'delete'])->name('delete');
         });
 
@@ -130,8 +130,8 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'base-units.'
         ], function () {
             Route::get('/', [BaseUnitController::class, 'index'])->name('index');
-            Route::match(['get', 'post'], '/create', [BaseUnitController::class, 'create'])->name('add');
-            Route::match(['get', 'post'], '/update', [BaseUnitController::class, 'update'])->name('edit');
+            Route::match(['get', 'post'], '/create', [BaseUnitController::class, 'create'])->name('create');
+            Route::match(['get', 'post'], '/update', [BaseUnitController::class, 'update'])->name('update');
             Route::post('delete', [BaseUnitController::class, 'delete'])->name('delete');
         });
 
@@ -140,8 +140,8 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'floor.'
         ], function () {
             Route::get('/', [FloorController::class, 'index'])->name('index');
-            Route::match(['get', 'post'], '/create', [FloorController::class, 'create'])->name('add');
-            Route::match(['get', 'post'], '/update', [FloorController::class, 'update'])->name('edit');
+            Route::match(['get', 'post'], '/create', [FloorController::class, 'create'])->name('create');
+            Route::match(['get', 'post'], '/update', [FloorController::class, 'update'])->name('update');
             Route::post('delete', [FloorController::class, 'delete'])->name('delete');
         });
 
@@ -150,8 +150,8 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'room.'
         ], function () {
             Route::get('/', [RoomController::class, 'index'])->name('index');
-            Route::match(['get', 'post'], '/create', [RoomController::class, 'create'])->name('add');
-            Route::match(['get', 'post'], '/update', [RoomController::class, 'update'])->name('edit');
+            Route::match(['get', 'post'], '/create', [RoomController::class, 'create'])->name('create');
+            Route::match(['get', 'post'], '/update', [RoomController::class, 'update'])->name('update');
             Route::post('delete', [RoomController::class, 'delete'])->name('delete');
         });
         
@@ -160,8 +160,8 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'unit_convert.'
         ], function () {
             Route::get('/', [UnitConvertController::class, 'index'])->name('index');
-            Route::match(['get', 'post'], '/create', [UnitConvertController::class, 'create'])->name('add');
-            Route::match(['get', 'post'], '/update', [UnitConvertController::class, 'update'])->name('edit');
+            Route::match(['get', 'post'], '/create', [UnitConvertController::class, 'create'])->name('create');
+            Route::match(['get', 'post'], '/update', [UnitConvertController::class, 'update'])->name('update');
             Route::post('delete', [UnitConvertController::class, 'delete'])->name('delete');
         });
 
@@ -216,7 +216,7 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'sales.',
         ], function () {
             Route::get('/', [SalesController::class, 'index'])->name('index');
-            Route::get('show/{id}', [SalesController::class, 'show'])->name('show');
+            Route::get('/show', [SalesController::class, 'modal_view'])->name('show');
             Route::post('delete/{id}', [SalesController::class, 'delete'])->name('delete');
             Route::get('stockcount/index', [SalesController::class, 'StockCount'])->name('StockCount');
         });
@@ -239,7 +239,7 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'invoices.',
         ], function () {
             Route::get('/', [InvoicesController::class, 'index'])->name('index');
-            Route::get('show/{id}', [InvoicesController::class, 'show'])->name('show');
+            Route::get('/show', [InvoicesController::class, 'modal_view'])->name('show');
             Route::post('/delete/{id}', [InvoicesController::class, 'destroy'])->name('delete');
             Route::get('search-customer', [InvoicesController::class, 'searchCustomer'])->name('searchCustomer');
             Route::get('getProductDataByCode', [InvoicesController::class, 'getProductDataByCode'])->name('getProductDataByCode');
@@ -251,8 +251,8 @@ Route::middleware(['auth', 'abilities'])->group(function () {
             'as' => 'return.',
         ], function () {
             Route::get('/', [SaleReturnController::class, 'index'])->name('index');
-            Route::get('/show/{id}', [SaleReturnController::class, 'show'])->name('show');
-            Route::post('/delete/{id}', [SaleReturnController::class, 'destroy'])->name('delete');
+            Route::get('/show', [SaleReturnController::class, 'modal_view'])->name('show');
+            Route::post('/delete', [SaleReturnController::class, 'destroy'])->name('delete');
         });
         
         Route::group([
