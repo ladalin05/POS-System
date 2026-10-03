@@ -39,7 +39,7 @@ class CategoryController extends Controller
                 }
 
                 $this->service->create($data);
-
+                
                 return $this->redirectResponse(
                     message: __('messages.create_category_success'),
                     route: route('products.categories.index'),
